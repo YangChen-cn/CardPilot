@@ -40,4 +40,14 @@ final class BankCard {
         isArchived = false; createdAt = .now
     }
     var displayName: String { "\(bank) · \(name)" }
+
+    /// `official`, `custom`, or `unknown`, inferred without adding fields to the
+    /// SwiftData schema: any stored image is personal/legacy; no image plus a
+    /// catalog ID uses official artwork.
+    var artworkOrigin: String {
+        if imageData != nil { return "custom" }
+        return catalogID.isEmpty ? "unknown" : "official"
+    }
+    var isCustomArtwork: Bool { imageData != nil }
+    var isOfficialArtwork: Bool { imageData == nil && !catalogID.isEmpty }
 }

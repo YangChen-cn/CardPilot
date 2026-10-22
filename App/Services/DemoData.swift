@@ -3,8 +3,14 @@ import SwiftData
 
 enum DemoData {
     @MainActor static func populate(_ context: ModelContext) throws {
-        try CatalogImporter.installBundledExampleIfNeeded(context)
-        guard let chill = try context.fetch(FetchDescriptor<BankCard>()).first else { return }
+        let key = "initial-catalog-v2"
+        let descriptor = FetchDescriptor<AppMetadata>(predicate: #Predicate { $0.key == key })
+        guard try context.fetchCount(descriptor) == 0 else { return }
+        guard let product = try BankLibrary.load().products.first(where: { $0.id == "bochk.chill.platinum" }) else {
+            throw PilotError.invalid("缺少内置 Chill 卡资料。")
+        }
+        context.insert(AppMetadata(key: key, value: "installed"))
+        let chill = try LibraryOnboarding.add(product: product, in: context)
         let start = HKCalendar.calendar.dateInterval(of: .month, for: .now)?.start ?? .now
         let end = HKCalendar.calendar.date(byAdding: .day, value: 18, to: .now) ?? .now
         let hsbc = BankCard(bank: "HSBC", name: "Red · 演示卡", network: "Mastercard", lastFour: "8028", statementDay: 12, paymentDay: 6, baseRateBps: 100, theme: "red")

@@ -1,26 +1,33 @@
 import Foundation
 import SwiftData
 
-/// Replace only the exact bundled composite artwork used by older releases.
-/// User photographs, custom artwork, identity and financial data stay unchanged.
+/// One-time cleanup for cards that stored a copy of an official card face.
+/// It only clears the copy when the bytes match the current official asset (or
+/// a known legacy GO face). Anything uncertain stays as personal artwork.
 @MainActor enum LibraryArtworkUpdates {
     @discardableResult static func apply(in context: ModelContext) throws -> Int {
-        let productID = "bochk.go.diamond"
-        let cards = try context.fetch(FetchDescriptor<BankCard>(predicate: #Predicate { $0.catalogID == productID }))
-        let legacy = ["bochk-go.png", "bochk-go-cf.png"].compactMap { BankLibrary.imageData(resource: $0) }
-        let affected = cards.filter { card in card.imageData.map { legacy.contains($0) } ?? false }
-        guard !affected.isEmpty else { return 0 }
-        guard let image = BankLibrary.imageData(resource: "bochk-go-diamond.png") else {
-            throw PilotError.invalid("暂时无法更新银行卡面，请重新打开 App。")
-        }
-        try CatalogImporter.validateImage(image)
-        try Persistence.save(context) {
-            for card in affected {
-                card.imageData = image
-                card.imageURL = "https://www.bochk.com/creditcard/images/cardface/301_DD_0955_00012.png"
-                card.modifiedAt = .now
+        let cards = try context.fetch(FetchDescriptor<BankCard>())
+        let library = try? BankLibrary.load()
+        let legacyGo = ["bochk-go.png", "bochk-go-cf.png"].compactMap { BankLibrary.imageData(resource: $0) }
+        var changed: [BankCard] = []
+
+        for card in cards where card.imageData != nil {
+            guard !card.catalogID.isEmpty else { continue }
+            let matchesCurrent = library?.product(id: card.catalogID)
+                .flatMap { $0.artwork.bundledData() }
+                .map { $0 == card.imageData } ?? false
+            let isLegacyGO = card.catalogID == "bochk.go.diamond"
+                && legacyGo.contains(card.imageData ?? Data())
+            if matchesCurrent || isLegacyGO {
+                card.imageData = nil
+                changed.append(card)
             }
         }
-        return affected.count
+
+        guard !changed.isEmpty else { return 0 }
+        try Persistence.save(context) {
+            for card in changed { card.modifiedAt = .now }
+        }
+        return changed.count
     }
 }

@@ -31,6 +31,7 @@ enum SyncMerger {
                 let profile = oldTime == newTime ? (oldPayload.lexicographicallyPrecedes(newPayload) ? new : old) : (oldTime > newTime ? old : new)
                 value.lastFour = profile.lastFour; value.statementDay = profile.statementDay
                 value.paymentDay = profile.paymentDay; value.isArchived = profile.isArchived
+                value.imageData = profile.imageData
                 value.profileRevision = profile.profileRevision
                 winner.payload = try? SyncCodec.encoder().encode(value)
             }

@@ -44,6 +44,10 @@ final class CatalogRepository {
     /// Bumped after a successful cache replacement so views can recompute
     /// their official offers without observing SwiftData.
     private(set) var revision = 0
+    /// Incremented after every check so failed artwork can be retried by the UI.
+    private(set) var assetRetryToken = 0
+
+    var assetBaseURL: URL { endpoint.deletingLastPathComponent() }
 
     init(endpoint: URL = CatalogRepository.defaultEndpoint,
          session: URLSession = .shared,
@@ -138,7 +142,10 @@ final class CatalogRepository {
         if !force, let lastCheckedAt, now().timeIntervalSince(lastCheckedAt) < checkInterval { return }
         isChecking = true
         phase = .checking
-        defer { isChecking = false }
+        defer {
+            isChecking = false
+            assetRetryToken &+= 1
+        }
 
         let cached = cache.loadSnapshot()
         var metadata = cached?.metadata ?? cache.loadMetadata()

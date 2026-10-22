@@ -8,10 +8,11 @@ CardPilot 是原生银行卡权益管理与轻量消费统计工具。权益展�
 
 | 数据 | 保存位置与用途 |
 | --- | --- |
-| 官方产品/卡面 | 内置BankLibrary JSON、稳定产品ID和本地图片资源；当前为HSBC、BOCHK、BEA、CNCBI信银国际四家银行十三个产品 |
-| 官方活动 | 公开GitHub Pages上的版本化CatalogRule快照；启动/回前台每6小时检查，校验后原子缓存为只读资料，不写入SwiftData |
+| 官方银行/产品 | Catalog Schema V2 的 `banks`/`products`，由公开 GitHub Pages 快照定义；稳定银行ID和产品ID，不再在 App 中硬编码银行白名单 |
+| 官方卡面/Logo | `CatalogAsset { path, sha256, contentType }`；路径相对 Catalog 根，按 SHA-256 下载、校验和缓存；个人自定义卡面与官方资源分开存储 |
+| 官方活动 | 公开 GitHub Pages 上的版本化 CatalogRule 快照；启动/回前台每6小时检查，校验后原子缓存为只读资料，不写入SwiftData |
 | 当前活动解释 | OfferStore从只读资料投影活动，BenefitInfo合并个人overlay并解释活动文字、费率参考、限制、来源与日期；无需任何消费数据；旧RewardRule只作个人自建或历史迁移 |
-| 用户持卡资料 | BankCard尾号、账单日、还款日、自定义名称/图片和归档；额度及手动账单、还款沿用现有领域文档 |
+| 用户持卡资料 | BankCard尾号、账单日、还款日、自定义名称/图片和归档；有`imageData`即个人/旧版图片，无图且有`catalogID`时使用当前官方卡面；官方更新不覆盖个人图片。该所有权由现有字段推导，不新增SwiftData字段；额度及手动账单、还款沿用现有领域文档 |
 | 卡片类型与显示 | `BankCard.kind` 保留“信用卡/借记卡”存储值，界面将借记卡称“扣账卡”；卡片页偏好 `@AppStorage("cards.displayMode")` 选择一起显示或按类型分组，一起显示时可筛选；不新增SwiftData字段 |
 | 个人迎新 | 新官方迎新使用welcomeTrackingOffer文档，key为welcomeTracking:offer:<cardKey>:<offerID>（官方卡cardKey为同步稳定的BankCard.overlayKey）；状态、申请/发卡日期、个人截止日、门槛参考、奖励内容、备注、到账日期；旧welcomeTracking:rule.syncKey只读迁移 |
 | 个人活动状态 | offerState文档，key为offerState:<cardKey>:<offerID>；隐藏、收藏、登记、备注；官方卡cardKey跨设备稳定，旧UUID key只读迁移；当前每个官方产品单实例，未来多实例需加入同步实例标识 |

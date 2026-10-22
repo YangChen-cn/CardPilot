@@ -25,6 +25,13 @@ private final class StubCatalogURLProtocol: URLProtocol {
 @Suite(.serialized) @MainActor
 struct RemoteCatalogTests {
     private let endpoint = URL(string: "https://catalog.example.test/catalog.json")!
+    private func asset(_ path: String, type: String = "image/png") -> CatalogAsset {
+        CatalogAsset(path: path, sha256: String(repeating: "a", count: 64), contentType: type)
+    }
+    private func bank() -> RemoteCatalogBank {
+        RemoteCatalogBank(id: "bochk", name: "BOCHK 中银香港", shortName: "BOCHK",
+                          logo: asset("images/banks/bochk.png"), searchTerms: ["中银"])
+    }
 
     private func product(rate: Decimal = 2, includeOld: Bool = true, verifiedOn: String = "2026-10-22") throws -> CardProduct {
         var rules: [[String: Any]] = [
@@ -43,18 +50,19 @@ struct RemoteCatalogTests {
             "rules": rules
         ]
         let catalog = try JSONDecoder().decode(CatalogCard.self, from: JSONSerialization.data(withJSONObject: object))
-        return CardProduct(bankID: "bochk", catalog: catalog, imageResource: "bochk-chill-platinum.png",
-                           baseRewardVerified: true, welcomePlans: [])
+        return CardProduct(bankID: "bochk", catalog: catalog, artwork: asset("images/cards/bochk-chill-platinum.png"),
+                           baseRewardVerified: true, welcomePlans: [], searchTerms: [])
     }
 
     private func document(version: Int, rate: Decimal = 4, includeOld: Bool = true,
                           verifiedOn: String = "2026-10-23") throws -> RemoteCatalogDocument {
         let card = try product(rate: rate, includeOld: includeOld, verifiedOn: verifiedOn).catalog
-        return RemoteCatalogDocument(schemaVersion: 1, contentVersion: version, publishedAt: "2026-10-23",
+        return RemoteCatalogDocument(schemaVersion: 2, contentVersion: version, publishedAt: "2026-10-23",
+                                     banks: [bank()],
                                      products: [RemoteCatalogProduct(id: card.id, bankID: "bochk",
-                                                                     imageResource: "bochk-chill-platinum.png",
+                                                                     artwork: asset("images/cards/bochk-chill-platinum.png"),
                                                                      baseRewardVerified: true, welcomePlans: [],
-                                                                     catalog: card)])
+                                                                     catalog: card, searchTerms: [])])
     }
 
     private func data(_ document: RemoteCatalogDocument) throws -> Data {
@@ -214,8 +222,8 @@ struct RemoteCatalogTests {
         rule.capPeriod = "campaign"
         let catalog = CatalogCard(id: "date.test", bank: "BOCHK", name: "Date product", network: "Visa",
                                   sourceURL: "https://example.com/official", verifiedOn: "2026-10-23", rules: [rule])
-        let product = CardProduct(bankID: "bochk", catalog: catalog, imageResource: "bochk-chill-platinum.png",
-                                  baseRewardVerified: false, welcomePlans: [])
+        let product = CardProduct(bankID: "bochk", catalog: catalog, artwork: asset("images/cards/bochk-chill-platinum.png"),
+                                  baseRewardVerified: false, welcomePlans: [], searchTerms: [])
         let info = BenefitInfo(official: rule, product: product, card: card, state: OfferPersonalState())
         #expect(!info.hasKnownPeriod)
         #expect(info.startsOn == .distantPast)
@@ -230,9 +238,15 @@ struct RemoteCatalogTests {
         #expect(throws: (any Error).self) {
             _ = try RemoteCatalogDocument.decode(JSONSerialization.data(withJSONObject: object))
         }
-        let schemaTwo = RemoteCatalogDocument(schemaVersion: 2, contentVersion: 1, publishedAt: "2026-10-23",
-                                              products: doc.products)
-        #expect(throws: (any Error).self) { _ = try RemoteCatalogDocument.decode(JSONEncoder().encode(schemaTwo)) }
+        let schemaOne = RemoteCatalogDocument(schemaVersion: 1, contentVersion: 1, publishedAt: "2026-10-23",
+                                              banks: doc.banks, products: doc.products)
+        #expect(throws: (any Error).self) { _ = try RemoteCatalogDocument.decode(JSONEncoder().encode(schemaOne)) }
+        var unknownBank = try #require(try JSONSerialization.jsonObject(with: data(doc)) as? [String: Any])
+        var banks = try #require(unknownBank["banks"] as? [[String: Any]])
+        banks[0]["unexpected"] = true; unknownBank["banks"] = banks
+        #expect(throws: (any Error).self) {
+            _ = try RemoteCatalogDocument.decode(JSONSerialization.data(withJSONObject: unknownBank))
+        }
     }
 
     @Test func offerPersonalStateIsIsolatedBetweenDifferentCards() throws {
@@ -318,8 +332,8 @@ struct RemoteCatalogTests {
             rule.capPeriod = "campaign"
             let catalog = CatalogCard(id: "date.test", bank: "BOCHK", name: "Date product", network: "Visa",
                                       sourceURL: "https://example.com/official", verifiedOn: "2026-10-23", rules: [rule])
-            let product = CardProduct(bankID: "bochk", catalog: catalog, imageResource: "bochk-chill-platinum.png",
-                                      baseRewardVerified: false, welcomePlans: [])
+            let product = CardProduct(bankID: "bochk", catalog: catalog, artwork: asset("images/cards/bochk-chill-platinum.png"),
+                                      baseRewardVerified: false, welcomePlans: [], searchTerms: [])
             return BenefitInfo(official: rule, product: product, card: card, state: OfferPersonalState())
         }
         let ended = try info(starts: nil, ends: "2026-01-01")

@@ -1,14 +1,17 @@
 import SwiftUI
 
 struct LibraryBankLogo: View {
-    let resource: String
-    @State private var data: Data?
+    let asset: CatalogAsset
 
     var body: some View {
-        Group {
-            if let data { LocalCardImage(data: data) }
-            else { Image(systemName: "building.columns").font(.title2).foregroundStyle(.secondary) }
+        CatalogAssetImage(asset: asset) { image in
+            Image(decorative: image.image, scale: 1)
+                .resizable()
+                .aspectRatio(image.aspectRatio, contentMode: .fit)
+        } placeholder: {
+            Image(systemName: "building.columns")
+                .font(.title2)
+                .foregroundStyle(.secondary)
         }
-        .task(id: resource) { data = BankLibrary.imageData(resource: resource) }
     }
 }

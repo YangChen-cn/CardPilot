@@ -37,14 +37,14 @@
 
 | 本地资源（BankLibrary内） | 官方资源URL | 说明 |
 |---|---|---|
-| `bochk-chill-platinum.png` | https://www.bochk.com/dam/boccreditcard/chillcard/images/cardface_platinum.png | 复用此前官方白金卡面，未替换为World |
+| `Catalog/images/cards/bochk-chill-platinum.png` | https://www.bochk.com/dam/boccreditcard/chillcard/images/cardface_platinum.png | 复用此前官方白金卡面，未替换为World |
 | `bochk-go-diamond.png` | https://www.bochk.com/creditcard/images/cardface/301_DD_0955_00012.png | 官方独立钻石数字卡面，1536×969，保留完整原图 |
 | `bochk-go-platinum.png` | https://www.bochk.com/creditcard/images/cardface/301_DG_0955_00012.png | 官方独立白金数字卡面，1536×969，保留完整原图 |
 | `bochk-go.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_195.png | 旧组合图，仅用于识别并修复老版本已保存图片；新产品不再使用 |
 | `bochk-go-cf.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/GOCard_CF.png | 旧组合备选，同样只用于旧图识别 |
 | `bochk-gba-youth.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_219.png | 青年卡独立卡面，示例头像及号码为银行发布的产品样图 |
 | `bochk-mastercard-debit.png` | https://www.bochk.com/dam/more/bocdebitcard/card/images/card-4.png | 中银万事达扣账卡灰色Platinum版卡面，151×240 |
-| `bea-hku-student.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c34.png | 官方HKU学生申请表c34的独立Visa卡面 |
+| `Catalog/images/cards/bea-hku-student-visa.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c34.png | 官方HKU学生申请表c34的独立Visa卡面 |
 | `bea-udc-diamond.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c05D.png | 官方UDC申请表实际card-face=c05D；普通及学生共用此卡面，产品ID仍分开 |
 | `bochk-logo.png` | https://www.bochk.com/etc/designs/bochk_web/images/logo.png | 银行官网页首logo |
 | `bea-logo.png` | https://www.hkbea.com/images-solar/logo.png | 银行官网页首logo |
@@ -55,7 +55,7 @@ GO 独立卡面来自[银行奖励说明](https://www.bochk.com/creditcard/BOCPA
 
 ## 文件边界
 
-`hk-bank-catalog.json`保留原有所有卡片和规则ID，另外新增`bea.udc.diamond.student`、`bochk.go.platinum`、`bochk.mastercard.debit`；原`bochk.go.diamond`及其既有规则ID不变。UDC白金及旧CNCBI资料仍保留用于历史账本兼容；CNCBI GBA与多币扣账卡现由独立manifest按需加入。`bochk-bea-products.json`列出8个BOCHK/BEA产品，加上HSBC三款、CNCBI两款，资料库当前共四家银行十三款产品。
+Catalog V2 的 `products` 保留原有所有卡片和规则ID，包含 `bea.udc.diamond.student`、`bochk.go.platinum`、`bochk.mastercard.debit`；原 `bochk.go.diamond` 及其既有规则ID不变。CNCBI GBA 与多币扣账卡也直接定义在同一份 Catalog 中；不再维护银行 manifest 或独立 catalog 文件。公开快照当前为四家银行十三款产品，卡面与 Logo 存放在 `Resources/Catalog/images/` 并由 SHA-256 引用。
 
 本子任务只做资料/资源更新及JSON引用核对，没有修改Swift代码，没有构建或进行UI验收。
 

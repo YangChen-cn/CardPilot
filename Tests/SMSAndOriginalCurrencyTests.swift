@@ -93,6 +93,7 @@ struct SMSAndOriginalCurrencyTests {
         let container = try Persistence.makeContainer(inMemory: true)
         let card = try LibraryOnboarding.add(product: product, in: container.mainContext)
         #expect(card.kind == "借记卡"); #expect(card.network == "Mastercard")
-        #expect(card.baseRateBps == 40); #expect(card.foreignFeeBps == 0); #expect(card.imageData != nil)
+        #expect(card.baseRateBps == 40); #expect(card.foreignFeeBps == 0)
+        #expect(card.imageData == nil); #expect(card.artworkOrigin == "official")
     }
 }

@@ -59,27 +59,6 @@ struct HardeningTests {
         #expect(try context.fetchCount(FetchDescriptor<SpendTransaction>()) == 2)
     }
 
-    @Test func reimportPreservesEditedRatesCapsDisabledStateAndPersonalWelcomeDates() throws {
-        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
-        let url = try #require(Bundle.main.url(forResource: "bochk-chill", withExtension: "json"))
-        let package = try CatalogImporter.decode(Data(contentsOf: url))
-        try CatalogImporter.apply(package, context: context)
-        let card = try #require(context.fetch(FetchDescriptor<BankCard>()).first)
-        let cashback = try #require(card.rules.first(where: { !$0.isWelcome }))
-        cashback.isEnabled = false; cashback.minimumCents = 25000
-        let draft = RuleDraft(rule: cashback); draft.rate = 7
-        #expect(draft.save(in: context, cards: [card]))
-        let welcome = try #require(card.rules.first(where: { $0.isWelcome }))
-        let personal = RuleDraft(rule: welcome); personal.startsOn = try day("2026-09-10"); personal.endsOn = try day("2026-11-30"); welcome.isEnabled = true
-        #expect(personal.save(in: context, cards: [card]))
-        try CatalogImporter.apply(package, context: context)
-        #expect(cashback.rateBps == 700); #expect(cashback.minimumCents == 25_000); #expect(!cashback.isEnabled)
-        #expect(welcome.startsOn == (try day("2026-09-10"))); #expect(welcome.isEnabled)
-        #expect(try RulePolicyStore.state(cashback).pending != nil)
-        try RulePolicyStore.acceptPending(cashback, context: context)
-        #expect(!cashback.isEnabled); #expect(cashback.rateBps != 700)
-    }
-
     @Test func csvQuotesDatesDuplicateIdsAndAtomicFailureAreHandled() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext, card = card(context)
         let csv = "id,merchant,date,amount,currency,payment,reward_eligible,notes\r\nref1,\"Cafe, Central\",2026-10-10T01:02:03.123Z,12.50,HKD,Apple Pay,true,lunch\r\nref2,\"Shop \"\"A\"\"\",2026-10-10T01:03:03Z,20,HKD,实体卡,false,bill\r\n"

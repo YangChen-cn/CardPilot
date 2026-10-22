@@ -21,7 +21,12 @@ targets:
   CardPilotMac:
     type: application
     platform: macOS
-    sources: [App]
+    sources:
+      - path: App
+        excludes: [Resources/Catalog]
+      - path: App/Resources/Catalog
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.app.mac
@@ -43,7 +48,12 @@ targets:
   CardPilotIOS:
     type: application
     platform: iOS
-    sources: [App]
+    sources:
+      - path: App
+        excludes: [Resources/Catalog]
+      - path: App/Resources/Catalog
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.app

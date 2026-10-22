@@ -12,8 +12,10 @@ struct CardPricingStabilityTests {
                                   overseasHKDFeePercent: 0.5, excludesWallets: false,
                                   annualFeeNote: "年费说明", caveats: "官方注意", rules: [],
                                   calculation: nil)
-        return CardProduct(bankID: "bochk", catalog: catalog, imageResource: "bochk-chill-platinum.png",
-                           baseRewardVerified: true, welcomePlans: [])
+        return CardProduct(bankID: "bochk", catalog: catalog,
+                           artwork: CatalogAsset(path: "images/cards/bochk-chill-platinum.png",
+                                                 sha256: String(repeating: "a", count: 64), contentType: "image/png"),
+                           baseRewardVerified: true, welcomePlans: [], searchTerms: [])
     }
 
     @Test func currentOfficialRatesWinOverTheCardSnapshot() throws {

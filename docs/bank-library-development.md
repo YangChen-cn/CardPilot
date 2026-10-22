@@ -24,18 +24,19 @@
 | CNCBI | cncbi.gba.dual | GBA双币卡 |
 | CNCBI | cncbi.multi-currency.debit | 多币扣账卡（Mastercard） |
 
-旧catalog中的其他条目仍用于历史导入兼容，不自动加入选卡范围。GO钻石/白金、UDC普通/学生、两张扣账卡均保持独立产品ID。活动改名不换ID；真正的新活动批次才创建新ID。
+所有产品都由同一份 Catalog V2 快照定义；GO钻石/白金、UDC普通/学生、两张扣账卡均保持独立产品ID。活动改名不换ID；真正的新活动批次才创建新ID。
 
 ## 职责与数据分离
 
 | 位置 | 职责 |
 | --- | --- |
-| Resources/BankLibrary/*products.json | 产品索引、官方卡面、来源与welcomePlans文字条款；当前为HSBC、BOCHK/BEA、CNCBI三个manifest |
-| Resources/hsbc-catalog.json、hk-bank-catalog.json、bochk-chill.json、cncbi-multi-currency-catalog.json | 兼容JSON v1产品与活动模板；所有活动写显式group；calculation字段仅为旧元数据及限制来源，不驱动结算 |
-| 公开快照 | 公开仓库 YangChen-cn/CardPilot-Catalog 的 docs/catalog.json；官方产品/活动文本、公开来源和迎新计划，不含图片、个人数据或凭据 |
+| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：4家银行、13个产品、Logo和官方卡面；所有图片有SHA-256；只读，不含个人字段 |
+| 公开快照 | 公开仓库 YangChen-cn/CardPilot-Catalog 的 docs/catalog.json 与 docs/images/；banks/products/artwork 全部云端定义，不含个人数据或凭据 |
 | CatalogRepository、RemoteCatalogCache | 获取、校验、ETag/Last-Modified、6小时检查、单文件原子快照和更新状态；304仅用有效快照，同版本正文变化拒绝；只读，不持有SwiftData上下文，不写个人账本 |
-| BankLibrary、CardProduct | 合并内置资料与最后有效只读缓存，验证产品/活动/迎新/图片；生产环境优先缓存，测试跳过真实用户缓存；displayCatalog补充无ruleIDs的文字迎新 |
-| LibraryOnboarding | 只为选中的产品创建个人BankCard实例；不再把官方CatalogRule复制成RewardRule；个人状态使用卡片overlayKey隔离 |
+| CatalogAssetStore、CatalogAssetImage | 按SHA-256独立下载/校验/磁盘缓存卡面与Logo；3个并发上限、按sha去重、原子写入、内存解码有上限；离线用缓存或内置回退，单图失败只显示占位并可在下次检查重试 |
+| BankLibrary、CardProduct | 解码 Catalog V2；银行与产品不再硬编码白名单，验证bankID引用、产品/活动/迎新和asset描述；生产环境优先最后有效缓存，测试跳过用户缓存；displayCatalog补充无ruleIDs的文字迎新 |
+| LibraryOnboarding | 只为选中的产品创建个人BankCard实例；官方卡不复制imageData，只保存catalogID；个人状态使用卡片overlayKey隔离。所有权由`imageData`/`catalogID`推导，不新增SwiftData字段 |
+| CardArtwork、LibraryArtworkUpdates | 优先个人自定义图片；官方卡按catalogID读取当前CatalogAsset；一次性把可确认的旧官方副本转成引用，无法确认的保留为custom，不覆盖用户图片 |
 | OfferStore、BenefitInfo | 从当前只读资料投影官方活动并合并个人overlay；展示自然语言限制、来源、日期；旧RewardRule只作为个人自建或历史迁移来源 |
 | OfferPanel、BenefitReaderView | 直接展示当前活动和自然语言限制、来源、日期；不读取交易历史 |
 | OfferStateStore、OfferTrackingStore | 官方活动的隐藏/收藏/登记/备注与迎新状态；key使用跨设备稳定的卡片overlayKey+活动稳定ID；旧UUID与WelcomeTrackingStore只读迁移 |
@@ -48,8 +49,9 @@
 
 ## 云端只读资料与个人状态
 
-- 官方资料的主数据源是公开GitHub Pages上的版本化JSON，不再通过“导入卡片与优惠”或启动刷新写入SwiftData。`CatalogRepository`只做下载、校验、缓存、版本比较和状态发布；`BankLibrary`把最后有效缓存与内置资料合并成当前只读产品目录。
-- 更新检查发生在启动、回到前台且距上次检查超过6小时、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。下载先按大小、schema、版本、字段、来源、日期、分类、迎新计划、图片和私有字段校验，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置资料。
+- 官方资料的主数据源是公开GitHub Pages上的 Catalog Schema V2 JSON；银行、产品、Logo和卡面都由快照定义，不再通过“导入卡片与优惠”或启动刷新写入SwiftData。`CatalogRepository`只做文档下载、校验、缓存、版本比较和状态发布；`BankLibrary`把最后有效缓存或内置Catalog解码成当前只读产品目录。新增银行或产品不需要更新App。
+- 更新检查发生在启动、回到前台且距上次检查超过6小时、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。文档先校验schema、数量、银行/产品引用、asset路径/hash、来源、日期、分组、迎新计划和私有字段，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置Catalog。
+- 文档与图片下载解耦。`CatalogAssetStore`按artifact的SHA-256查找磁盘缓存、内置回退和网络；图片校验失败不会让Catalog更新失败，也不会让产品消失。加载期间或失败时UI显示占位图；手动检查或下次联网会重试。缓存清理只删除无效文件，不删除当前Catalog或持卡卡面仍引用的资源。
 - 官方活动使用显式`group`（daily/limited/merchant/welcome），日期可为空；`verifiedOn`只是资料核实日期，`updatedAt`是内容更新时间，不能拿来补活动开始、结束或个人截止日。迎新申请期和个人消费期分开。
 - 个人状态不以产品ID或活动名称模糊匹配。`BenefitInfo.cardKey` 对官方卡使用同步稳定的 `BankCard.overlayKey`（即由catalogID派生的`card.syncKey`），官方offer key是`offer:<cardKey>:<offerID>`；隐藏/收藏/登记/备注文档key是`offerState:<cardKey>:<offerID>`，迎新新key是`welcomeTracking:offer:<cardKey>:<offerID>`。旧`BankCard.id` UUID键在启动时只读复制到新key并保留旧记录。当前每个官方产品只保留一个持卡实例；未来支持同产品多实例时，需在overlayKey中加入同步实例标识，避免不同实例共享状态。
 - 旧官方RewardRule不删除、不改写：新安装不再复制官方规则；既有卡上的旧规则作为历史活动显示，旧迎新档案只读迁移到新key。旧个人自建规则（externalID为空）继续保留为个人活动。
@@ -61,11 +63,12 @@
 1. 用户授权扩大范围后再加银行/卡片。本轮只维护上表。先搜索ID和名称，防止重复或把不同等级/用户版本合并。
 2. 从官方产品页及条款核实名称、卡组织、权益、门槛、限制、登记、上限和日期。不能确认的条件直接标待核实；无须为了展示一项权益建立可执行交易匹配模型。保留来源和真实核实日期。
 3. 复杂权益优先写清自然语言notes/details。不能准确表达的奖励保留描述，不随意合并不同币种目标、虚构现金等值或复制宣传“最高”比例作为普遍回赠。不要写“引擎未建模”“关闭资格开关”等工程说明。
-4. 新公开快照使用`docs/catalog.json`的`contentVersion`与显式活动`group`；`startsOn`/`endsOn`可缺省并以null表示未知。旧JSON v1仍可读，旧模型内的兼容日期和`calculation.periodUnverified`只作历史，不当作活动事实或个人截止日。活动官方期与个人消费截止日不可互相代替。
-5. 官方公开卡面优先，本地缓存并保留完整比例。图片下载与规则出处写进对应银行研究文档。无法下载时，任何同款备份应同时记录官方原URL、实际下载URL和核对依据；不使用生成图冒充官方卡面。
+4. 新公开快照使用Catalog V2：顶层`schemaVersion: 2`、`contentVersion`、`publishedAt`、`banks`、`products`；活动写显式`group`，`startsOn`/`endsOn`可缺省并以null表示未知。`contentVersion`必须大于线上版本；`verifiedOn`、`updatedAt`不能补活动日期。活动官方期与个人消费截止日不可互相代替。
+5. 官方公开卡面优先。图片先用`script/catalog_asset.py`去除EXIF/重编码，限制2400px、4MB，并把输出的`path`/`sha256`/`contentType`写入对应asset；再用`script/build_catalog_snapshot.py`校验每张引用图片存在且hash匹配，生成公开`docs/catalog.json`并复制到`docs/images/`。图片下载与规则出处写进对应银行研究文档；无法下载时不得用生成图冒充官方卡面。
 6. 新卡安装只创建个人BankCard；官方权益由OfferStore从当前只读资料实时投影，不再复制为RewardRule。无ruleIDs的welcomePlans由displayCatalog生成externalID=plan.id的描述条目。新迎新仅未确认，不因旧calculable/isEnabled字段推断用户申请或达标；老已开启状态与到账读取保留。
 7. 远程官方更新只替换只读缓存，不覆盖尾号、账单/还款日、个人状态/截止日、隐藏/收藏、归档、手工名称/卡面、交易。旧官方规则不删除；活动从新快照消失时只停止当前投影。个人自建活动永不被官方资料覆盖。
-8. 增删源文件后xcodegen generate。产品资料改动跑资料库及直接受影响测试；公共存储/同步大改才全量。UI由用户验收，交付前主动构建并打开macOS。
+8. 新增/修改银行时只改Catalog，不改BankLibrary白名单；产品数量上限为1000、银行200。新增图片后运行公开仓库`python3 scripts/validate_catalog.py docs/catalog.json --base <上一版>`，再提交公开仓库并等待GitHub Pages。App不随资料更新发版。
+9. 增删源文件后xcodegen generate。产品资料改动跑资料库及直接受影响测试；公共存储/同步大改才全量。UI由用户验收，交付前主动构建并打开macOS。
 
 welcomePlans.kind、exclusionGroup、calculable及旧主/附方案字段仅为旧资料描述/兼容。不要再据此限制用户或要求建立多币种奖励引擎。普通/学生UDC现可展示原有完整迎新说明、让用户记录状态，无须自动计算资格。
 

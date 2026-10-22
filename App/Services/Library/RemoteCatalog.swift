@@ -2,16 +2,18 @@ import CryptoKit
 import Foundation
 
 /// The public, versioned catalog snapshot downloaded from GitHub Pages.
-/// It contains official product and offer content only; personal data never
-/// belongs in this document.
+/// Banks, products and artwork are all data; the app has no bank whitelist.
 struct RemoteCatalogDocument: Codable, Sendable {
     let schemaVersion: Int
     let contentVersion: Int
     let publishedAt: String
+    let banks: [RemoteCatalogBank]
     let products: [RemoteCatalogProduct]
 
-    static let currentSchemaVersion = 1
-    static let maximumBytes = 5_000_000
+    static let currentSchemaVersion = 2
+    static let maximumBytes = 8_000_000
+    static let maximumBanks = 200
+    static let maximumProducts = 1_000
 
     static func decode(_ data: Data) throws -> RemoteCatalogDocument {
         guard data.count <= maximumBytes else { throw PilotError.invalid("资料文件过大，已保留本地资料。") }
@@ -25,23 +27,22 @@ struct RemoteCatalogDocument: Codable, Sendable {
         }
         guard document.contentVersion > 0 else { throw PilotError.invalid("资料版本无效。") }
         _ = try CatalogImporter.date(document.publishedAt)
-        guard !document.products.isEmpty, document.products.count <= 20 else {
-            throw PilotError.invalid("资料产品数量无效。")
+        guard (1...maximumBanks).contains(document.banks.count),
+              (1...maximumProducts).contains(document.products.count) else {
+            throw PilotError.invalid("资料银行或产品数量无效。")
+        }
+        guard Set(document.banks.map(\.id)).count == document.banks.count else {
+            throw PilotError.invalid("资料银行 ID 重复。")
         }
         guard Set(document.products.map(\.id)).count == document.products.count else {
             throw PilotError.invalid("资料产品 ID 重复。")
         }
+        let bankIDs = Set(document.banks.map(\.id))
+        for bank in document.banks {
+            try bank.validate()
+        }
         for product in document.products {
-            guard product.id == product.catalog.id, product.bankID == "hsbc" || product.bankID == "bochk" || product.bankID == "bea" else {
-                throw PilotError.invalid("资料产品标识不一致。")
-            }
-            _ = try CatalogImporter.decode(JSONEncoder().encode(CatalogPackage(schemaVersion: 1, cards: [product.catalog])))
-            for rule in product.catalog.rules {
-                guard let group = rule.group,
-                      ["daily", "limited", "merchant", "welcome"].contains(group) else {
-                    throw PilotError.invalid("\(product.id)：\(rule.name) 缺少有效的活动分类。")
-                }
-            }
+            try product.validate(bankIDs: bankIDs)
         }
         return document
     }
@@ -51,28 +52,87 @@ struct RemoteCatalogDocument: Codable, Sendable {
             let unknown = Set(object.keys).subtracting(allowed)
             if !unknown.isEmpty { throw PilotError.invalid("\(name)含不支持的字段：\(unknown.sorted().joined(separator: ", "))。") }
         }
-        try check(root, allowed: ["schemaVersion", "contentVersion", "publishedAt", "products"], name: "资料")
-        for (index, value) in (root["products"] as? [[String: Any]] ?? []).enumerated() {
-            try check(value, allowed: ["id", "bankID", "imageResource", "baseRewardVerified", "welcomePlans", "catalog"],
-                      name: "产品 \(index + 1)")
+        try check(root, allowed: ["schemaVersion", "contentVersion", "publishedAt", "banks", "products"], name: "资料")
+        for (index, value) in (root["banks"] as? [[String: Any]] ?? []).enumerated() {
+            try check(value, allowed: ["id", "name", "shortName", "logo", "searchTerms"], name: "银行 \(index + 1)")
+            if let logo = value["logo"] as? [String: Any] {
+                try check(logo, allowed: ["path", "sha256", "contentType"], name: "银行 \(index + 1) Logo")
+            }
         }
+        for (index, value) in (root["products"] as? [[String: Any]] ?? []).enumerated() {
+            try check(value, allowed: ["id", "bankID", "artwork", "baseRewardVerified", "welcomePlans", "catalog", "searchTerms"],
+                      name: "产品 \(index + 1)")
+            if let artwork = value["artwork"] as? [String: Any] {
+                try check(artwork, allowed: ["path", "sha256", "contentType"], name: "产品 \(index + 1) 卡面")
+            }
+        }
+    }
+
+    var libraryBanks: [LibraryBank] {
+        banks.map { LibraryBank(id: $0.id, name: $0.name, shortName: $0.shortName,
+                                logo: $0.logo, searchTerms: $0.searchTerms ?? []) }
     }
 
     var cardProducts: [CardProduct] {
         products.map { product in
-            CardProduct(bankID: product.bankID, catalog: product.catalog, imageResource: product.imageResource,
-                        baseRewardVerified: product.baseRewardVerified, welcomePlans: product.welcomePlans)
+            CardProduct(bankID: product.bankID, catalog: product.catalog, artwork: product.artwork,
+                        baseRewardVerified: product.baseRewardVerified, welcomePlans: product.welcomePlans,
+                        searchTerms: product.searchTerms ?? [])
         }
+    }
+}
+
+struct RemoteCatalogBank: Codable, Sendable {
+    let id: String
+    let name: String
+    let shortName: String
+    let logo: CatalogAsset
+    let searchTerms: [String]?
+
+    func validate() throws {
+        guard id.count <= 64, id.range(of: "^[a-z0-9][a-z0-9._-]*$", options: .regularExpression) != nil,
+              !name.isEmpty, name.count <= 100, !shortName.isEmpty, shortName.count <= 60 else {
+            throw PilotError.invalid("银行标识或名称无效。")
+        }
+        try logo.validate()
+        try CatalogSearchTerms.validate(searchTerms ?? [])
     }
 }
 
 struct RemoteCatalogProduct: Codable, Sendable {
     let id: String
     let bankID: String
-    let imageResource: String
+    let artwork: CatalogAsset
     let baseRewardVerified: Bool
     let welcomePlans: [WelcomePlan]
     let catalog: CatalogCard
+    let searchTerms: [String]?
+
+    func validate(bankIDs: Set<String>) throws {
+        guard id.count <= 128, id.range(of: "^[A-Za-z0-9][A-Za-z0-9._-]*$", options: .regularExpression) != nil,
+              bankIDs.contains(bankID), id == catalog.id,
+              !catalog.bank.isEmpty, !catalog.name.isEmpty,
+              catalog.imageURL == nil, catalog.imageBase64 == nil else {
+            throw PilotError.invalid("资料产品标识或银行关联不一致。")
+        }
+        try artwork.validate()
+        try CatalogSearchTerms.validate(searchTerms ?? [])
+        _ = try CatalogImporter.decode(JSONEncoder().encode(CatalogPackage(schemaVersion: 1, cards: [catalog])))
+        for rule in catalog.rules {
+            guard let group = rule.group,
+                  ["daily", "limited", "merchant", "welcome"].contains(group) else {
+                throw PilotError.invalid("\(id)：\(rule.name) 缺少有效的活动分类。")
+            }
+        }
+    }
+}
+
+enum CatalogSearchTerms {
+    static func validate(_ terms: [String]) throws {
+        guard terms.count <= 20, terms.allSatisfy({ !$0.isEmpty && $0.count <= 40 }) else {
+            throw PilotError.invalid("搜索关键词数量或长度无效。")
+        }
+    }
 }
 
 struct CatalogCacheMetadata: Codable, Sendable {

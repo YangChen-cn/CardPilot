@@ -4,22 +4,14 @@ import Foundation
 struct CardProduct: Identifiable, Sendable {
     let bankID: String
     let catalog: CatalogCard
-    let imageResource: String
+    let artwork: CatalogAsset
     let baseRewardVerified: Bool
     let welcomePlans: [WelcomePlan]
+    let searchTerms: [String]
     var id: String { catalog.id }
 
-    /// Extra names users commonly type that are not part of the formal title.
-    var searchKeywords: [String] {
-        switch id {
-        case "hsbc.pulse.unionpay.diamond": ["Pulse", "Pluse", "双币", "钻石"]
-        case "bochk.gba.youth": ["GBA", "大湾区", "双币", "青年"]
-        case "cncbi.gba.dual": ["GBA", "大湾区", "双币", "信银", "中信"]
-        case "bochk.mastercard.debit": ["Mastercard", "万事达", "扣账卡", "借记卡"]
-        case "cncbi.multi-currency.debit": ["CITIC", "中信", "信银", "多币", "扣账卡", "借记卡"]
-        default: []
-        }
-    }
+    /// Names users commonly type that are not part of the formal title.
+    var searchKeywords: [String] { searchTerms }
 
     /// Some official welcomes cannot be expressed as a single numeric reward. Keep their
     /// published text as activities too, without manufacturing thresholds or payout values.

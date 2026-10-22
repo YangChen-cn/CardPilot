@@ -6,7 +6,7 @@ struct LibraryBankRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            LibraryBankLogo(resource: bank.logoResource)
+            LibraryBankLogo(asset: bank.logo)
                 .frame(width: 54, height: 44)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 5) {

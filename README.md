@@ -57,16 +57,16 @@ CardPilot 把这些问题放回一个安静、离线优先的本地工作区：�
   <img src="docs/assets/screenshot-ios-benefit.jpg" alt="CardPilot iPhone 权益详情" width="30%">
 </p>
 
-## 内置资料库
+## 资料库与官方卡面
 
-当前内置 **4 家银行、13 款产品**：
+资料库使用公开的 **Catalog Schema V2**：银行、产品、官方卡面、Logo、来源与活动都由云端快照定义。当前提供 **4 家银行、13 款产品**：
 
 - **HSBC 汇丰**：学生 Visa 金卡、Pulse 银联双币钻石卡、Mastercard 扣账卡
 - **BOCHK 中银香港**：Chill 白金卡、GO 银联钻石卡、GO 白金卡、大湾区青年卡、万事达扣账卡
 - **BEA 东亚银行**：HKU 学生 Visa、UDC 钻石卡、UDC 钻石学生卡
 - **CNCBI 信银国际**：GBA 双币卡、多币扣账卡
 
-资料由 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog) 以只读快照发布。App 只缓存官方产品、卡面和权益描述；个人卡片、尾号、备注、迎新和消费始终单独保存在本机。网络不可用时，最后一份有效快照或内置资料继续工作。
+资料由 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog) 以只读快照发布，新增银行或产品只需更新资料库，不需要发布新版 App。官方卡面按 SHA-256 独立下载并缓存，单张图片失败不会影响权益资料；个人卡片、尾号、备注、迎新和消费始终单独保存在本机。网络不可用时，最后一份有效快照或精简的内置资料继续工作，首次启动也不需要等待网络。
 
 > 资料用于整理和比较，不构成银行官方说明或财务建议。权益、费率和活动以银行最新条款为准。
 
@@ -145,14 +145,14 @@ xcodebuild \
 - **SwiftData**：卡片、消费、活动和同步文档的本地存储；V3 schema，含旧数据兼容路径。
 - **Observation**：资料库、同步和界面状态的轻量响应式更新。
 - **文件同步**：`NSFileCoordinator` + 每台设备独立快照，支持用户自选文件夹或 iCloud Drive。
-- **只读资料库**：公开快照 + 原子缓存 + ETag/Last-Modified；失败不覆盖最后有效版本。
+- **只读资料库 V2**：云端定义银行、产品和卡面；原子快照 + ETag/Last-Modified + SHA-256 图片缓存；失败不覆盖最后有效版本。
 
 ```text
 App/
   Features/      卡片、总览、权益、账本、推荐、设置
   Models/        SwiftData 模型
   Services/      资料库、权益投影、同步、定价、邮件导入
-  Resources/     官方资料 JSON、卡面、图标、快捷指令
+  Resources/     内置 Catalog 回退、图标、快捷指令
 Tests/           Swift Testing 单元与回归测试
 docs/            架构、资料库、同步、邮件和技术说明
 cloud/           可选的 Google Apps Script 邮件采集端

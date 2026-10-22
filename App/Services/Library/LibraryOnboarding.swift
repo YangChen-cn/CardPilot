@@ -19,7 +19,7 @@ import SwiftData
         card.excludesWallets = catalog.excludesWallets ?? false
         card.annualFeeNote = catalog.annualFeeNote ?? ""
         card.caveats = catalog.caveats ?? ""
-        card.imageData = BankLibrary.imageData(resource: product.imageResource)
+        card.imageData = nil
         if commit { try Persistence.save(context) { context.insert(card) } }
         else { context.insert(card) }
         return card

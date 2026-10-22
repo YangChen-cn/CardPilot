@@ -19,8 +19,8 @@
 
 | 本地资源（BankLibrary内） | 来源 | 说明 |
 |---|---|---|
-| `cncbi-gba-dual.png` | 官方产品页核对卡种；卡面由公开产品宣传图裁切 | 官方页面未提供可直接下载的独立 GBA 卡面文件；未重绘卡面或伪造标志。若后续取得官方独立卡面，应替换并记录下载 URL |
-| `cncbi-multi-currency-debit.png` | https://www.cncbinternational.com/_document/about-us/media-center/2025-10-13/tc/p251013.pdf（第3页内嵌图） | 官方新闻稿内嵌卡面，403×657，保留完整比例 |
+| `Catalog/images/cards/cncbi-gba-dual.png` | 官方产品页核对卡种；卡面由公开产品宣传图裁切 | 官方页面未提供可直接下载的独立 GBA 卡面文件；未重绘卡面或伪造标志。若后续取得官方独立卡面，应替换并记录下载 URL |
+| `Catalog/images/cards/cncbi-multi-currency-debit.png` | https://www.cncbinternational.com/_document/about-us/media-center/2025-10-13/tc/p251013.pdf（第3页内嵌图） | 官方新闻稿内嵌卡面，403×657，保留完整比例 |
 | `cncbi-logo.png` | https://www.cncbinternational.com/personal/e-banking/inmotion/images/cncbi-logo.png | 银行官网页首 logo，230×62 |
 
 这些图像及品牌标识的权利归中信银行（国际）所有，仅用于卡种识别，不纳入项目代码许可证。

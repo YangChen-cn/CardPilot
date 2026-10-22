@@ -5,11 +5,6 @@ import SwiftData
 
 @Suite @MainActor
 struct PersistenceAndImportTests {
-    private func package() throws -> CatalogPackage {
-        let url = try #require(Bundle.main.url(forResource: "bochk-chill", withExtension: "json"))
-        return try CatalogImporter.decode(Data(contentsOf: url))
-    }
-
     @Test func realDiskStoreSurvivesReopenEditsAndDeletes() throws {
         let directory = URL.temporaryDirectory.appending(path: "CardPilot-test-" + UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -53,34 +48,9 @@ struct PersistenceAndImportTests {
         }
     }
 
-    @Test func bochkImportIsIdempotentAndKeepsPersonalData() throws {
+    @Test func legacyImportValidationRejectsUnsupportedSchemaAndBadValues() throws {
         let container = try Persistence.makeContainer(inMemory: true)
-        let context = container.mainContext
-        let package = try package()
-        try CatalogImporter.apply(package, context: context)
-        let card = try #require(context.fetch(FetchDescriptor<BankCard>()).first)
-        #expect(card.name == "Chill 白金卡"); #expect(card.baseRateBps == 40)
-        #expect(card.foreignFeeBps == 195); #expect(card.rules.count == 3)
-        #expect(card.statementDay == 0)
-        let welcome = try #require(card.rules.first(where: { $0.isWelcome }))
-        #expect(!welcome.isEnabled)
-        card.lastFour = "8123"; card.statementDay = 12
-        welcome.isEnabled = true; welcome.startsOn = try CatalogImporter.date("2026-11-01")
-        let transaction = SpendTransaction(merchant: "History", amountCents: 5000, card: card)
-        context.insert(transaction); try context.save()
-        try CatalogImporter.apply(package, context: context)
-        #expect(try context.fetchCount(FetchDescriptor<BankCard>()) == 1)
-        #expect(try context.fetchCount(FetchDescriptor<RewardRule>()) == 3)
-        #expect(card.lastFour == "8123"); #expect(card.statementDay == 12)
-        #expect(welcome.isEnabled); #expect(welcome.startsOn == (try CatalogImporter.date("2026-11-01")))
-        #expect(card.transactions.count == 1)
-    }
-
-    @Test func invalidImportIsRejectedBeforeAnyWrite() throws {
-        let container = try Persistence.makeContainer(inMemory: true)
-        let valid = try package()
-        let encoded = try JSONEncoder().encode(valid)
-        let text = String(decoding: encoded, as: UTF8.self).replacing("\"schemaVersion\":1", with: "\"schemaVersion\":99")
+        let text = #"{"schemaVersion":99,"cards":[]}"#
         #expect(throws: (any Error).self) { try CatalogImporter.decode(Data(text.utf8)) }
         #expect(try container.mainContext.fetchCount(FetchDescriptor<BankCard>()) == 0)
         #expect(throws: (any Error).self) { try CatalogImporter.date("2026-02-30") }

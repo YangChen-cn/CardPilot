@@ -209,17 +209,4 @@ enum CatalogImporter {
         } catch { context.rollback(); throw error }
     }
 
-    @MainActor static func installBundledExampleIfNeeded(_ context: ModelContext) throws {
-        let key = "initial-catalog-v1"
-        let descriptor = FetchDescriptor<AppMetadata>(predicate: #Predicate { $0.key == key })
-        guard try context.fetchCount(descriptor) == 0 else { return }
-        guard let url = Bundle.main.url(forResource: "bochk-chill", withExtension: "json") else {
-            throw PilotError.invalid("缺少内置 Chill 卡导入资料。")
-        }
-        let package = try decode(Data(contentsOf: url))
-        let image = Bundle.main.url(forResource: "chill-platinum", withExtension: "png").flatMap { try? Data(contentsOf: $0) }
-        context.insert(AppMetadata(key: key, value: "installed"))
-        do { try apply(package, context: context, images: image.map { ["bochk.chill.platinum": $0] } ?? [:]) }
-        catch { context.rollback(); throw error }
-    }
 }

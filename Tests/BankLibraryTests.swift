@@ -14,10 +14,10 @@ struct BankLibraryTests {
         let library = try BankLibrary.load()
         #expect(Set(library.banks.map(\.id)) == ["hsbc", "bochk", "bea", "cncbi"])
         #expect(library.products.count == 13); #expect(Set(library.products.map(\.id)).count == 13)
-        for bank in library.banks { try CatalogImporter.validateImage(#require(BankLibrary.imageData(resource: bank.logoResource))) }
-        for product in library.products { try CatalogImporter.validateImage(#require(BankLibrary.imageData(resource: product.imageResource))) }
+        for bank in library.banks { try CatalogImporter.validateImage(#require(bank.logo.bundledData())) }
+        for product in library.products { try CatalogImporter.validateImage(#require(product.artwork.bundledData())) }
         let ordinary = try product("bea.udc.diamond"), student = try product("bea.udc.diamond.student")
-        #expect(ordinary.imageResource == student.imageResource)
+        #expect(ordinary.artwork.path == student.artwork.path)
         #expect(ordinary.welcomePlans.first?.id != student.welcomePlans.first?.id)
         #expect(try product("bochk.mastercard.debit").catalog.kind == "借记卡")
         #expect(try product("cncbi.multi-currency.debit").catalog.kind == "借记卡")
@@ -37,7 +37,7 @@ struct BankLibraryTests {
             let offers = OfferStore.offers(for: card, context: context)
             #expect(Set(offers.filter { $0.origin == .official }.map(\.title))
                     == Set(product.displayCatalog.rules.map(\.name)))
-            #expect(card.imageData != nil)
+            #expect(card.imageData == nil); #expect(card.artworkOrigin == "official")
             if !product.baseRewardVerified { #expect(card.baseRateBps == 0) }
         }
     }
@@ -81,19 +81,20 @@ struct BankLibraryTests {
 
     @Test func catalogAndPersonalUpdatesPreserveCustomActivityAndArtwork() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
-        let product = try product("hsbc.student.visa.gold"), card = try LibraryOnboarding.add(product: product, in: context)
+        let hsbcProduct = try product("hsbc.student.visa.gold")
+        let card = try LibraryOnboarding.add(product: hsbcProduct, in: context)
         let welcome = RewardRule(name: "Legacy welcome", kind: "welcome", card: card,
                                  startsOn: try day("2026-09-01"), endsOn: try day("2026-12-31"))
-        welcome.externalID = try #require(product.welcomePlans.first?.ruleIDs.first)
+        welcome.externalID = try #require(hsbcProduct.welcomePlans.first?.ruleIDs.first)
         context.insert(welcome)
         let edit = RuleDraft(rule: welcome); edit.notes = "My activity note"; edit.endsOn = try day("2026-11-20")
         #expect(edit.save(in: context, cards: [card]))
-        let customArtwork = try #require(BankLibrary.imageData(resource: "bea-hku-student.png"))
+        let customArtwork = try #require(self.product("bea.udc.diamond").artwork.bundledData())
         let custom = CardDraft(card: card); custom.name = "My student card"; custom.imageData = customArtwork
         custom.basePercent = 0.8; #expect(custom.save(in: context))
-        try CatalogImporter.apply(CatalogPackage(schemaVersion: 1, cards: [product.displayCatalog]), context: context)
+        try CatalogImporter.apply(CatalogPackage(schemaVersion: 1, cards: [hsbcProduct.displayCatalog]), context: context)
         #expect(card.name == "My student card"); #expect(card.imageData == customArtwork); #expect(card.baseRateBps == 80)
-        let personal = PersonalCardDraft(card: card, product: product); personal.lastFour = "4321"
+        let personal = PersonalCardDraft(card: card, product: hsbcProduct); personal.lastFour = "4321"
         #expect(personal.save(in: context)); #expect(welcome.notes == "My activity note")
         #expect(welcome.endsOn == (try day("2026-11-20")))
         #expect(try RulePolicyStore.state(welcome).pending != nil)

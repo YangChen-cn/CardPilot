@@ -4,10 +4,23 @@ struct CardArtwork: View {
     let card: BankCard
     var compact = false
 
+    private var product: CardProduct? {
+        guard !card.catalogID.isEmpty else { return nil }
+        return (try? BankLibrary.load())?.product(id: card.catalogID)
+    }
+
     var body: some View {
         Group {
             if let data = card.imageData, !data.isEmpty {
                 LocalCardImage(data: data)
+            } else if let product {
+                CatalogAssetImage(asset: product.artwork) { image in
+                    Image(decorative: image.image, scale: 1)
+                        .resizable()
+                        .aspectRatio(image.aspectRatio, contentMode: .fit)
+                } placeholder: {
+                    ProgrammaticCardFace(card: card, compact: compact)
+                }
             } else {
                 ProgrammaticCardFace(card: card, compact: compact)
             }

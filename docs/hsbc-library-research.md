@@ -21,7 +21,7 @@
 | 本地资源 | 官方原图/标识出处 | 实际下载备份 |
 | --- | --- | --- |
 | `hsbc-student.jpg` | [官方学生金卡 1600×900 图](https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/credit-cards/tile-16-9/9358-hsbc-visa-gold-card-grey-1600x900.jpg) | [SmartDollar 同款学生金卡图](https://smartdollar.hk/api/media/file/hsbc-visa-gold-card-for-students.jpg) |
-| `hsbc-pulse.png` | [官方 Pulse 图](https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/credit-cards/tile-16-9/9358-hsbc-pulse-unionpay-grey-1600x900.jpg) | [Maxr 产品页](https://www.maxr.ws/credit-cards/hsbc-pulse)所用[同款银联钻石卡 PNG](https://static.wixstatic.com/media/bec40d_50daf9136ed34ca1b659a180ca5dde55~mv2.png/v1/fill/w_1536%2Ch_969%2Cal_c/HSBC%20Dual%20Currency%20Diamond%20Credit%20Card.png) |
+| `Catalog/images/cards/hsbc-pulse-unionpay-diamond.png` | [官方 Pulse 图](https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/credit-cards/tile-16-9/9358-hsbc-pulse-unionpay-grey-1600x900.jpg) | [Maxr 产品页](https://www.maxr.ws/credit-cards/hsbc-pulse)所用[同款银联钻石卡 PNG](https://static.wixstatic.com/media/bec40d_50daf9136ed34ca1b659a180ca5dde55~mv2.png/v1/fill/w_1536%2Ch_969%2Cal_c/HSBC%20Dual%20Currency%20Diamond%20Credit%20Card.png) |
 | `hsbc-logo.png` | [HSBC 公司官网标准标识](https://www.hsbc.com/-/files/hsbc/header/hsbc-logo-200x25.svg)；Commons 说明追溯至 HSBC 官方发布 | [Wikimedia 原图备份](https://upload.wikimedia.org/wikipedia/commons/b/ba/HSBC_Logo_2018.png) |
 
 学生卡对照官方八达通学生推广图中的香港金狮 Visa 款式，Pulse 对照官方产品图中的香港红狮银联双币钻石款式，未使用其他国家同名卡。银行图片和商标权利归相应持有人，未发现开源图片授权；不适用本项目代码许可证。备份站内容不作为优惠事实来源。
@@ -30,12 +30,12 @@
 
 ## 扩展提示
 
-新增 HSBC 产品遵循 [资料库维护手册](bank-library-development.md)。`hsbc-catalog.json` 仅放 JSON v1 计算模板；展示、迎新方案、核实与可计算标记放 `BankLibrary/hsbc-products.json`。同一银行新客、现有客及渠道方案使用独立方案 ID，互斥消费奖励不可全部启用。
+新增 HSBC 产品遵循 [资料库维护手册](bank-library-development.md)。产品、权益、迎新方案、核实与可计算标记统一写入 `App/Resources/Catalog/catalog.json` 的 Catalog V2 `products`，官方卡面写入 `App/Resources/Catalog/images/` 并通过 SHA-256 引用；不再维护独立 manifest 或 JSON v1 文件。同一银行新客、现有客及渠道方案使用独立方案 ID，互斥消费奖励不可全部启用。
 
 ## Mastercard 蓝狮子扣账卡（2026-10-22）
 
 - 稳定产品 ID：`hsbc.mastercard.debit`；种类：借记卡，卡组织 Mastercard，与学生汇财金 Visa 信用卡独立。银行产品页核实12种货币（含HKD/CNY/USD）从对应账户直接扣款，合资格签账0.4%现金回赠，免外币交易费及年费；余额不足时可能有兑换，原币记账不代表自行推定港币换汇。
 - 官方产品及基础权益：https://www.hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/
 - 当前使用条款（页面标示2026-09-20起生效）：https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/debit-cards/mastercard-debit-card/terms-and-conditions.pdf
-- 官方卡面原始及实际下载来源：https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg 。原图640×1024，本地缓存 `BankLibrary/hsbc-mastercard-debit.jpg`，保持完整卡面。
+- 官方卡面原始及实际下载来源：https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg 。原图640×1024，本地缓存 `BankLibrary/Catalog/images/cards/hsbc-mastercard-debit.jpg`，保持完整卡面。
 - 支付宝推广包含首次绑卡优惠券、即时折扣及Mastercard额外奖赏；2026-06-15至12-31期间AlipayHK不合资格。未将最高CNY300写成固定迎新或通用返现规则；本次不导入不可准确表达的加码活动。

@@ -12,9 +12,9 @@ struct GoCardVariantsTests {
 
     @Test func variantsHaveIndependentProductsArtworkAndRewards() throws {
         let diamond = try product("bochk.go.diamond"), platinum = try product("bochk.go.platinum")
-        #expect(diamond.id != platinum.id); #expect(diamond.imageResource != platinum.imageResource)
-        let diamondImage = try #require(BankLibrary.imageData(resource: diamond.imageResource))
-        let platinumImage = try #require(BankLibrary.imageData(resource: platinum.imageResource))
+        #expect(diamond.id != platinum.id); #expect(diamond.artwork.path != platinum.artwork.path)
+        let diamondImage = try #require(diamond.artwork.bundledData())
+        let platinumImage = try #require(platinum.artwork.bundledData())
         #expect(diamondImage != platinumImage)
         #expect(diamondImage != BankLibrary.imageData(resource: "bochk-go.png"))
         #expect(platinumImage != BankLibrary.imageData(resource: "bochk-go.png"))
@@ -25,7 +25,8 @@ struct GoCardVariantsTests {
         let a = try LibraryOnboarding.add(product: diamond, in: context)
         let b = try LibraryOnboarding.add(product: platinum, in: context)
         #expect(a.id != b.id); #expect(a.syncKey != b.syncKey)
-        #expect(a.imageData == diamondImage); #expect(b.imageData == platinumImage)
+        #expect(a.imageData == nil); #expect(b.imageData == nil)
+        #expect(a.artworkOrigin == "official"); #expect(b.artworkOrigin == "official")
         #expect(try OfferStore.offers(for: a, context: context).contains { $0.origin == .official })
         #expect(try OfferStore.offers(for: b, context: context).contains { $0.origin == .official })
         #expect(try LibraryOnboarding.add(product: diamond, in: context).id == a.id)
@@ -46,13 +47,13 @@ struct GoCardVariantsTests {
         try context.save()
         let cardID = card.id, ruleID = rule.id, transactionID = transaction.id
         #expect(try LibraryArtworkUpdates.apply(in: context) == 1)
-        #expect(card.imageData == BankLibrary.imageData(resource: "bochk-go-diamond.png"))
+        #expect(card.imageData == nil); #expect(card.artworkOrigin == "official")
         #expect(card.id == cardID); #expect(card.name == "我的 GO"); #expect(card.lastFour == "1234")
         #expect(card.statementDay == 17); #expect(card.paymentDay == 9); #expect(card.baseRateBps == 80)
         #expect(rule.id == ruleID); #expect(rule.rateBps == 777); #expect(!rule.isEnabled)
         #expect(transaction.id == transactionID); #expect(transaction.amountCents == 8888)
         #expect(try LibraryArtworkUpdates.apply(in: context) == 0)
-        let custom = try #require(BankLibrary.imageData(resource: "bea-hku-student.png"))
+        let custom = try #require(self.product("bea.udc.diamond").artwork.bundledData())
         card.imageData = custom
         #expect(try LibraryArtworkUpdates.apply(in: context) == 0); #expect(card.imageData == custom)
     }

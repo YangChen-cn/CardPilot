@@ -55,7 +55,8 @@ final class CardDraft {
                 card.baseRateBps = Int(Money.cents(basePercent)); card.foreignFeeBps = Int(Money.cents(feePercent))
                 card.overseasHKDFeeBps = Int(Money.cents(overseasHKDPercent))
                 card.theme = theme; card.isArchived = isArchived
-                card.imageData = imageData; card.sourceURL = sourceURL
+                card.sourceURL = sourceURL
+                card.imageData = (imageData?.isEmpty == false) ? imageData : nil
                 card.modifiedAt = .now
                 if let terms { try DocumentStore.put(terms, key: "cardTerms:" + card.syncKey, kind: "cardTerms", in: context) }
                 if existing != nil, !card.catalogID.isEmpty, let official {
