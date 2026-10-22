@@ -231,6 +231,10 @@ final class CatalogRepository {
                     }.value
                     snapshot = RemoteCatalogSnapshot(document: document, data: data, metadata: savedMetadata)
                     BankLibrary.invalidate()
+                    let keptAssets = (try? BankLibrary.load())?.referencedArtworkHashes ?? []
+                    Task(priority: .utility) {
+                        await CatalogAssetStore.shared.prune(keeping: keptAssets)
+                    }
                     revision &+= 1
                     lastCheckedAt = checkedAt
                     lastAppliedAt = appliedAt

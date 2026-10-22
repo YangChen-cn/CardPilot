@@ -11,6 +11,18 @@ import SwiftData
         let legacyGo = ["bochk-go.png", "bochk-go-cf.png"].compactMap { BankLibrary.imageData(resource: $0) }
         var changed: [BankCard] = []
 
+        let retained = cards.compactMap { card -> (String, CatalogAsset)? in
+            guard !card.catalogID.isEmpty, let product = library?.product(id: card.catalogID) else { return nil }
+            return (card.catalogID, product.artwork)
+        }
+        if !retained.isEmpty {
+            Task {
+                for (catalogID, artwork) in retained {
+                    await CatalogAssetStore.shared.retain(artwork, forCatalogID: catalogID)
+                }
+            }
+        }
+
         for card in cards where card.imageData != nil {
             guard !card.catalogID.isEmpty else { continue }
             let matchesCurrent = library?.product(id: card.catalogID)

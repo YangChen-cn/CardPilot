@@ -51,6 +51,49 @@ struct CatalogAssetStoreTests {
         #expect(await store.data(for: asset, baseURL: base) == source)
     }
 
+    @Test func rejectsOversizedDeclaredResponseBeforeReadingBody() async throws {
+        let source = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork.bundledData())
+        let asset = CatalogAsset(path: "images/cards/oversized.png",
+                                 sha256: CatalogAssetStore.hash(source), contentType: "image/png")
+        let directory = FileManager.default.temporaryDirectory.appending(path: "catalog-assets-" + UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        StubAssetURLProtocol.handler = { request in
+            (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
+                             headerFields: ["Content-Type": "image/png",
+                                            "Content-Length": String(CatalogAssetStore.maximumBytes + 1)])!, source)
+        }
+        let store = CatalogAssetStore(directory: directory, session: session())
+        let base = URL(string: "https://catalog.example.test/docs/")!
+        #expect(await store.data(for: asset, baseURL: base) == nil)
+    }
+
+    @Test func rejectsCrossOriginArtworkURLs() {
+        let base = URL(string: "https://catalog.example.test/docs/")!
+        #expect(CatalogAssetStore.isTrustedRemoteURL(URL(string: "https://catalog.example.test/docs/a.png")!, baseURL: base))
+        #expect(!CatalogAssetStore.isTrustedRemoteURL(URL(string: "https://evil.example.test/a.png")!, baseURL: base))
+        #expect(!CatalogAssetStore.isTrustedRemoteURL(URL(string: "http://catalog.example.test/a.png")!, baseURL: base))
+        #expect(!CatalogAssetStore.isTrustedRemoteURL(URL(string: "https://catalog.example.test/other/a.png")!, baseURL: base))
+    }
+
+    @Test func pruneKeepsCurrentCatalogAndHeldCardArtwork() async throws {
+        let directory = FileManager.default.temporaryDirectory.appending(path: "catalog-assets-" + UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let product = try #require(BankLibrary.load().product(id: "bochk.chill.platinum"))
+        let current = String(repeating: "a", count: 64)
+        let held = product.artwork.sha256
+        let stale = String(repeating: "c", count: 64)
+        for name in [current, held, stale] {
+            try Data(name.utf8).write(to: directory.appending(path: name))
+        }
+        let store = CatalogAssetStore(directory: directory, session: session())
+        await store.retain(product.artwork, forCatalogID: product.id)
+        await store.prune(keeping: [current], maximumBytes: 1)
+        #expect(FileManager.default.fileExists(atPath: directory.appending(path: current).path))
+        #expect(FileManager.default.fileExists(atPath: directory.appending(path: held).path))
+        #expect(!FileManager.default.fileExists(atPath: directory.appending(path: stale).path))
+    }
+
     @Test func corruptedCacheIsDiscardedAndRedownloaded() async throws {
         let source = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork.bundledData())
         let hash = CatalogAssetStore.hash(source)

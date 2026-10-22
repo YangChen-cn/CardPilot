@@ -18,6 +18,13 @@ struct BankLibrary: Sendable {
     @MainActor private static var cached: BankLibrary?
     @MainActor private static var images: [String: Data] = [:]
 
+    var referencedArtworkHashes: Set<String> {
+        var hashes = Set(banks.map { $0.logo.sha256 })
+        for product in products { hashes.insert(product.artwork.sha256) }
+        for product in retiredProducts { hashes.insert(product.artwork.sha256) }
+        return hashes
+    }
+
     func products(for bankID: String) -> [CardProduct] { products.filter { $0.bankID == bankID } }
 
     func bank(id: String) -> LibraryBank? { banks.first { $0.id == id } }

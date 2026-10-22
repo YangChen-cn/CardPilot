@@ -51,7 +51,7 @@
 
 - 官方资料的主数据源是公开GitHub Pages上的 Catalog Schema V2 JSON；银行、产品、Logo和卡面都由快照定义，不再通过“导入卡片与优惠”或启动刷新写入SwiftData。`CatalogRepository`只做文档下载、校验、缓存、版本比较和状态发布；`BankLibrary`把最后有效缓存或内置Catalog解码成当前只读产品目录。新增银行或产品不需要更新App。
 - 更新检查发生在启动、回到前台且距上次检查超过6小时、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。文档先校验schema、数量、银行/产品引用、asset路径/hash、来源、日期、分组、迎新计划和私有字段，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置Catalog。
-- 文档与图片下载解耦。`CatalogAssetStore`按artifact的SHA-256查找磁盘缓存、内置回退和网络；图片校验失败不会让Catalog更新失败，也不会让产品消失。加载期间或失败时UI显示占位图；手动检查或下次联网会重试。缓存清理只删除无效文件，不删除当前Catalog或持卡卡面仍引用的资源。
+- 文档与图片下载解耦。`CatalogAssetStore`按artifact的SHA-256查找磁盘缓存、内置回退和网络；下载采用有上限的流式读取，拒绝超大响应、非图片内容和跳出Catalog路径的同源重定向。图片校验失败不会让Catalog更新失败，也不会让产品消失。加载期间或失败时UI显示占位图；手动检查或下次联网会重试。缓存按当前/下架Catalog和持卡引用保留资源，超出容量预算时按最近访问时间回收无引用文件，不删除当前Catalog或持卡卡面仍引用的资源。
 - 官方活动使用显式`group`（daily/limited/merchant/welcome），日期可为空；`verifiedOn`只是资料核实日期，`updatedAt`是内容更新时间，不能拿来补活动开始、结束或个人截止日。迎新申请期和个人消费期分开。
 - 个人状态不以产品ID或活动名称模糊匹配。`BenefitInfo.cardKey` 对官方卡使用同步稳定的 `BankCard.overlayKey`（即由catalogID派生的`card.syncKey`），官方offer key是`offer:<cardKey>:<offerID>`；隐藏/收藏/登记/备注文档key是`offerState:<cardKey>:<offerID>`，迎新新key是`welcomeTracking:offer:<cardKey>:<offerID>`。旧`BankCard.id` UUID键在启动时只读复制到新key并保留旧记录。当前每个官方产品只保留一个持卡实例；未来支持同产品多实例时，需在overlayKey中加入同步实例标识，避免不同实例共享状态。
 - 旧官方RewardRule不删除、不改写：新安装不再复制官方规则；既有卡上的旧规则作为历史活动显示，旧迎新档案只读迁移到新key。旧个人自建规则（externalID为空）继续保留为个人活动。
@@ -64,7 +64,7 @@
 2. 从官方产品页及条款核实名称、卡组织、权益、门槛、限制、登记、上限和日期。不能确认的条件直接标待核实；无须为了展示一项权益建立可执行交易匹配模型。保留来源和真实核实日期。
 3. 复杂权益优先写清自然语言notes/details。不能准确表达的奖励保留描述，不随意合并不同币种目标、虚构现金等值或复制宣传“最高”比例作为普遍回赠。不要写“引擎未建模”“关闭资格开关”等工程说明。
 4. 新公开快照使用Catalog V2：顶层`schemaVersion: 2`、`contentVersion`、`publishedAt`、`banks`、`products`；活动写显式`group`，`startsOn`/`endsOn`可缺省并以null表示未知。`contentVersion`必须大于线上版本；`verifiedOn`、`updatedAt`不能补活动日期。活动官方期与个人消费截止日不可互相代替。
-5. 官方公开卡面优先。图片先用`script/catalog_asset.py`去除EXIF/重编码，限制2400px、4MB，并把输出的`path`/`sha256`/`contentType`写入对应asset；再用`script/build_catalog_snapshot.py`校验每张引用图片存在且hash匹配，生成公开`docs/catalog.json`并复制到`docs/images/`。图片下载与规则出处写进对应银行研究文档；无法下载时不得用生成图冒充官方卡面。
+5. 官方公开卡面优先。图片先用`script/catalog_asset.py`去除EXIF/重编码，限制2400px、4MB，并把输出的`path`/`sha256`/`contentType`写入对应asset；公开仓库`CardPilot-Catalog`是唯一维护源：在其`docs/catalog.json`中更新资料，用`scripts/catalog_asset.py`处理图片并校验hash；App侧用`script/import_catalog_snapshot.py`把已验证快照复制到`App/Resources/Catalog/`，而不是反向生成云端资料。图片下载与规则出处写进对应银行研究文档；无法下载时不得用生成图冒充官方卡面。
 6. 新卡安装只创建个人BankCard；官方权益由OfferStore从当前只读资料实时投影，不再复制为RewardRule。无ruleIDs的welcomePlans由displayCatalog生成externalID=plan.id的描述条目。新迎新仅未确认，不因旧calculable/isEnabled字段推断用户申请或达标；老已开启状态与到账读取保留。
 7. 远程官方更新只替换只读缓存，不覆盖尾号、账单/还款日、个人状态/截止日、隐藏/收藏、归档、手工名称/卡面、交易。旧官方规则不删除；活动从新快照消失时只停止当前投影。个人自建活动永不被官方资料覆盖。
 8. 新增/修改银行时只改Catalog，不改BankLibrary白名单；产品数量上限为1000、银行200。新增图片后运行公开仓库`python3 scripts/validate_catalog.py docs/catalog.json --base <上一版>`，再提交公开仓库并等待GitHub Pages。App不随资料更新发版。
