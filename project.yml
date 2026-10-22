@@ -1,0 +1,84 @@
+name: CardPilot
+options:
+  bundleIdPrefix: com.cardpilot
+  deploymentTarget:
+    iOS: "26.0"
+    macOS: "26.0"
+  xcodeVersion: "27.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    PRODUCT_NAME: CardPilot
+    PRODUCT_MODULE_NAME: CardPilot
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_CFBundleDisplayName: CardPilot
+    INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
+    CODE_SIGN_STYLE: Automatic
+targets:
+  CardPilotMac:
+    type: application
+    platform: macOS
+    sources: [App]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.app.mac
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: CardPilot
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_USER_SELECTED_FILES: readwrite
+        CODE_SIGN_ENTITLEMENTS: App/CardPilot.entitlements
+    postBuildScripts:
+      - name: Build stable mail Keychain helper
+        script: 'bash "$SRCROOT/script/build_mail_keychain_helper.sh"'
+        basedOnDependencyAnalysis: false
+    info:
+      path: App/Generated/Mac-Info.plist
+      properties:
+        CFBundleURLTypes:
+          - CFBundleURLName: com.cardpilot.app
+            CFBundleURLSchemes: [cardpilot]
+  CardPilotIOS:
+    type: application
+    platform: iOS
+    sources: [App]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.app
+        TARGETED_DEVICE_FAMILY: "1,2"
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    info:
+      path: App/Generated/iOS-Info.plist
+      properties:
+        CFBundleURLTypes:
+          - CFBundleURLName: com.cardpilot.app
+            CFBundleURLSchemes: [cardpilot]
+  CardPilotTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [Tests]
+    dependencies:
+      - target: CardPilotMac
+    settings:
+      base:
+        PRODUCT_NAME: CardPilotTests
+        PRODUCT_MODULE_NAME: CardPilotTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.tests
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: CardPilot
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CardPilot.app/Contents/MacOS/CardPilot"
+schemes:
+  CardPilotMac:
+    build:
+      targets:
+        CardPilotMac: all
+    test:
+      targets: [CardPilotTests]
+  CardPilotIOS:
+    build:
+      targets:
+        CardPilotIOS: all

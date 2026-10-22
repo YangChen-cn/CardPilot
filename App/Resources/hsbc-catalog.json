@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "cards": [
+    {
+      "id": "hsbc.student.visa.gold",
+      "bank": "HSBC 汇丰",
+      "name": "汇财金卡－学生卡",
+      "network": "Visa",
+      "sourceURL": "https://www.hsbc.com.hk/zh-hk/credit-cards/products/student-visa-gold/",
+      "verifiedOn": "2026-10-22",
+      "baseRatePercent": 0.4,
+      "foreignFeePercent": 1.95,
+      "overseasHKDFeePercent": 1,
+      "annualFeeNote": "学生卡永久免年费（学生卡专属条款；非普通汇财金卡首两年安排）",
+      "imageURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/credit-cards/tile-16-9/9358-hsbc-visa-gold-card-grey-1600x900.jpg",
+      "caveats": "每HKD250合资格消费赚$1奖赏钱，按RC抵账HKD1估值，不是自动现金提现；零头累计及最终奖赏钱以银行记录为准。基础RC条款为2026-10-12生效版；Gold卡银行网上缴费、现金、税款、钱包充值等不计基础RC。最红自主奖赏需单独登记并分配倍数，最高2.4%并非通用比例。学费推广另有专用网银渠道及院校限制，须分别核对。年满18岁指定香港院校全日制学生才可申请；不适用附属卡及超额信贷安排。",
+      "rules": [
+        {
+          "id": "hsbc.student.welcome.new.2026",
+          "name": "学生卡迎新｜新客 $300奖赏钱",
+          "kind": "welcome",
+          "startsOn": "2026-04-01",
+          "endsOn": "2027-02-28",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/student/terms-and-conditions.pdf",
+          "thresholdHKD": 2000,
+          "bonusHKD": 300,
+          "capPeriod": "campaign",
+          "requiresPersonalDates": true,
+          "enabled": false,
+          "notes": "已核实的申请推广期并非个人消费期。选择符合资格的一项迎新后，按真实发卡日填写首60个历日（发卡日计第1日）；过去12个月取消任何汇丰个人信用卡主卡不合资格，账户须有效及信用良好。达标后两个月内发放奖赏钱，开户13个月内销卡或退款可能被扣回。电子钱包、充值、缴费、现金、税款、分期供款及循环付款等按细则排除；不能把其他方案同时累加。",
+          "calculation": {
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ],
+            "excludedCategories": [
+              "缴费"
+            ]
+          },
+          "group": "welcome"
+        },
+        {
+          "id": "hsbc.student.welcome.existing.2026",
+          "name": "学生卡迎新｜现有客户 $200奖赏钱",
+          "kind": "welcome",
+          "startsOn": "2026-04-01",
+          "endsOn": "2027-02-28",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/student/terms-and-conditions.pdf",
+          "thresholdHKD": 2000,
+          "bonusHKD": 200,
+          "capPeriod": "campaign",
+          "requiresPersonalDates": true,
+          "enabled": false,
+          "notes": "已核实的申请推广期并非个人消费期。选择符合资格的一项迎新后，按真实发卡日填写首60个历日（发卡日计第1日）；过去12个月取消任何汇丰个人信用卡主卡不合资格，账户须有效及信用良好。达标后两个月内发放奖赏钱，开户13个月内销卡或退款可能被扣回。电子钱包、充值、缴费、现金、税款、分期供款及循环付款等按细则排除；不能把其他方案同时累加。",
+          "calculation": {
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ],
+            "excludedCategories": [
+              "缴费"
+            ]
+          },
+          "group": "welcome"
+        },
+        {
+          "id": "hsbc.student.tuition.2026h2",
+          "name": "指定院校学费2.4%奖赏钱（网银缴费）",
+          "kind": "cashback",
+          "startsOn": "2026-10-01",
+          "endsOn": "2027-03-31",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/tc/tuition-fee-payment-tcs1.pdf",
+          "ratePercent": 2.4,
+          "capHKD": 200,
+          "capPeriod": "campaign",
+          "category": "缴费",
+          "currency": "HKD",
+          "channelCondition": "online",
+          "enabled": false,
+          "merchantKeywords": "香港大学,香港大學,HKU,香港中文大学,香港中文大學,CUHK,香港科技大学,香港科技大學,HKUST,香港城市大学,香港城市大學,CityU,香港理工大学,香港理工大學,PolyU,香港浸会大学,香港浸會大學,香港教育大学,香港教育大學,香港都会大学,香港都會大學,香港树仁大学,香港樹仁大學,岭南大学,嶺南大學,香港恒生大学,香港恆生大學,东华学院,東華學院,职业训练局,職業訓練局",
+          "calculation": {
+            "capIncludesBase": true,
+            "rateMode": "total"
+          },
+          "notes": "2026-10-01至2027-03-31，通过HSBC HK App或个人网银的网上缴费服务向指定院校缴学费，整期额外奖赏钱最高$200，2027年5月底前发放。普通网上刷卡或其他教育消费并不因此符合资格；完整院校、收款机构及所需渠道见官方条款。此类Gold卡缴费原本不计基础RC，2.4%不能再叠加0.4%基础奖赏钱。",
+          "group": "merchant"
+        }
+      ]
+    },
+    {
+      "id": "hsbc.pulse.unionpay.diamond",
+      "bank": "HSBC 汇丰",
+      "name": "Pulse 银联双币钻石信用卡",
+      "network": "UnionPay",
+      "sourceURL": "https://www.hsbc.com.hk/zh-hk/credit-cards/products/unionpay-dual-currency-diamond/",
+      "verifiedOn": "2026-10-22",
+      "baseRatePercent": 0.4,
+      "foreignFeePercent": 1,
+      "overseasHKDFeePercent": 0,
+      "annualFeeNote": "首两年免年费；资料概要主卡标准年费HKD1,800（后续减免按银行条件）",
+      "imageURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/credit-cards/tile-16-9/9358-hsbc-pulse-unionpay-grey-1600x900.jpg",
+      "calculation": {
+        "cnyFeeBps": 0,
+        "baseRewardBasis": "faceValue"
+      },
+      "caveats": "港币及人民币子账户每250元合资格消费赚$1奖赏钱，人民币RC按面值而非HKD汇率，RC按抵账HKD1估值。人民币及澳门元免外币交易费，其他非HKD/CNY/MOP交易费1%；澳门元记账暂不可用。需分别偿还HKD/CNY子账户。额外2%设有支付方式及币种限制；最红自主奖赏额外5X需登记并分配，能否叠加须按条款核对。HSBCPULSE额外迎新按合资格二维码次数发放，并非每笔直接返20%；贷款分期额外奖励另设申请及费用条件，不属于日常零售迎新。",
+      "rules": [
+        {
+          "id": "hsbc.pulse.cn-mo.mobile.2026h2",
+          "name": "内地／澳门人民币手机付款额外2%奖赏钱",
+          "kind": "cashback",
+          "startsOn": "2026-07-01",
+          "endsOn": "2026-12-31",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/unionpay-dual-currency/diamond-card-terms-and-conditions.pdf",
+          "ratePercent": 2,
+          "capHKD": 1600,
+          "capPeriod": "campaign",
+          "currency": "CNY",
+          "enabled": false,
+          "calculation": {
+            "rateMode": "extra",
+            "stackingGroup": "hsbc-pulse-special",
+            "rewardBasis": "faceValue",
+            "regions": [
+              "CN",
+              "MO"
+            ],
+            "paymentMethods": [
+              "Apple Pay",
+              "云闪付"
+            ],
+            "capScope": "hsbc.pulse.cn-mo.2026h2",
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ]
+          },
+          "notes": "额外5倍基本奖赏钱（5×0.4%=2%），与基本0.4%分开。整期首HKD80,000合资格签账；人民币按子账户面值计RC，按公开比例推算的额外上限为$1,600，不能视为保证到账。主附卡按同一持卡人合并，涉及多币种及共用消费上限，须核对银行累计记录。官方也接受澳门元、Reward+二维码、Google Pay及Samsung Pay。港币、其他外币、支付宝/微信等电子钱包及充值不适用。具体资格由银行按国家码、币种、交易类型及入账记录判断。",
+          "group": "limited"
+        },
+        {
+          "id": "hsbc.pulse.welcome.new.online.2026",
+          "name": "Pulse迎新｜新客网上申请 $800奖赏钱",
+          "kind": "welcome",
+          "startsOn": "2026-03-01",
+          "endsOn": "2027-02-28",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/offers/welcome-terms-and-conditions.pdf",
+          "thresholdHKD": 8000,
+          "bonusHKD": 800,
+          "capPeriod": "campaign",
+          "requiresPersonalDates": true,
+          "enabled": false,
+          "notes": "已核实的申请推广期并非个人消费期。选择符合资格的一项迎新后，按真实发卡日填写首60个历日（发卡日计第1日）；过去12个月取消任何汇丰个人信用卡主卡不合资格，账户须有效及信用良好。达标后两个月内发放奖赏钱，开户13个月内销卡或退款可能被扣回。电子钱包、充值、缴费、现金、税款、分期供款及循环付款等按细则排除；不能把其他方案同时累加。 新客网上渠道限汇丰网页、个人网上理财或HSBC HK App。人民币迎新门槛按HKD/CNY 1:1，非实际换汇金额。",
+          "calculation": {
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ],
+            "excludedCategories": [
+              "缴费"
+            ],
+            "rewardBasis": "faceValue"
+          },
+          "group": "welcome"
+        },
+        {
+          "id": "hsbc.pulse.welcome.new.other.2026",
+          "name": "Pulse迎新｜新客其他渠道 $600奖赏钱",
+          "kind": "welcome",
+          "startsOn": "2026-03-01",
+          "endsOn": "2027-02-28",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/offers/welcome-terms-and-conditions.pdf",
+          "thresholdHKD": 8000,
+          "bonusHKD": 600,
+          "capPeriod": "campaign",
+          "requiresPersonalDates": true,
+          "enabled": false,
+          "notes": "已核实的申请推广期并非个人消费期。选择符合资格的一项迎新后，按真实发卡日填写首60个历日（发卡日计第1日）；过去12个月取消任何汇丰个人信用卡主卡不合资格，账户须有效及信用良好。达标后两个月内发放奖赏钱，开户13个月内销卡或退款可能被扣回。电子钱包、充值、缴费、现金、税款、分期供款及循环付款等按细则排除；不能把其他方案同时累加。 不符合网申加码条件的其他申请渠道仅按$600；请以申请时银行确认的方案为准。人民币门槛按HKD/CNY 1:1。",
+          "calculation": {
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ],
+            "excludedCategories": [
+              "缴费"
+            ],
+            "rewardBasis": "faceValue"
+          },
+          "group": "welcome"
+        },
+        {
+          "id": "hsbc.pulse.welcome.existing.2026",
+          "name": "Pulse迎新｜现有客户 $200奖赏钱",
+          "kind": "welcome",
+          "startsOn": "2026-03-01",
+          "endsOn": "2027-02-28",
+          "sourceURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/offers/welcome-terms-and-conditions.pdf",
+          "thresholdHKD": 8000,
+          "bonusHKD": 200,
+          "capPeriod": "campaign",
+          "requiresPersonalDates": true,
+          "enabled": false,
+          "notes": "已核实的申请推广期并非个人消费期。选择符合资格的一项迎新后，按真实发卡日填写首60个历日（发卡日计第1日）；过去12个月取消任何汇丰个人信用卡主卡不合资格，账户须有效及信用良好。达标后两个月内发放奖赏钱，开户13个月内销卡或退款可能被扣回。电子钱包、充值、缴费、现金、税款、分期供款及循环付款等按细则排除；不能把其他方案同时累加。 处理申请时已持任何汇丰个人信用卡主卡属现有客户；人民币门槛按HKD/CNY 1:1。",
+          "calculation": {
+            "excludedPaymentMethods": [
+              "支付宝",
+              "微信支付",
+              "PayMe"
+            ],
+            "excludedCategories": [
+              "缴费"
+            ],
+            "rewardBasis": "faceValue"
+          },
+          "group": "welcome"
+        }
+      ]
+    },
+    {
+      "id": "hsbc.mastercard.debit",
+      "bank": "HSBC 汇丰",
+      "name": "Mastercard 扣账卡（蓝狮子）",
+      "network": "Mastercard",
+      "kind": "借记卡",
+      "sourceURL": "https://www.hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/",
+      "verifiedOn": "2026-10-22",
+      "baseRatePercent": 0.4,
+      "foreignFeePercent": 0,
+      "overseasHKDFeePercent": 0,
+      "annualFeeNote": "免年费；扣账卡不提供信用额度",
+      "imageURL": "https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg",
+      "caveats": "支持12种货币从对应账户直接扣账，包括HKD、CNY、USD；外币账户不足时可能涉及银行兑换。合资格签账0.4%现金回赠、免外币交易费；非合资格交易按官方条款排除。港币估值不代表实际发生换汇。支付宝推广含绑卡券、即时折扣及指定渠道条件，不视作通用返现。",
+      "rules": []
+    }
+  ]
+}

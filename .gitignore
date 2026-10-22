@@ -1,0 +1,10 @@
+.DS_Store
+build/
+*.xcuserstate
+xcuserdata/
+.build/
+*.xcresult
+*.store*
+*.log
+CardPilotSync/
+CardPilot Backups/

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "products": [
+    {
+      "id": "cncbi.gba.dual",
+      "bankID": "cncbi",
+      "catalogResource": "hk-bank-catalog",
+      "imageResource": "cncbi-gba-dual.png",
+      "baseRewardVerified": true,
+      "welcomePlans": []
+    },
+    {
+      "id": "cncbi.multi-currency.debit",
+      "bankID": "cncbi",
+      "catalogResource": "cncbi-multi-currency-catalog",
+      "imageResource": "cncbi-multi-currency-debit.png",
+      "baseRewardVerified": true,
+      "welcomePlans": []
+    }
+  ]
+}
