@@ -31,7 +31,47 @@ struct HardeningTests {
         guard case .duplicate = try TransactionRecorder.record(request, in: context) else { Issue.record("Repeated stable transaction was saved twice"); return }
         let records = try context.fetch(FetchDescriptor<SpendTransaction>())
         #expect(records.count == 1); #expect(records.first?.date == request.date)
-        #expect(records.first?.paymentMethod == "云闪付"); #expect(records.first?.region == "HK")
+        #expect(records.first?.paymentMethod == "UnionPay"); #expect(records.first?.region == "HK")
+    }
+
+
+    @Test func unionPayLabelsNormalizeToOneCanonicalMethod() {
+        #expect(PaymentMethod.canonical("UnionPay") == "UnionPay")
+        #expect(PaymentMethod.canonical("UnionPay App") == "UnionPay")
+        #expect(PaymentMethod.canonical("云闪付") == "UnionPay")
+        #expect(PaymentMethod.canonical("云闪付 App") == "UnionPay")
+        #expect(PaymentMethod.canonical("雲閃付") == "UnionPay")
+        #expect(PaymentMethod.matches("UnionPay App", "云闪付"))
+        #expect(PaymentMethod.isKnown("UnionPay App"))
+    }
+
+    @Test func unknownPaymentMethodDoesNotRejectTheWholeCatalog() throws {
+        let json: [String: Any] = [
+            "schemaVersion": 1,
+            "cards": [[
+                "id": "future.pay", "bank": "Future Bank", "name": "Future Card", "network": "Visa",
+                "sourceURL": "https://example.com/card", "verifiedOn": "2026-10-23",
+                "rules": [[
+                    "id": "future.rule", "name": "Future offer", "kind": "cashback",
+                    "sourceURL": "https://example.com/offer", "paymentMethod": "Future Wallet",
+                    "calculation": ["paymentMethods": ["Future Wallet"], "excludedPaymentMethods": ["Future Wallet"]],
+                ]],
+            ]],
+        ]
+        let package = try CatalogImporter.decode(JSONSerialization.data(withJSONObject: json))
+        #expect(package.cards.first?.rules.first?.paymentMethod == "Future Wallet")
+        #expect(package.cards.first?.rules.first?.calculation?.paymentMethods == ["Future Wallet"])
+    }
+
+
+    @Test func unionPayAliasesShareTheSameAutomaticDedupeKey() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext, card = card(context)
+        var request = TransactionRequest(cardID: card.syncKey, merchant: "Cafe", amountCents: 1250, date: try day("2026-10-10"))
+        request.paymentMethod = "云闪付"
+        _ = try TransactionRecorder.record(request, in: context)
+        request.paymentMethod = "UnionPay App"
+        guard case .duplicate = try TransactionRecorder.record(request, in: context) else { Issue.record("Alias was treated as a different transaction"); return }
+        #expect(try context.fetchCount(FetchDescriptor<SpendTransaction>()) == 1)
     }
 
     @Test func explicitReferencesDeduplicatePerCardAndAllowDistinctTransactions() throws {

@@ -86,7 +86,7 @@ struct SettingsView: View {
         for t in transactions {
             rows.append([t.externalID.isEmpty ? t.id.uuidString : t.externalID, t.card?.syncKey ?? "", t.card?.displayName ?? "", t.merchant, t.date.ISO8601Format(),
                          (Decimal(t.amountCents) / 100).description, t.currency, t.exchangeRate,
-                         t.hasHKDValuation ? (Decimal(t.hkdCents) / 100).description : "", t.category, t.paymentMethod, t.channel,
+                         t.hasHKDValuation ? (Decimal(t.hkdCents) / 100).description : "", t.category, PaymentMethod.canonical(t.paymentMethod), t.channel,
                          String(t.isOverseas), t.region, String(t.isRewardEligible), t.notes])
         }
         document = TextDocument(text: rows.map { $0.map(csvCell).joined(separator: ",") }.joined(separator: "\r\n"))

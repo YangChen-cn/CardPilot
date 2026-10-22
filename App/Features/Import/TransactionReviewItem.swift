@@ -13,7 +13,7 @@ struct TransactionReviewItem: View {
                 Text(request.merchant).font(.headline)
                 Text(Money.text(request.amountCents, currency: request.currency)).font(.title2.weight(.semibold)).monospacedDigit()
                 Text(cardName).font(.subheadline).foregroundStyle(.secondary)
-                Text("\(sourceTitle(request.source)) · \(request.paymentMethod)").font(.caption).foregroundStyle(.secondary)
+                Text("\(sourceTitle(request.source)) · \(PaymentMethod.canonical(request.paymentMethod))").font(.caption).foregroundStyle(.secondary)
                 Text(request.date, format: .dateTime.year().month().day().hour().minute()).font(.caption).foregroundStyle(.secondary)
             }
             if let duplicate {
@@ -21,7 +21,7 @@ struct TransactionReviewItem: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Label(duplicate.isExact ? "这笔交易已经记录" : "发现一笔相似消费", systemImage: "doc.on.doc").font(.subheadline.weight(.medium))
                     Text("\(duplicate.transaction.merchant) · \(Money.text(duplicate.transaction.amountCents, currency: duplicate.transaction.currency))")
-                    Text("\(sourceTitle(duplicate.transaction.source)) · \(duplicate.transaction.paymentMethod)")
+                    Text("\(sourceTitle(duplicate.transaction.source)) · \(PaymentMethod.canonical(duplicate.transaction.paymentMethod))")
                     Text(duplicate.transaction.date, format: .dateTime.year().month().day().hour().minute())
                 }.font(.caption).foregroundStyle(.secondary)
             }

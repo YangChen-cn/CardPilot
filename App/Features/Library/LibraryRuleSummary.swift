@@ -21,7 +21,7 @@ struct LibraryRuleSummary: View {
                 if let notes = rule.notes, !notes.isEmpty { Text(notes).font(.subheadline).foregroundStyle(.secondary) }
                 if let category = rule.category, !category.isEmpty { LabeledContent("消费类别", value: category) }
                 if let currency = rule.currency, !currency.isEmpty { LabeledContent("币种", value: currency) }
-                if let method = rule.paymentMethod, !method.isEmpty { LabeledContent("支付方式", value: method) }
+                if let method = rule.paymentMethod, !method.isEmpty { LabeledContent("支付方式", value: PaymentMethod.canonical(method)) }
                 if let minimum = rule.minimumHKD, minimum > 0 { LabeledContent("单笔最低消费", value: Money.text(Money.cents(minimum))) }
                 if let monthly = rule.monthlyPhysicalThresholdHKD, monthly > 0 { LabeledContent("每月实体消费门槛", value: Money.text(Money.cents(monthly))) }
                 if let url = URL(string: rule.sourceURL) { Link("官方条款", destination: url).frame(minHeight: 44) }

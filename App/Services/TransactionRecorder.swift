@@ -45,7 +45,7 @@ import CryptoKit
         transaction.amountCents = request.amountCents; transaction.currency = request.currency
         transaction.exchangeRate = request.currency == "HKD" ? "1" : request.exchangeRate
         transaction.date = request.date; transaction.card = card
-        transaction.paymentMethod = request.paymentMethod; transaction.category = request.category
+        transaction.paymentMethod = PaymentMethod.canonical(request.paymentMethod); transaction.category = request.category
         transaction.channel = request.channel
         transaction.isOverseas = request.isOverseas || ["CN", "MO", "other"].contains(request.region)
         transaction.region = request.region
@@ -72,7 +72,7 @@ import CryptoKit
         guard !merchant.isEmpty, merchant.count <= 500, (1...10_000_000_000).contains(request.amountCents),
               Currency(rawValue: request.currency) != nil,
               (request.exchangeRate.isEmpty || !rate.isNaN && rate > 0 && rate <= 1000),
-              PaymentMethod(rawValue: request.paymentMethod) != nil, SpendCategory(rawValue: request.category) != nil,
+              PaymentMethod.isKnown(request.paymentMethod), SpendCategory(rawValue: request.category) != nil,
               ["physical", "online", "unknown"].contains(request.channel), request.externalID.count <= 512,
               ["", "HK", "CN", "MO", "other"].contains(request.region),
               request.date.timeIntervalSince1970.isFinite, request.date <= now.addingTimeInterval(300) else {
@@ -123,7 +123,7 @@ import CryptoKit
 
     private static func fingerprint(_ request: TransactionRequest, card: BankCard) -> String {
         let fields = [card.syncKey, normalizedMerchant(request.merchant), String(request.amountCents), request.currency,
-                      request.paymentMethod, String(Int64((request.date.timeIntervalSince1970 * 1000).rounded()))]
+                      PaymentMethod.canonical(request.paymentMethod), String(Int64((request.date.timeIntervalSince1970 * 1000).rounded()))]
         return "auto:" + digest(fields.joined(separator: "\u{1f}"))
     }
 

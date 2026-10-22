@@ -64,7 +64,7 @@ struct RecommendationFields: View {
                     }
                 }.padding(.top, 8)
             }.font(.subheadline)
-            Text(draft.paymentMethod.isEmpty ? "支付方式未确定：相关优惠仍需确认。" : "支付方式：" + draft.paymentMethod)
+            Text(draft.paymentMethod.isEmpty ? "支付方式未确定：相关优惠仍需确认。" : "支付方式：" + PaymentMethod.canonical(draft.paymentMethod))
                 .font(.caption).foregroundStyle(.secondary)
         }
     }

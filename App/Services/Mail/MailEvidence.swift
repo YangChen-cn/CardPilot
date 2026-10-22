@@ -56,7 +56,7 @@ struct MailEvidence: Codable, Equatable, Sendable {
             && (1...10_000_000_000).contains(mail.amountCents) && Currency(rawValue: mail.currency) != nil
             && mail.date.timeIntervalSince1970.isFinite && abs(mail.date.timeIntervalSince1970) <= 100_000_000_000
             && mail.receivedAt.timeIntervalSince1970.isFinite && abs(mail.receivedAt.timeIntervalSince1970) <= 100_000_000_000
-            && (mail.paymentMethod.map { PaymentMethod(rawValue: $0) != nil } ?? true)
+            && (mail.paymentMethod.map { PaymentMethod.isKnown($0) } ?? true)
             && (mail.channel.map { ["physical", "online", "unknown"].contains($0) } ?? true)
             && (mail.region.map { ["", "HK", "CN", "MO", "other"].contains($0) } ?? true)
             && (mail.bankReference?.count ?? 0) <= 512

@@ -38,14 +38,14 @@ final class TransactionDraft {
         if let transaction {
             merchant = transaction.merchant; amount = Decimal(transaction.amountCents) / 100
             currency = transaction.currency; exchangeRate = Decimal(string: transaction.exchangeRate) ?? 0
-            cardID = transaction.card?.id; category = transaction.category; paymentMethod = transaction.paymentMethod
+            cardID = transaction.card?.id; category = transaction.category; paymentMethod = PaymentMethod.canonical(transaction.paymentMethod)
             channel = transaction.channel
             isRewardEligible = transaction.isRewardEligible; date = transaction.date; notes = transaction.notes
             region = transaction.region; isOverseas = transaction.isOverseas
         } else if let preferences = preferences ?? QuickEntryPreferencesStore.load(defaults: defaults) {
             preferredCardKey = preferences.cardKey
             if SpendCategory(rawValue: preferences.category) != nil { category = preferences.category }
-            if PaymentMethod(rawValue: preferences.paymentMethod) != nil { paymentMethod = preferences.paymentMethod }
+            if PaymentMethod.isKnown(preferences.paymentMethod) { paymentMethod = PaymentMethod.canonical(preferences.paymentMethod) }
         }
     }
 
@@ -60,7 +60,7 @@ final class TransactionDraft {
         if merchant.count > 500 { return "商户名称不能超过500字。" }
         if amount.isNaN || amount < 0.01 || amount > Money.maxAmount { return "金额须为0.01–100,000,000。" }
         if currency != "HKD" && (exchangeRate.isNaN || exchangeRate < 0 || exchangeRate > 1000) { return "港币估值汇率须大于0且不超过1000；填0可先按原币记账。" }
-        if Currency(rawValue: currency) == nil || PaymentMethod(rawValue: paymentMethod) == nil ||
+        if Currency(rawValue: currency) == nil || !PaymentMethod.isKnown(paymentMethod) ||
             SpendCategory(rawValue: category) == nil || !["physical", "online", "unknown"].contains(channel) { return "请检查币种、分类及支付方式。" }
         if date > .now { return "交易日期不能在未来。" }
         if !["", "HK", "CN", "MO", "other"].contains(region) { return "请选择有效的商户地区。" }
@@ -96,7 +96,7 @@ final class TransactionDraft {
     private func request(card: BankCard) -> TransactionRequest {
         var request = TransactionRequest(cardID: card.syncKey, merchant: merchant, amountCents: Money.cents(amount), date: date)
         request.currency = currency; request.exchangeRate = currency == "HKD" ? "1" : (exchangeRate == 0 ? "" : exchangeRate.description)
-        request.category = category; request.paymentMethod = paymentMethod
+        request.category = category; request.paymentMethod = PaymentMethod.canonical(paymentMethod)
         request.channel = channel; request.isOverseas = isOverseas; request.region = region
         request.isRewardEligible = isRewardEligible; request.notes = notes
         request.source = existing?.source ?? "manual"; request.externalID = existing?.externalID ?? ""

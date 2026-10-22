@@ -26,6 +26,7 @@ final class CatalogRepository {
 
     let endpoint: URL
     let checkInterval: TimeInterval
+    private let failureRetryInterval: TimeInterval = 5 * 60
     private let session: URLSession
     private let cache: RemoteCatalogCache
     private let now: () -> Date
@@ -48,6 +49,10 @@ final class CatalogRepository {
     private(set) var assetRetryToken = 0
 
     var assetBaseURL: URL { endpoint.deletingLastPathComponent() }
+
+    private var effectiveCheckInterval: TimeInterval {
+        lastFailureAt == nil ? checkInterval : min(checkInterval, failureRetryInterval)
+    }
 
     init(endpoint: URL = CatalogRepository.defaultEndpoint,
          session: URLSession = .shared,
@@ -128,18 +133,18 @@ final class CatalogRepository {
         }
     }
 
-    /// Foreground/startup entry point. A failed attempt still counts as a check,
-    /// so the app does not retry on every scene activation. Manual refresh can
-    /// always bypass the interval.
+    /// Foreground/startup entry point. Successful checks wait the full interval;
+    /// a failed check retries after a short backoff. Manual refresh can always
+    /// bypass the interval.
     func checkIfNeeded() async {
         guard !isChecking else { return }
-        if let lastCheckedAt, now().timeIntervalSince(lastCheckedAt) < checkInterval { return }
+        if let lastCheckedAt, now().timeIntervalSince(lastCheckedAt) < effectiveCheckInterval { return }
         await check(force: false)
     }
 
     func check(force: Bool) async {
         guard !isChecking else { return }
-        if !force, let lastCheckedAt, now().timeIntervalSince(lastCheckedAt) < checkInterval { return }
+        if !force, let lastCheckedAt, now().timeIntervalSince(lastCheckedAt) < effectiveCheckInterval { return }
         isChecking = true
         phase = .checking
         defer {

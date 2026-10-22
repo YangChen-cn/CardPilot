@@ -375,7 +375,7 @@
               ],
               "paymentMethods": [
                 "Apple Pay",
-                "云闪付"
+                "UnionPay"
               ],
               "capScope": "hsbc.pulse.cn-mo.2026h2",
               "excludedPaymentMethods": [
@@ -677,7 +677,7 @@
               "paymentMethods": [
                 "Apple Pay",
                 "Huawei Pay",
-                "云闪付",
+                "UnionPay",
                 "BoC Pay"
               ],
               "excludedCategories": [
@@ -711,7 +711,7 @@
               "paymentMethods": [
                 "Apple Pay",
                 "Huawei Pay",
-                "云闪付"
+                "UnionPay"
               ],
               "excludedCategories": [
                 "缴费"
@@ -790,7 +790,7 @@
               "paymentMethods": [
                 "Apple Pay",
                 "Huawei Pay",
-                "云闪付",
+                "UnionPay",
                 "BoC Pay"
               ],
               "excludedCategories": [
@@ -824,7 +824,7 @@
               "paymentMethods": [
                 "Apple Pay",
                 "Huawei Pay",
-                "云闪付"
+                "UnionPay"
               ],
               "excludedCategories": [
                 "缴费"
@@ -940,7 +940,7 @@
               "paymentMethods": [
                 "Apple Pay",
                 "Huawei Pay",
-                "云闪付"
+                "UnionPay"
               ],
               "excludedCategories": [
                 "缴费"
@@ -1218,7 +1218,7 @@
             "ratePercent": 0.8,
             "capHKD": 400,
             "sharedCapGroup": "bea-udc-extra",
-            "paymentMethod": "云闪付",
+            "paymentMethod": "UnionPay",
             "calculation": {
               "rewardBasis": "faceValue",
               "excludedCategories": [
@@ -1433,7 +1433,7 @@
             "ratePercent": 0.8,
             "capHKD": 400,
             "sharedCapGroup": "bea-udc-extra",
-            "paymentMethod": "云闪付",
+            "paymentMethod": "UnionPay",
             "calculation": {
               "rewardBasis": "faceValue",
               "excludedCategories": [

@@ -253,9 +253,10 @@ enum BenefitPeriodStatus: Equatable {
         if !category.isEmpty { items.append("适用类别：" + category) }
         if !merchants.isEmpty { items.append("指定商户：" + merchants) }
         if !currency.isEmpty { items.append("交易币种：" + currency) }
-        let methods = Array(Set(extras.paymentMethods + (paymentMethod.isEmpty ? [] : [paymentMethod]))).sorted()
+        let methods = Array(Set((extras.paymentMethods + (paymentMethod.isEmpty ? [] : [paymentMethod])).map(PaymentMethod.canonical).filter { !$0.isEmpty })).sorted()
         if !methods.isEmpty { items.append("指定支付方式：" + methods.joined(separator: "、")) }
-        if !extras.excludedPaymentMethods.isEmpty { items.append("不适用：" + extras.excludedPaymentMethods.joined(separator: "、")) }
+        let excludedMethods = Array(Set(extras.excludedPaymentMethods.map(PaymentMethod.canonical).filter { !$0.isEmpty })).sorted()
+        if !excludedMethods.isEmpty { items.append("不适用：" + excludedMethods.joined(separator: "、")) }
         if !extras.regions.isEmpty {
             let names = extras.regions.map { ["HK": "香港", "CN": "中国内地", "MO": "澳门", "other": "其他地区"][$0] ?? $0 }
             items.append("适用地区：" + names.joined(separator: "、"))

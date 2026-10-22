@@ -8,7 +8,7 @@ import Foundation
               let data = (defaults ?? .standard).data(forKey: key),
               let preferences = try? JSONDecoder().decode(QuickEntryPreferences.self, from: data),
               SpendCategory(rawValue: preferences.category) != nil,
-              PaymentMethod(rawValue: preferences.paymentMethod) != nil else { return nil }
+              PaymentMethod.isKnown(preferences.paymentMethod) else { return nil }
         return preferences
     }
 

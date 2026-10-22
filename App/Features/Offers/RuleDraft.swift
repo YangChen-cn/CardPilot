@@ -54,7 +54,7 @@ import SwiftData
                 rule.name = name; rule.kind = kind; rule.card = card
                 rule.rateBps = Int(Money.cents(rate)); rule.capCents = Money.cents(cap); rule.capPeriod = period
                 rule.thresholdCents = Money.cents(threshold); rule.bonusCents = Money.cents(bonus)
-                rule.category = category; rule.currency = currency; rule.paymentMethod = paymentMethod
+                rule.category = category; rule.currency = currency; rule.paymentMethod = PaymentMethod.canonical(paymentMethod)
                 rule.merchantKeywords = merchants; rule.startsOn = HKCalendar.start(startsOn); rule.endsOn = HKCalendar.start(endsOn)
                 rule.notes = notes; rule.sourceURL = sourceURL; rule.modifiedAt = .now; card.modifiedAt = .now
                 // Legacy limits/history remain stored, but no longer drive reward simulation.

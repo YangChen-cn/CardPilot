@@ -63,17 +63,19 @@ import Foundation
         if !info.currency.isEmpty, info.currency != query.currency { return nil }
         if extras.currencyCondition == "foreign", query.currency == "HKD" { return nil }
         if extras.currencyCondition == "local", query.currency != "HKD" { return nil }
-        let methods = Array(Set(extras.paymentMethods + (info.paymentMethod.isEmpty ? [] : [info.paymentMethod]))).sorted()
+        let queryMethod = PaymentMethod.canonical(query.paymentMethod)
+        let methods = Array(Set((extras.paymentMethods + (info.paymentMethod.isEmpty ? [] : [info.paymentMethod])).map(PaymentMethod.canonical).filter { !$0.isEmpty })).sorted()
         if !methods.isEmpty {
-            if query.paymentMethod.isEmpty { missing.append("须使用" + methods.joined(separator: "、") + "；本次支付方式尚未指定。") }
+            if queryMethod.isEmpty { missing.append("须使用" + methods.joined(separator: "、") + "；本次支付方式尚未指定。") }
             else {
-                guard methods.contains(query.paymentMethod) else { return nil }
-                matched.append("支付方式符合公开要求：" + query.paymentMethod)
+                guard methods.contains(queryMethod) else { return nil }
+                matched.append("支付方式符合公开要求：" + queryMethod)
             }
         }
-        if !query.paymentMethod.isEmpty, extras.excludedPaymentMethods.contains(query.paymentMethod) { return nil }
-        if query.paymentMethod.isEmpty, !extras.excludedPaymentMethods.isEmpty {
-            missing.append("不适用于" + extras.excludedPaymentMethods.joined(separator: "、") + "。")
+        let excludedMethods = Set(extras.excludedPaymentMethods.map(PaymentMethod.canonical).filter { !$0.isEmpty })
+        if !queryMethod.isEmpty, excludedMethods.contains(queryMethod) { return nil }
+        if queryMethod.isEmpty, !excludedMethods.isEmpty {
+            missing.append("不适用于" + excludedMethods.sorted().joined(separator: "、") + "。")
         }
         let merchants = info.merchantKeywords.split(whereSeparator: { ",，;；\n".contains($0) }).map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
         if !merchants.isEmpty {

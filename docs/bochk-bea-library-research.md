@@ -55,7 +55,7 @@ GO 独立卡面来自[银行奖励说明](https://www.bochk.com/creditcard/BOCPA
 
 ## 文件边界
 
-Catalog V2 的 `products` 保留原有所有卡片和规则ID，包含 `bea.udc.diamond.student`、`bochk.go.platinum`、`bochk.mastercard.debit`；原 `bochk.go.diamond` 及其既有规则ID不变。CNCBI GBA 与多币扣账卡也直接定义在同一份 Catalog 中；不再维护银行 manifest 或独立 catalog 文件。公开快照当前为四家银行十三款产品，卡面与 Logo 存放在 `Resources/Catalog/images/` 并由 SHA-256 引用。
+Catalog V2 的 `products` 保留原有所有卡片和规则ID，包含 `bea.udc.diamond.student`、`bochk.go.platinum`、`bochk.mastercard.debit`；原 `bochk.go.diamond` 及其既有规则ID不变。CNCBI GBA 与多币扣账卡也直接定义在同一份 Catalog 中；不再维护银行 manifest 或独立 catalog 文件。公开快照当前为五家银行十五款产品（另含交银香港两款），卡面与 Logo 存放在 `Resources/Catalog/images/` 并由 SHA-256 引用。
 
 本子任务只做资料/资源更新及JSON引用核对，没有修改Swift代码，没有构建或进行UI验收。
 

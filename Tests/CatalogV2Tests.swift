@@ -26,6 +26,35 @@ struct CatalogV2Tests {
                                                               catalog: card(), searchTerms: ["未来卡"])])
     }
 
+
+    @Test func unknownPaymentMethodDoesNotInvalidateTheWholeRemoteCatalog() throws {
+        var extras = RuleExtras()
+        extras.paymentMethods = ["UnionPay App"]
+        extras.excludedPaymentMethods = ["云闪付"]
+        let rule = CatalogRule(id: "future.rule", name: "Future offer", kind: "cashback",
+                               group: "merchant", startsOn: nil, endsOn: nil,
+                               sourceURL: "https://example.com/offer", paymentMethod: "UnionPay App",
+                               calculation: extras)
+        let productCard = CatalogCard(id: "future.card", bank: "Future Bank", name: "Future Card",
+                                      network: "Visa", sourceURL: "https://example.com/official",
+                                      verifiedOn: "2026-10-23", rules: [rule])
+        let product = RemoteCatalogProduct(id: "future.card", bankID: "futurebank",
+                                           artwork: asset("images/cards/future.png"),
+                                           baseRewardVerified: false, welcomePlans: [],
+                                           catalog: productCard, searchTerms: [])
+        let doc = RemoteCatalogDocument(schemaVersion: 2, contentVersion: 9, publishedAt: "2026-10-23",
+                                        banks: [bank()], products: [product])
+        let decoded = try RemoteCatalogDocument.decode(JSONEncoder().encode(doc))
+        #expect(decoded.cardProducts.first?.catalog.rules.first?.paymentMethod == "UnionPay App")
+    }
+
+    @Test func unionPayAliasesMatchForEligibility() {
+        #expect(PaymentMethod.canonical("UnionPay App") == "UnionPay")
+        #expect(PaymentMethod.canonical("云闪付") == "UnionPay")
+        #expect(PaymentMethod.matches("UnionPay", "雲閃付"))
+    }
+
+
     @Test func arbitraryBanksAreAcceptedWithoutAnAppWhitelist() throws {
         let decoded = try RemoteCatalogDocument.decode(JSONEncoder().encode(document()))
         #expect(decoded.banks.map(\.id) == ["futurebank"])

@@ -71,7 +71,6 @@ enum CatalogImporter {
                 }
                 if let c = rule.currency, !c.isEmpty, !Currency.allCases.map(\.rawValue).contains(c) { throw PilotError.invalid("不支持币种 \(c)。") }
                 if let c = rule.category, !c.isEmpty, !SpendCategory.allCases.map(\.rawValue).contains(c) { throw PilotError.invalid("不支持分类 \(c)。") }
-                if let p = rule.paymentMethod, !p.isEmpty, !PaymentMethod.allCases.map(\.rawValue).contains(p) { throw PilotError.invalid("不支持支付方式 \(p)。") }
             }
             for rule in card.rules {
                 if let extras = rule.calculation {
@@ -80,9 +79,7 @@ enum CatalogImporter {
                           ["fixed", "percentage"].contains(extras.welcomeMode),
                           ["hkd", "faceValue"].contains(extras.rewardBasis), extras.regions.allSatisfy({ ["HK", "CN", "MO", "other"].contains($0) }),
                           !extras.capIncludesBase || (extras.stackingGroup.isEmpty && extras.rateMode == "total"),
-                          extras.paymentMethods.allSatisfy({ PaymentMethod(rawValue: $0) != nil }),
-                          extras.excludedCategories.allSatisfy({ SpendCategory(rawValue: $0) != nil }),
-                          extras.excludedPaymentMethods.allSatisfy({ PaymentMethod(rawValue: $0) != nil }) else {
+                          extras.excludedCategories.allSatisfy({ SpendCategory(rawValue: $0) != nil }) else {
                         throw PilotError.invalid("活动的叠加方式、原币门槛或单笔上限无效。")
                     }
                 }
@@ -189,7 +186,7 @@ enum CatalogImporter {
                     value.minimumCents = Money.cents(item.minimumHKD ?? 0)
                     value.monthlyPhysicalThresholdCents = Money.cents(item.monthlyPhysicalThresholdHKD ?? 0)
                     value.channelCondition = item.channelCondition ?? "any"; value.category = item.category ?? ""
-                    value.currency = item.currency ?? ""; value.paymentMethod = item.paymentMethod ?? ""
+                    value.currency = item.currency ?? ""; value.paymentMethod = PaymentMethod.canonical(item.paymentMethod ?? "")
                     value.merchantKeywords = item.merchantKeywords ?? ""; value.sourceURL = item.sourceURL
                     value.verifiedOn = incoming.verifiedOn; value.notes = item.notes ?? ""
                     if existing == nil || item.kind != "welcome" {
@@ -200,6 +197,8 @@ enum CatalogImporter {
                     }
                     if existing != nil { value.isEnabled = rule.isEnabled }
                     var extras = item.calculation ?? RuleExtras()
+                    extras.paymentMethods = Array(Set(extras.paymentMethods.map(PaymentMethod.canonical))).sorted()
+                    extras.excludedPaymentMethods = Array(Set(extras.excludedPaymentMethods.map(PaymentMethod.canonical))).sorted()
                     extras.benefitGroup = item.group
                     if item.startsOn == nil || item.endsOn == nil { extras.periodUnverified = true }
                     try RulePolicyStore.imported(value, extras: extras, into: rule, isNew: existing == nil, context: context)

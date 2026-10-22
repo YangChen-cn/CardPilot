@@ -6,7 +6,7 @@
 
 银行卡 → 添加 → 银行 → 产品 → 官方卡面与权益预览 → 添加 → 个人尾号/账单日/额度。手动添加及自定义卡面继续保留。个人迎新在对应活动或迎新记录中编辑，不要求先选择“可计算方案”或确认银行资格。
 
-当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际四家银行的十三个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
+当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际和交通银行香港五家银行的十五个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
 
 | 银行 | 稳定产品ID | 产品 |
 | --- | --- | --- |
@@ -23,6 +23,8 @@
 | BEA | bea.udc.diamond.student | UDC钻石学生版 |
 | CNCBI | cncbi.gba.dual | GBA双币卡 |
 | CNCBI | cncbi.multi-currency.debit | 多币扣账卡（Mastercard） |
+| BOCOM | bocom.go-goal.visa.platinum | Go-Goal Visa 白金信用卡 |
+| BOCOM | bocom.gba.unionpay.diamond | 大湾区银联双币钻石信用卡 |
 
 所有产品都由同一份 Catalog V2 快照定义；GO钻石/白金、UDC普通/学生、两张扣账卡均保持独立产品ID。活动改名不换ID；真正的新活动批次才创建新ID。
 
@@ -30,7 +32,7 @@
 
 | 位置 | 职责 |
 | --- | --- |
-| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：4家银行、13个产品、Logo和官方卡面；所有图片有SHA-256；只读，不含个人字段 |
+| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：4家银行、13个产品、Logo和官方卡面（联网后由公开快照补齐交银两款）；所有图片有SHA-256；只读，不含个人字段 |
 | 公开快照 | 公开仓库 YangChen-cn/CardPilot-Catalog 的 docs/catalog.json 与 docs/images/；banks/products/artwork 全部云端定义，不含个人数据或凭据 |
 | CatalogRepository、RemoteCatalogCache | 获取、校验、ETag/Last-Modified、6小时检查、单文件原子快照和更新状态；304仅用有效快照，同版本正文变化拒绝；只读，不持有SwiftData上下文，不写个人账本 |
 | CatalogAssetStore、CatalogAssetImage | 按SHA-256独立下载/校验/磁盘缓存卡面与Logo；3个并发上限、按sha去重、原子写入、内存解码有上限；离线用缓存或内置回退，单图失败只显示占位并可在下次检查重试 |
@@ -50,7 +52,8 @@
 ## 云端只读资料与个人状态
 
 - 官方资料的主数据源是公开GitHub Pages上的 Catalog Schema V2 JSON；银行、产品、Logo和卡面都由快照定义，不再通过“导入卡片与优惠”或启动刷新写入SwiftData。`CatalogRepository`只做文档下载、校验、缓存、版本比较和状态发布；`BankLibrary`把最后有效缓存或内置Catalog解码成当前只读产品目录。新增银行或产品不需要更新App。
-- 更新检查发生在启动、回到前台且距上次检查超过6小时、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。文档先校验schema、数量、银行/产品引用、asset路径/hash、来源、日期、分组、迎新计划和私有字段，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置Catalog。
+- 更新检查发生在启动、回到前台且距上次检查超过6小时（失败后5分钟重试）、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。文档先校验schema、数量、银行/产品引用、asset路径/hash、来源、日期、分组、迎新计划和私有字段，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置Catalog。
+- 发布契约：活动支付方式只使用canonical标签（`UnionPay`、`Apple Pay`、`支付宝`等）。客户端把`UnionPay App`、`云闪付`、`雲閃付`等输入统一映射为`UnionPay`；公开快照必须写`UnionPay`。`scripts/validate_catalog.py`会校验单个活动和`calculation.paymentMethods`/`excludedPaymentMethods`，CI在合并前拒绝未知或旧标签。活动本身遇到未知支付方式时保留为文本，不再因一项活动让整份 Catalog 失效；结构、日期、URL或图片错误仍会使本次更新保留上一份有效缓存。
 - 文档与图片下载解耦。`CatalogAssetStore`按artifact的SHA-256查找磁盘缓存、内置回退和网络；下载采用有上限的流式读取，拒绝超大响应、非图片内容和跳出Catalog路径的同源重定向。图片校验失败不会让Catalog更新失败，也不会让产品消失。加载期间或失败时UI显示占位图；手动检查或下次联网会重试。缓存按当前/下架Catalog和持卡引用保留资源，超出容量预算时按最近访问时间回收无引用文件，不删除当前Catalog或持卡卡面仍引用的资源。
 - 官方活动使用显式`group`（daily/limited/merchant/welcome），日期可为空；`verifiedOn`只是资料核实日期，`updatedAt`是内容更新时间，不能拿来补活动开始、结束或个人截止日。迎新申请期和个人消费期分开。
 - 个人状态不以产品ID或活动名称模糊匹配。`BenefitInfo.cardKey` 对官方卡使用同步稳定的 `BankCard.overlayKey`（即由catalogID派生的`card.syncKey`），官方offer key是`offer:<cardKey>:<offerID>`；隐藏/收藏/登记/备注文档key是`offerState:<cardKey>:<offerID>`，迎新新key是`welcomeTracking:offer:<cardKey>:<offerID>`。旧`BankCard.id` UUID键在启动时只读复制到新key并保留旧记录。当前每个官方产品只保留一个持卡实例；未来支持同产品多实例时，需在overlayKey中加入同步实例标识，避免不同实例共享状态。
