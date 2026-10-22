@@ -5,7 +5,10 @@ DEST_DIR="${TARGET_BUILD_DIR:?}/${EXECUTABLE_FOLDER_PATH:?}"
 DEST="$DEST_DIR/CardPilotMailKeychain"
 STAMP="${TARGET_TEMP_DIR:?}/CardPilotMailKeychain.inputs"
 IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY:-CardPilot}"
-if [[ "$IDENTITY" == '-' ]]; then echo 'CardPilotMailKeychain requires the CardPilot certificate.' >&2; exit 1; fi
+if [[ "$IDENTITY" == '-' ]]; then
+  echo 'note: ad-hoc build; skipping CardPilotMailKeychain (bank mail sync is unavailable).' >&2
+  exit 0
+fi
 SOURCES=("$ROOT_DIR/Support/MailKeychain/MailKeychainMain.swift" "$ROOT_DIR/App/Services/Mail/MailKeychainMessage.swift" "$ROOT_DIR/App/Services/Mail/MailKeychainReply.swift")
 ENTITLEMENTS="$ROOT_DIR/Support/MailKeychain/MailKeychain.entitlements"
 INPUT_HASH="$( {
