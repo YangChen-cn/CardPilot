@@ -27,7 +27,7 @@ struct ContentView: View {
                     Tab("账本", systemImage: "list.bullet.rectangle", value: .transactions) { mobile(.transactions) }
                     Tab("推荐", systemImage: "sparkles", value: .recommend) { mobile(.recommend) }
                 }
-                .tabBarMinimizeBehavior(.onScrollDown)
+                .tabBarMinimizeBehavior(.never)
             } else { desktop }
             #else
             desktop
