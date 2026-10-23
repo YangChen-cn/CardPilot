@@ -16,8 +16,15 @@ struct RecommendationRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Label("可考虑", systemImage: "creditcard").font(.caption).foregroundStyle(PilotTheme.accent)
+            Label(result.rankingLabel,
+                  systemImage: result.topOffer == nil
+                    ? "info.circle"
+                    : (result.isConditional ? "questionmark.circle" : "checkmark.circle"))
+                .font(.caption)
+                .foregroundStyle(result.topOffer == nil || result.isConditional
+                                 ? AnyShapeStyle(.secondary) : AnyShapeStyle(PilotTheme.accent))
             Text(result.card.displayName).font(.title3.bold())
+            Text(result.rankingSummary).font(.caption).foregroundStyle(.secondary)
             if let base = result.baseBenefit { Text(base).font(.subheadline).foregroundStyle(.secondary) }
             ForEach(result.offers) { offer in
                 VStack(alignment: .leading, spacing: 8) {

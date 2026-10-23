@@ -173,7 +173,7 @@ struct RemoteCatalogTests {
         BankLibrary.invalidate()
         let library = try BankLibrary.load(remoteCache: cache)
         #expect(library.products.count == 1)
-        #expect(library.retiredProducts.count == 13)
+        #expect(library.retiredProducts.count == 15)
         let remote = try #require(library.products.first { $0.id == "remote.test" })
         #expect(remote.catalog.rules.first { $0.id == "daily" }?.ratePercent == 6)
 

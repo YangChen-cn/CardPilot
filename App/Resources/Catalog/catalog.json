@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102302,
+  "contentVersion": 2026102307,
   "publishedAt": "2026-10-23",
   "banks": [
     {
@@ -67,6 +67,26 @@
         "sha256": "7b81e29fa401105b18616987c3cbb544b0c3fc86dcea379a68b813370c8d7549",
         "contentType": "image/png"
       }
+    },
+    {
+      "id": "bocom",
+      "name": "BOCOM 交通银行（香港）",
+      "shortName": "交通银行",
+      "logo": {
+        "path": "images/banks/bocom-hk.png",
+        "sha256": "e8040d6c544175882d5f741e00d129ed2d4fefeecb827a5f5ff6d377dbb3390a",
+        "contentType": "image/png"
+      },
+      "searchTerms": [
+        "交通银行",
+        "交通銀行",
+        "交通银行香港",
+        "交银",
+        "交銀",
+        "交行",
+        "BOCOM",
+        "Bank of Communications"
+      ]
     }
   ],
   "products": [
@@ -651,7 +671,7 @@
         "bank": "BOCHK 中银香港",
         "network": "UnionPay",
         "sourceURL": "https://www.bochk.com/dam/boccreditcard/gocard/gocardoffer_TC.pdf",
-        "verifiedOn": "2026-10-22",
+        "verifiedOn": "2026-10-23",
         "baseRatePercent": 0.4,
         "foreignFeePercent": 1,
         "overseasHKDFeePercent": 0,
@@ -686,7 +706,7 @@
               "rewardBasis": "faceValue",
               "capIncludesBase": true
             },
-            "notes": "钻石版手机签账合共3倍积分，白金版仅2倍；每月25,000积分上限包括基础积分，港币/人民币按1:1计，2026年底前豁免每月本地HK$1,500门槛。指定Go商户交易另按其优惠条款处理，不参与本手机积分计划；主附卡合并、7天内入账及排除项须按官方记录核对。",
+            "notes": "钻石版手机签账合共3倍积分，白金版仅2倍；每月25,000积分上限包括基础积分，港币/人民币按1:1计，2026年底前豁免每月本地HK$1,500门槛。指定Go商户交易另按其优惠条款处理，不参与本手机积分计划；主附卡合并、7天内入账及排除项须按官方记录核对。；2026年10至12月指定手机支付已另设需登记的第四季度推广，最高20X/10X/5X为合计倍率，不可与此日常3X/2X重复相加。第四季度额外积分全期75,000分上限，与原每月积分上限不同。",
             "group": "daily"
           },
           {
@@ -718,9 +738,147 @@
               ]
             },
             "group": "welcome"
+          },
+          {
+            "id": "go.diamond.mobile.mainland.2026q4",
+            "name": "2026年第4季内地指定手机签账最高20X积分（等值8%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/northboundgo.html",
+            "ratePercent": 8,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "CN"
+              ],
+              "currencyCondition": "any",
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.diamond.mobile.local.2026q4",
+            "name": "2026年第4季香港本地指定手机签账最高10X积分（等值4%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/northboundgo.html",
+            "ratePercent": 4,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "HK"
+              ],
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.diamond.mobile.overseas.2026q4",
+            "name": "2026年第4季海外（非内地）指定手机签账最高10X积分（等值4%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/creditcard/promotions/offers/taipei-go/tc.html",
+            "ratePercent": 4,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "MO",
+                "other"
+              ],
+              "currencyCondition": "foreign",
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.diamond.fx.fee-waiver.2026q4",
+            "name": "2026年第4季海外实体外币签账费用100%回赠",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://iservice.boccc.com.hk/LDPRegistrationWEB/w-verify.jsp?action=register&campaignid=gofx2610&lang=zh_CN&sign=05d42914670efb8e23af7ed191ea3f993db01e5e63d768f170fa0eb90c8dd990",
+            "channelCondition": "overseasForeign",
+            "requiresPersonalDates": true,
+            "notes": "2026-10-01至12-31须成功另行登记本推广（首20,000名）；在海外实体商户的合资格非港币、非内地人民币外币签账，可获相当于已收取外币交易费用100%的回赠（目前Go银联双币卡有关费用通常为1%）。不是所有外币消费额外派1%积分或无限1%返现；须确有相关手续费、实体商户以及有效登记。",
+            "calculation": {
+              "regions": [
+                "MO",
+                "other"
+              ],
+              "currencyCondition": "foreign"
+            }
+          },
+          {
+            "id": "go.diamond.selected-go-merchants.2026",
+            "name": "指定Go商户最高5%现金回赠",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/gomerchants.html",
+            "ratePercent": 5,
+            "capPeriod": "monthly",
+            "merchantKeywords": "Keeta,美团,Meituan,大众点评,Dianping,高速铁路,High Speed Rail,滴滴,DiDi,京东,JD,惠康,Wellcome,Market Place,Oliver's,3hreesixty",
+            "notes": "指定Go商户合资格零售签账最高5%现金回赠（已含基础0.4%，额外4.6%），每张Go卡主附卡合并计算，月回赠总上限HK$100。日常须每月累计本地合资格交易满HK$1,500，2026年底前获豁免该门槛；按银行实际商户识别及MCC确认资格。适用指定商户包括Keeta、美团、大众点评、香港西九龙站指定柜台／售票机的高铁票、内地指定滴滴网约车、京东港澳自营且Go卡直接绑定支付、惠康／Market Place／Oliver's／3hreesixty合资格渠道；惠康等自助收银及网上渠道不适用。支付方式：实体卡、指定商户App直接绑定Go卡、Apple Pay、Huawei Pay、Samsung Pay、云闪付App银联二维码；BoC Pay/BoC Pay+不适用；与GO手机积分推广不可叠加。名单及细则以官方商户清单为准。",
+            "capHKD": 100
           }
         ],
-        "caveats": "钻石版手机签账3倍积分等值1.2%，与白金版2倍积分等值0.8%不同；每月HK$100等值上限包括基础积分，2026年底前豁免本地消费门槛。须登记的额外积分活动、指定Go商户5%、非人民币外币2倍积分及海外外币费回赠，须分别核对登记要求和适用范围；指定Go商户不可与手机/海外积分优惠叠加。境外HKD交易不额外收取1%；CNY免手续费仅内地交易适用。主附卡共用上限，请核对银行累计记录。",
+        "caveats": "钻石版手机签账3倍积分等值1.2%，与白金版2倍积分等值0.8%不同；每月HK$100等值上限包括基础积分，2026年底前豁免本地消费门槛。须登记的额外积分活动、指定Go商户5%、非人民币外币2倍积分及海外外币费回赠，须分别核对登记要求和适用范围；指定Go商户不可与手机/海外积分优惠叠加。境外HKD交易不额外收取1%；CNY免手续费仅内地交易适用。主附卡共用上限，请核对银行累计记录。；2026年第4季内地／本地／海外手机积分推广需单独登记，最高倍率包含基础及原有手机积分，整期合资格额外积分上限75,000分（等值HK$300）；指定Go商户5%不与该推广叠加。另有需独立登记的海外实体外币交易费回赠。",
         "annualFeeNote": "主卡首年免年费；2025-06-01起申请并在收年费时持有中银香港储蓄或往来账户可获豁免"
       },
       "searchTerms": [
@@ -764,7 +922,7 @@
         "bank": "BOCHK 中银香港",
         "network": "UnionPay",
         "sourceURL": "https://www.bochk.com/dam/boccreditcard/gocard/gocardoffer_TC.pdf",
-        "verifiedOn": "2026-10-22",
+        "verifiedOn": "2026-10-23",
         "baseRatePercent": 0.4,
         "foreignFeePercent": 1,
         "overseasHKDFeePercent": 0,
@@ -799,7 +957,7 @@
               "rewardBasis": "faceValue",
               "capIncludesBase": true
             },
-            "notes": "白金版手机签账合共2倍积分，不可套用钻石版3倍；每月25,000积分上限包括基础积分，港币/人民币按1:1计，2026年底前豁免每月本地HK$1,500门槛。指定Go商户交易另按其优惠条款处理，不参与本手机积分计划；主附卡合并、7天内入账及排除项须按官方记录核对。",
+            "notes": "白金版手机签账合共2倍积分，不可套用钻石版3倍；每月25,000积分上限包括基础积分，港币/人民币按1:1计，2026年底前豁免每月本地HK$1,500门槛。指定Go商户交易另按其优惠条款处理，不参与本手机积分计划；主附卡合并、7天内入账及排除项须按官方记录核对。；2026年10至12月指定手机支付已另设需登记的第四季度推广，最高20X/10X/5X为合计倍率，不可与此日常3X/2X重复相加。第四季度额外积分全期75,000分上限，与原每月积分上限不同。",
             "group": "daily"
           },
           {
@@ -831,9 +989,147 @@
               ]
             },
             "group": "welcome"
+          },
+          {
+            "id": "go.platinum.mobile.mainland.2026q4",
+            "name": "2026年第4季内地指定手机签账最高10X积分（等值4%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/northboundgo.html",
+            "ratePercent": 4,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "CN"
+              ],
+              "currencyCondition": "any",
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.platinum.mobile.local.2026q4",
+            "name": "2026年第4季香港本地指定手机签账最高5X积分（等值2%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/northboundgo.html",
+            "ratePercent": 2,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "HK"
+              ],
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.platinum.mobile.overseas.2026q4",
+            "name": "2026年第4季海外（非内地）指定手机签账最高5X积分（等值2%）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/creditcard/promotions/offers/taipei-go/tc.html",
+            "ratePercent": 2,
+            "capHKD": 300,
+            "capPeriod": "campaign",
+            "sharedCapGroup": "bochk.go.mobile.2026q4.75000",
+            "requiresPersonalDates": true,
+            "notes": "推广期2026-10-01至12-31，须在本季度成功重新登记，以登记成功后推广期内合资格交易计。指定支付为Apple Pay、Huawei Pay、Samsung Pay、BoC Pay+、云闪付App银联二维码；普通实体卡、支付宝、微信支付不适用。活动倍率为合计倍率，已包含基础1X与既有手机积分，不可与3X/2X再累加。每卡主附卡合并，整期额外积分上限75,000分（等值HK$300），本地、内地、海外共享，且相关海外2X积分亦受同一上限约束；不是第三季度每月25,000分。内地须以人民币结算，按CNY1=HKD1计；海外须符合外币收单要求。指定Go商户5%与本活动不能叠加；交易须7日内入账，积分一般于交易月后2个月内发放。",
+            "calculation": {
+              "regions": [
+                "MO",
+                "other"
+              ],
+              "currencyCondition": "foreign",
+              "paymentMethods": [
+                "Apple Pay",
+                "Huawei Pay",
+                "BoC Pay",
+                "UnionPay"
+              ],
+              "excludedPaymentMethods": [
+                "支付宝",
+                "微信支付"
+              ],
+              "rewardBasis": "faceValue",
+              "rateMode": "total",
+              "capScope": "campaign",
+              "capIncludesBase": false
+            }
+          },
+          {
+            "id": "go.platinum.fx.fee-waiver.2026q4",
+            "name": "2026年第4季海外实体外币签账费用100%回赠",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://iservice.boccc.com.hk/LDPRegistrationWEB/w-verify.jsp?action=register&campaignid=gofx2610&lang=zh_CN&sign=05d42914670efb8e23af7ed191ea3f993db01e5e63d768f170fa0eb90c8dd990",
+            "channelCondition": "overseasForeign",
+            "requiresPersonalDates": true,
+            "notes": "2026-10-01至12-31须成功另行登记本推广（首20,000名）；在海外实体商户的合资格非港币、非内地人民币外币签账，可获相当于已收取外币交易费用100%的回赠（目前Go银联双币卡有关费用通常为1%）。不是所有外币消费额外派1%积分或无限1%返现；须确有相关手续费、实体商户以及有效登记。",
+            "calculation": {
+              "regions": [
+                "MO",
+                "other"
+              ],
+              "currencyCondition": "foreign"
+            }
+          },
+          {
+            "id": "go.platinum.selected-go-merchants.2026",
+            "name": "指定Go商户最高5%现金回赠",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/tc/creditcard/promotions/offers/gomerchants.html",
+            "ratePercent": 5,
+            "capPeriod": "monthly",
+            "merchantKeywords": "Keeta,美团,Meituan,大众点评,Dianping,高速铁路,High Speed Rail,滴滴,DiDi,京东,JD,惠康,Wellcome,Market Place,Oliver's,3hreesixty",
+            "notes": "指定Go商户合资格零售签账最高5%现金回赠（已含基础0.4%，额外4.6%），每张Go卡主附卡合并计算，月回赠总上限HK$100。日常须每月累计本地合资格交易满HK$1,500，2026年底前获豁免该门槛；按银行实际商户识别及MCC确认资格。适用指定商户包括Keeta、美团、大众点评、香港西九龙站指定柜台／售票机的高铁票、内地指定滴滴网约车、京东港澳自营且Go卡直接绑定支付、惠康／Market Place／Oliver's／3hreesixty合资格渠道；惠康等自助收银及网上渠道不适用。支付方式：实体卡、指定商户App直接绑定Go卡、Apple Pay、Huawei Pay、Samsung Pay、云闪付App银联二维码；BoC Pay/BoC Pay+不适用；与GO手机积分推广不可叠加。名单及细则以官方商户清单为准。",
+            "capHKD": 100
           }
         ],
-        "caveats": "白金版手机签账2倍积分等值0.8%，不可套用钻石版1.2%；每月HK$100等值上限包括基础积分，2026年底前豁免本地消费门槛。须登记的额外积分活动、指定Go商户5%、非人民币外币2倍积分及海外外币费回赠，须分别核对登记要求和适用范围；指定Go商户不可与手机/海外积分优惠叠加。境外HKD交易不额外收取1%；CNY免手续费仅内地交易适用。银联白金级别礼遇须按白金条款核对，不套用钻石卡权益。主附卡共用上限，请核对银行累计记录。",
+        "caveats": "白金版手机签账2倍积分等值0.8%，不可套用钻石版1.2%；每月HK$100等值上限包括基础积分，2026年底前豁免本地消费门槛。须登记的额外积分活动、指定Go商户5%、非人民币外币2倍积分及海外外币费回赠，须分别核对登记要求和适用范围；指定Go商户不可与手机/海外积分优惠叠加。境外HKD交易不额外收取1%；CNY免手续费仅内地交易适用。银联白金级别礼遇须按白金条款核对，不套用钻石卡权益。主附卡共用上限，请核对银行累计记录。；2026年第4季内地／本地／海外手机积分推广需单独登记，最高倍率包含基础及原有手机积分，整期合资格额外积分上限75,000分（等值HK$300）；指定Go商户5%不与该推广叠加。另有需独立登记的海外实体外币交易费回赠。",
         "annualFeeNote": "主卡首年免年费；2025-06-01起申请并在收年费时持有中银香港储蓄或往来账户可获豁免"
       },
       "searchTerms": [
@@ -1502,14 +1798,51 @@
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
-      "welcomePlans": [],
+      "welcomePlans": [
+        {
+          "id": "cncbi.gba.welcome.plan.fx10.2026h2",
+          "title": "全新信用卡客户｜外币签账10%（最高HK$1,000）",
+          "details": "迎新二选一。2026-07-01至12-31申请、2027-03-31前获发合资格主卡；首3个月合资格非港币结算签账（含人民币）按10%回赠，整期最多HK$1,000。银行条款以批核后起算，产品页以发卡日起算；请依个人批核／发卡记录手动确认截止日。新客定义、钱包／缴费等排除、到账条件见官方条款。与HK$600方案不可同时享有。",
+          "sourceURL": "https://www.cncbinternational.com/_document/personal/credit-cards/hkma_update/new_tnc_tc.pdf",
+          "ruleIDs": [
+            "cncbi.gba.welcome.fx10.2026h2"
+          ],
+          "applicationChannels": [
+            "银行认可申请渠道"
+          ],
+          "verified": true,
+          "calculable": false,
+          "applicationStartsOn": "2026-07-01",
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main",
+          "exclusionGroup": "cncbi.primary-welcome.2026h2"
+        },
+        {
+          "id": "cncbi.gba.welcome.plan.cash600.2026h2",
+          "title": "全新信用卡客户｜签账HK$6,000享HK$600",
+          "details": "迎新二选一。2026-07-01至12-31申请、2027-03-31前获发合资格主卡；首2个月累计合资格零售签账HK$6,000，达标享HK$600固定现金回赠；人民币按CNY1=HKD1累计。银行正式条款以批核后起算、产品页以发卡日起算，请自行确认个人期限。与外币10%方案互斥，且同一合资格客户仅可领取一项主迎新。",
+          "sourceURL": "https://www.cncbinternational.com/_document/personal/credit-cards/hkma_update/new_tnc_tc.pdf",
+          "ruleIDs": [
+            "welcome600"
+          ],
+          "applicationChannels": [
+            "银行认可申请渠道"
+          ],
+          "verified": true,
+          "calculable": false,
+          "applicationStartsOn": "2026-07-01",
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main",
+          "exclusionGroup": "cncbi.primary-welcome.2026h2"
+        }
+      ],
       "catalog": {
         "id": "cncbi.gba.dual",
         "name": "GBA 双币卡",
         "bank": "CNCBI 信银国际",
         "network": "UnionPay",
         "sourceURL": "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15",
-        "verifiedOn": "2026-10-21",
+        "verifiedOn": "2026-10-23",
         "baseRatePercent": 0.4,
         "foreignFeePercent": 0,
         "overseasHKDFeePercent": 0,
@@ -1524,7 +1857,7 @@
             "id": "cny4",
             "name": "人民币签账额外3.6%（连基础共4%）",
             "kind": "cashback",
-            "startsOn": "2026-10-21",
+            "startsOn": null,
             "endsOn": "2026-12-31",
             "sourceURL": "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15",
             "ratePercent": 3.6,
@@ -1538,13 +1871,15 @@
                 "缴费"
               ]
             },
-            "group": "limited"
+            "group": "limited",
+            "capPeriod": "monthly",
+            "notes": "人民币结算的合资格零售／网购签账可享合共4%（含基础0.4%及额外3.6%），额外回赠按每历月最高HK$150封顶；同一上限也适用于合资格云闪付App商户扫付款码交易。人民币签账按月结单币种认定，人民币按CNY1=HKD1计合资格额外回赠。官网只列「即日起」，未核实准确开始日期，不以资料核实日充当活动开始日。"
           },
           {
             "id": "cny6",
             "name": "单笔满CNY4,000额外6%",
             "kind": "cashback",
-            "startsOn": "2026-10-21",
+            "startsOn": null,
             "endsOn": "2026-12-31",
             "sourceURL": "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15",
             "ratePercent": 6,
@@ -1564,23 +1899,56 @@
                 "PayMe"
               ]
             },
-            "group": "limited"
+            "group": "limited",
+            "capPeriod": "monthly",
+            "notes": "仅合资格单笔人民币签账满CNY4,000的额外6%回赠；每历月额外回赠最多HK$250。不适用于通过微信／支付宝／PayMe的所有交易。与基础及其他优惠能否叠加、是否合资格均以银行条款、入账记录及活动规则为准；官方仅列「即日起」，起始日期未知。"
           },
           {
             "id": "welcome600",
             "name": "迎新消费HK$6,000奖励HK$600",
             "kind": "welcome",
-            "startsOn": "2026-10-21",
+            "startsOn": "2026-07-01",
             "endsOn": "2026-12-31",
-            "sourceURL": "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15",
+            "sourceURL": "https://www.cncbinternational.com/_document/personal/credit-cards/hkma_update/new_tnc_tc.pdf",
             "ratePercent": 0,
             "thresholdHKD": 6000,
             "bonusHKD": 600,
             "requiresPersonalDates": true,
-            "group": "welcome"
+            "group": "welcome",
+            "notes": "2026-07-01至2026-12-31申请的全新合资格主卡客户，在首2个合资格月份内累计已入账合资格零售签账HK$6,000，可选HK$600固定回赠；人民币签账按CNY1=HKD1计。与外币10%（上限HK$1,000）迎新二选一，不能同时领取。官方产品页以发卡日起算、正式迎新PDF写批核后，个人截止日期应以银行确认为准。批核月起过去12个月内曾持有信银国际信用卡主卡可能不符合新客资格；具体排除项见官方PDF。"
+          },
+          {
+            "id": "cncbi.gba.unionpay.app.merchantqr.2026h2",
+            "name": "云闪付App商户扫付款码｜合共4%回赠（含基础）",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15",
+            "ratePercent": 3.6,
+            "capHKD": 150,
+            "capPeriod": "monthly",
+            "sharedCapGroup": "cncbi-4",
+            "paymentMethod": "UnionPay",
+            "notes": "以云闪付App展示付款码、由商户扫描的合资格实体零售交易，可享合共4%（基础0.4%加额外3.6%），与人民币4%回赠共用每历月额外HK$150上限。用户扫描商户码、账单缴费、服务／慈善、交通、网购等云闪付交易不合资格。符合人民币及云闪付资格的同一笔消费只计一次；不应把两条4%规则相加。活动开始日官方仅列「即日起」，保留未知。"
+          },
+          {
+            "id": "cncbi.gba.welcome.fx10.2026h2",
+            "name": "迎新二选一｜外币签账10%回赠（最高HK$1,000）",
+            "kind": "welcome",
+            "group": "welcome",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.cncbinternational.com/_document/personal/credit-cards/hkma_update/new_tnc_tc.pdf",
+            "ratePercent": 10,
+            "capHKD": 1000,
+            "capPeriod": "campaign",
+            "requiresPersonalDates": true,
+            "notes": "2026-07-01至2026-12-31申请的全新合资格主卡客户，在首3个合资格月份内以非港币结算（包括人民币）的已入账合资格零售及网上签账，可按条款获10%回赠，整段最多HK$1,000。与累计HK$6,000享HK$600方案二选一；并非额外叠加该固定奖赏。产品页按发卡日起算，正式迎新PDF写批核后，个人起止日请按银行确认填写。银行对排除的电子钱包、缴费、税款、保险费、充值、撤销等交易有最终认定权；迎新回赠按官方条款最迟于发卡月起6个月内入账。"
           }
         ],
-        "caveats": "基础0.4%按共享信用额及账单周期设上限。人民币额外3.6%与大额额外6%各有适用条件；雲閃付商户扫付款码活动与其他迎新选项尚待单独核实。迎新方案须按银行条款选择，当前资料列示固定HK$600方案，个人消费期按实际申请及发卡资料核对。"
+        "caveats": "基础0.4%回赠以银行共享信用额及账单周期上限为准。人民币及合资格云闪付App商户扫付款码的额外3.6%共用每历月HK$150上限；单笔人民币满CNY4,000额外6%每历月HK$250封顶且不适用微信／支付宝／PayMe。符合多种渠道条件的同笔交易不能重复享受4%奖励，实际叠加和资格由银行判定。迎新有「非港币签账10%（最多HK$1,000）」和「签满HK$6,000送HK$600」两种主方案，只能选一；活动申请期与个人消费期不同，个人截止日请按批核／发卡记录及银行条款确认。",
+        "annualFeeNote": "银行列示全新卡客户豁免首年年费；之后收费及适用资格请以银行收费表为准。"
       },
       "searchTerms": [
         "GBA",
@@ -1625,6 +1993,248 @@
         "借记卡",
         "Mastercard"
       ]
+    },
+    {
+      "id": "bocom.go-goal.visa.platinum",
+      "bankID": "bocom",
+      "baseRewardVerified": true,
+      "welcomePlans": [
+        {
+          "id": "bocom.go-goal.plan.welcome.2026",
+          "title": "迎新三选一｜HK$500签账回赠或指定礼品",
+          "details": "2026年1月1日至12月31日申请；申请时及过去12个月未持有任何交银主卡。发卡首3个月内累计并入账满HK$3,000合资格签账，可从HK$500签账回赠、20吋折叠行李箱、Hedgren背囊连随身包中选一项。主附卡合并；同时申请大湾区卡不另送一份迎新。现金回赠达标后2个月内入账，13个月内取消卡或不合资格取奖可收HK$600行政费。",
+          "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113105426_GoGoal_Card_2026_WelcomeOffer_TnC_TC.pdf",
+          "ruleIDs": [
+            "bocom.go-goal.welcome.2026"
+          ],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "applicationStartsOn": "2026-01-01",
+          "applicationEndsOn": "2026-12-31"
+        }
+      ],
+      "searchTerms": [
+        "Go Goal",
+        "Go-Goal",
+        "GoGoal",
+        "学生",
+        "白金",
+        "Visa",
+        "交行",
+        "交通银行",
+        "交銀"
+      ],
+      "catalog": {
+        "id": "bocom.go-goal.visa.platinum",
+        "bank": "BOCOM 交通银行（香港）",
+        "name": "Go-Goal Visa 白金信用卡",
+        "network": "Visa",
+        "kind": "信用卡",
+        "sourceURL": "https://www.hk.bankcomm.com/hk/shtml/hk/tw/2004980/2005005/2005035/2500459/2500839/list.shtml?channelId=2004980",
+        "verifiedOn": "2026-10-23",
+        "baseRatePercent": 0.4,
+        "annualFeeNote": "大学生及大专生专用；永久免年费",
+        "caveats": "全日制大学及大专学生专用；基础0.4%按250分抵HK$1的积分等值列示。首年额外回赠按个人发卡月份计算，所示2026年为申请推广期。学费积分及迎新独立设条件；外币手续费未核实，不代表免费。",
+        "rules": [
+          {
+            "id": "bocom.go-goal.points",
+            "name": "日常积分｜HK$1赚1分",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": null,
+            "endsOn": null,
+            "sourceURL": "https://www.hk.bankcomm.com/hk/shtml/hk/tw/2004980/2005005/2005035/2500459/2500839/list.shtml?channelId=2004980",
+            "notes": "合资格签账每HK$1累积1分；250分可抵HK$1，等值0.4%。积分兑换及排除交易按银行条款，不等于每笔即时现金回赠。"
+          },
+          {
+            "id": "bocom.go-goal.first-year.rebate.2026",
+            "name": "2026申请｜首12历月额外5.6%签账回赠",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": "2026-01-01",
+            "endsOn": null,
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113110202_Go-Goal_Card_Spending%20Rebate_TnC_TC.pdf",
+            "notes": "限2026年1月1日至12月31日成功申请主卡的全日制大学／大专学生。发卡当月起首12个历月，每月首HK$2,000合资格签账获额外5.6%，与基础积分等值合共最高6%；额外部分每月最高HK$112，交易历月后第3个月入账。个人12个月可能跨至2027年，不能以申请期结束日代替个人截止日。分期供款、网上缴费、收费等排除，具体入账及资格以银行记录为准。",
+            "ratePercent": 5.6,
+            "capHKD": 112,
+            "capPeriod": "monthly",
+            "calculation": {
+              "rateMode": "extra"
+            }
+          },
+          {
+            "id": "bocom.go-goal.tuition.points.2026",
+            "name": "指定大学学费｜最高50,000积分",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": "2026-01-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113105426_Go-Goal_Card_Tuitionfee_TnC_TC.pdf",
+            "notes": "限2026年内申请的新卡，申请时及过去12个月无交银主卡。推广期内缴付城大、浸大、岭大、中大、教大、理大、科大或港大学费，每HK$1获1分，整期最多50,000分，主附卡合并。交易须在发卡首3个月内入账，积分于2027年6月或之前发放；本项不能直接等同享有6%签账回赠。",
+            "category": "缴费"
+          },
+          {
+            "id": "bocom.go-goal.welcome.2026",
+            "name": "迎新三选一｜HK$500签账回赠或指定礼品",
+            "kind": "welcome",
+            "group": "welcome",
+            "startsOn": "2026-01-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113105426_GoGoal_Card_2026_WelcomeOffer_TnC_TC.pdf",
+            "notes": "2026年1月1日至12月31日申请；申请时及过去12个月未持有任何交银主卡。发卡首3个月内累计并入账满HK$3,000合资格签账，可从HK$500签账回赠、20吋折叠行李箱、Hedgren背囊连随身包中选一项。主附卡合并；同时申请大湾区卡不另送一份迎新。现金回赠达标后2个月内入账，13个月内取消卡或不合资格取奖可收HK$600行政费。",
+            "thresholdHKD": 3000,
+            "requiresPersonalDates": true
+          },
+          {
+            "id": "bocom.spending-rewards.2026q4",
+            "name": "签账礼遇叠叠赏｜月度HK$50／180或终极HK$1,500",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202609/30/9039785/20260930112643_2026_Q4_Mass%20Spending%20Programme_TnC_TC_final.pdf",
+            "notes": "须登记推广202609CCD0000111，每月阶段5,000个名额。登记阶段起每月合资格签账满HK$3,000获HK$50，满HK$10,000获HK$180；累计达HK$100,000改获整期HK$1,500，不能再叠加阶段奖励。登记此推广另获2,000积分（每人整期一次），各主卡独立累计、附卡并入；内地银联人民币按1:1计门槛，钱包、八达通、缴费及指定交易排除。预计2027年3月入账。"
+          }
+        ]
+      },
+      "artwork": {
+        "path": "images/cards/bocom-hk-go-goal-visa-platinum.png",
+        "sha256": "be575bf80a4001f45cbf20c843ac0cb3e12126a2ff9828adcb92378089d592ed",
+        "contentType": "image/png"
+      }
+    },
+    {
+      "id": "bocom.gba.unionpay.diamond",
+      "bankID": "bocom",
+      "baseRewardVerified": false,
+      "welcomePlans": [
+        {
+          "id": "bocom.gba.plan.welcome.2026h2",
+          "title": "新客迎新｜HK$500签账回赠",
+          "details": "2026年7月1日至12月31日申请，申请时及过去12个月未持有任何交银主卡；发卡日起首3个月内累计并入账满HKD／RMB5,000合资格签账，可获HK$500签账回赠。人民币按1:1计算活动门槛，附属卡并入主卡，达标后2个月内存入主卡港币账户；退款、取消、未入账等交易不计。个人消费期不同于申请推广期。",
+          "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202301/31/2622792/20260629174948_%E5%A4%A7%E7%81%A3%E5%8D%80%E5%8D%A12026%E8%BF%8E%E6%96%B0%E7%A6%AE%E5%93%81%E6%8F%9B%E9%A0%98%E6%A2%9D%E6%AC%BE%E5%8F%8A%E7%B4%B0%E5%89%87H2_TC.pdf",
+          "ruleIDs": [
+            "bocom.gba.welcome.2026h2"
+          ],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "applicationStartsOn": "2026-07-01",
+          "applicationEndsOn": "2026-12-31"
+        }
+      ],
+      "searchTerms": [
+        "大湾区",
+        "大灣區",
+        "GBA",
+        "双币",
+        "雙幣",
+        "银联",
+        "銀聯",
+        "钻石",
+        "鑽石",
+        "交行",
+        "交通银行",
+        "交銀"
+      ],
+      "catalog": {
+        "id": "bocom.gba.unionpay.diamond",
+        "bank": "BOCOM 交通银行（香港）",
+        "name": "大湾区银联双币钻石信用卡",
+        "network": "UnionPay",
+        "kind": "信用卡",
+        "sourceURL": "https://www.hk.bankcomm.com/hk/shtml/hk/tw/2004980/2005005/2005035/2500459/2601230/list.shtml?channelId=2004980",
+        "verifiedOn": "2026-10-23",
+        "annualFeeNote": "年费及豁免条件尚待核实，请以银行最新申请文件为准",
+        "caveats": "港币与人民币分账，实际兑换及收费按银行记录。日常奖励以积分展示，不预设固定现金回赠比例；锦绣中华Diamond Prestige邀请卡的专属权益不适用于本产品。推广需登记及合资格签账，不能从币种推断交易地区或个人资格。",
+        "rules": [
+          {
+            "id": "bocom.gba.dual-account",
+            "name": "港币及人民币双币账户",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": null,
+            "endsOn": null,
+            "sourceURL": "https://www.hk.bankcomm.com/hk/shtml/hk/tw/2004980/2005005/2005035/2500459/2601230/list.shtml?channelId=2004980",
+            "notes": "香港及海外签账以港币结算，内地签账以人民币结算；分别按对应账户还款，实际入账及转换按银行处理。"
+          },
+          {
+            "id": "bocom.gba.points",
+            "name": "合资格签账累积奖赏积分",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": null,
+            "endsOn": null,
+            "sourceURL": "https://www.hk.bankcomm.com/hk/shtml/hk/tw/2004980/2005005/5005174/5005181/5005188/list.shtml?channelId=2004980",
+            "notes": "合资格签账每HK$1或人民币1元可获1分，附属卡积分并入主卡。人民币积分仅适用于银联双币卡，部分内地交易类别及缴费、收费等不获积分；现金等值与具体兑换方案未在此预设。"
+          },
+          {
+            "id": "bocom.unionpay.cny-mop.rebate.2026",
+            "name": "人民币／澳门币零售签账5%回赠",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-01-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202606/29/7051588/20260714173726_2026_%E3%80%8C%E4%BA%BA%E6%B0%91%E5%B9%A3%E5%8F%8A%E6%BE%B3%E9%96%80%E5%B9%A3%E9%9B%B6%E5%94%AE%E7%B0%BD%E8%B3%AC%E4%BA%A4%E6%98%93%E7%B0%BD%E8%B3%AC%E6%8E%A8%E5%BB%A3%E8%A8%88%E5%8A%83%E3%80%8DTnC_TC_202607.pdf",
+            "ratePercent": 5,
+            "capHKD": 300,
+            "capPeriod": "monthly",
+            "notes": "须登记202601CCD0000098，全年5,000个名额。每月合资格人民币及／或澳门币零售签账须满HK$2,000，每月最高HK$300、全年HK$3,600；内地人民币按1:1计算推广金额。支持实体卡及指定Apple Pay／云闪付／银联二维码；本行App银联二维码包括在内。指定交通交易另按交通5%活动处理，不能并入本项；钱包、八达通、缴费、保险及指定交易排除。主附卡合并，各主卡分开，须当月入账，回赠翌月发放。"
+          },
+          {
+            "id": "bocom.unionpay.gba-transport.rebate.2026",
+            "name": "交游湾区｜指定交通签账5%回赠",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-01-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202609/30/7051612/20260930144441_2026_TravelnEarn%20in%20GBA_TC_TC.pdf",
+            "ratePercent": 5,
+            "capHKD": 100,
+            "capPeriod": "monthly",
+            "category": "交通",
+            "calculation": {
+              "regions": [
+                "HK",
+                "CN",
+                "MO"
+              ]
+            },
+            "notes": "须登记202601CCD0000097，从登记当月起计算。适用香港、澳门、内地及跨境的指定公共交通，以及隧道／路桥、油站、停车、充电、汽车维修及美容等合资格费用；每月最多HK$100，主附卡合并，各主卡独立。接受实体卡及指定Apple Pay／云闪付／银联二维码；八达通增值、支付宝／微信／PayMe钱包、分拆及退款等排除。内地人民币按1:1计算推广金额，回赠翌月底前发放。"
+          },
+          {
+            "id": "bocom.gba.welcome.2026h2",
+            "name": "新客迎新｜消费满HKD／RMB5,000获HK$500",
+            "kind": "welcome",
+            "group": "welcome",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202301/31/2622792/20260629174948_%E5%A4%A7%E7%81%A3%E5%8D%80%E5%8D%A12026%E8%BF%8E%E6%96%B0%E7%A6%AE%E5%93%81%E6%8F%9B%E9%A0%98%E6%A2%9D%E6%AC%BE%E5%8F%8A%E7%B4%B0%E5%89%87H2_TC.pdf",
+            "notes": "2026年7月1日至12月31日申请，申请时及过去12个月未持有任何交银主卡；发卡日起首3个月内累计并入账满HKD／RMB5,000合资格签账，可获HK$500签账回赠。人民币按1:1计算活动门槛，附属卡并入主卡，达标后2个月内存入主卡港币账户；退款、取消、未入账等交易不计。个人消费期不同于申请推广期。",
+            "thresholdHKD": 5000,
+            "bonusHKD": 500,
+            "requiresPersonalDates": true
+          },
+          {
+            "id": "bocom.spending-rewards.2026q4",
+            "name": "签账礼遇叠叠赏｜月度HK$50／180或终极HK$1,500",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.hk.bankcomm.com/hk/uploadhk/infos/202609/30/9039785/20260930112643_2026_Q4_Mass%20Spending%20Programme_TnC_TC_final.pdf",
+            "notes": "须登记推广202609CCD0000111，每月阶段5,000个名额。登记阶段起每月合资格签账满HK$3,000获HK$50，满HK$10,000获HK$180；累计达HK$100,000改获整期HK$1,500，不能再叠加阶段奖励。登记此推广另获2,000积分（每人整期一次），各主卡独立累计、附卡并入；内地银联人民币按1:1计门槛，钱包、八达通、缴费及指定交易排除。预计2027年3月入账。"
+          }
+        ]
+      },
+      "artwork": {
+        "path": "images/cards/bocom-hk-gba-unionpay-diamond.png",
+        "sha256": "5aac8a28ecb657bfbcf38b59206cfed3a992e343255b60937f87c6f3a6e43c0e",
+        "contentType": "image/png"
+      }
     }
   ]
 }

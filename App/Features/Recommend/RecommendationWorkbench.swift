@@ -36,6 +36,8 @@ struct RecommendationWorkbench: View {
                 if !phoneLayout { Text("这一笔，考虑哪张卡？").font(.title2.bold()) }
                 Text(phoneLayout ? "选好类别与地区，看看哪些权益可能适用。" : "按公开权益筛选，帮你找到值得查看的优惠。")
                     .font(.subheadline).foregroundStyle(.secondary)
+                Text("排序先看公开权益力度，再参考已确认条件；未填写的支付方式、商户等会标为待确认。")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             RecommendationFields(draft: draft, compact: compact)
             if let issue = draft.validationError {
@@ -45,8 +47,13 @@ struct RecommendationWorkbench: View {
                 if suggestions.isEmpty {
                     ContentUnavailableView("暂无匹配的公开权益", systemImage: "creditcard", description: Text("可调整条件，或到卡片详情查看完整优惠。"))
                 } else {
-                    ForEach(compact ? Array(suggestions.prefix(1)) : suggestions) { result in
+                    ForEach(compact ? Array(suggestions.prefix(2)) : suggestions) { result in
                         RecommendationRow(result: result)
+                    }
+                    if compact, suggestions.count > 2 {
+                        NavigationLink("查看全部 \(suggestions.count) 张候选") { RecommendView() }
+                            .font(.subheadline)
+                            .frame(minHeight: 44)
                     }
                 }
             }

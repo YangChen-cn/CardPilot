@@ -49,6 +49,89 @@ struct RecommendationTests {
         #expect(possible.confirmationNeeded.contains { $0.contains("推广登记") })
     }
 
+    @Test func publicValueBeatsMatchCountEvenWhenAnotherCardMatchesMoreConditions() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let highValue = BankCard(bank: "Example", name: "High value"); context.insert(highValue)
+        let highOffer = try rule(highValue, context: context)
+        highOffer.rateBps = 800
+        highOffer.paymentMethod = "Apple Pay"
+        let manyMatches = BankCard(bank: "Example", name: "Many matches"); context.insert(manyMatches)
+        for index in 0..<2 {
+            let small = try rule(manyMatches, context: context)
+            small.name = "Small offer \(index)"
+            small.rateBps = 100
+            small.category = "餐饮"
+        }
+        let input = query()
+        input.paymentMethod = "Apple Pay"
+
+        let suggestions = RecommendationEngine.suggest(cards: [manyMatches, highValue], query: input,
+                                                       now: try day("2026-10-22"))
+        let first = try #require(suggestions.first)
+        let second = try #require(suggestions.dropFirst().first)
+        #expect(first.card.name == "High value")
+        #expect(first.knownMatches < second.knownMatches)
+        #expect(first.bestRateBps == 800)
+    }
+
+    @Test func higherPublicOfferValueRanksAheadOfAMatchCountTie() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let library = try BankLibrary.load()
+        let goProduct = try #require(library.products.first { $0.id == "bochk.go.diamond" })
+        let chillProduct = try #require(library.products.first { $0.id == "bochk.chill.platinum" })
+        let go = try LibraryOnboarding.add(product: goProduct, in: context)
+        let chill = try LibraryOnboarding.add(product: chillProduct, in: context)
+        let input = query()
+        input.region = "CN"; input.currency = "CNY"; input.paymentMethod = "Apple Pay"
+
+        let suggestions = RecommendationEngine.suggest(cards: [chill, go], query: input,
+                                                       now: try day("2026-10-22"))
+        let first = try #require(suggestions.first)
+        let offer = try #require(first.topOffer)
+        #expect(first.card.catalogID == "bochk.go.diamond")
+        #expect(offer.rateBps == 800)
+        #expect(offer.title.contains("8%"))
+        #expect(first.rankingLabel == "需补充信息")
+        #expect(offer.keyMissingConditions.contains("登记状态"))
+    }
+
+    @Test func unspecifiedPaymentMethodKeepsTheCandidateOpenInsteadOfCallingItBest() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let library = try BankLibrary.load()
+        let goProduct = try #require(library.products.first { $0.id == "bochk.go.diamond" })
+        let chillProduct = try #require(library.products.first { $0.id == "bochk.chill.platinum" })
+        let go = try LibraryOnboarding.add(product: goProduct, in: context)
+        let chill = try LibraryOnboarding.add(product: chillProduct, in: context)
+        let input = query(); input.region = "CN"; input.currency = "CNY"
+
+        let first = try #require(RecommendationEngine.suggest(
+            cards: [go, chill], query: input, now: try day("2026-10-22")
+        ).first)
+        let offer = try #require(first.topOffer)
+        #expect(first.card.catalogID == "bochk.go.diamond")
+        #expect(offer.keyMissingConditions.contains("支付方式"))
+        #expect(offer.confirmationNeeded.contains { $0.contains("支付方式尚未指定") })
+        #expect(first.isConditional)
+        #expect(first.rankingSummary.contains("先确认支付方式"))
+    }
+
+    @Test func physicalCardComparisonDropsTheMobileOnlyQuarterlyOffer() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let library = try BankLibrary.load()
+        let goProduct = try #require(library.products.first { $0.id == "bochk.go.diamond" })
+        let chillProduct = try #require(library.products.first { $0.id == "bochk.chill.platinum" })
+        let go = try LibraryOnboarding.add(product: goProduct, in: context)
+        let chill = try LibraryOnboarding.add(product: chillProduct, in: context)
+        let input = query()
+        input.region = "CN"; input.currency = "CNY"; input.paymentMethod = "实体卡"
+
+        let suggestions = RecommendationEngine.suggest(cards: [go, chill], query: input,
+                                                       now: try day("2026-10-22"))
+        #expect(suggestions.first?.card.catalogID == "bochk.chill.platinum")
+        let goResult = try #require(suggestions.first { $0.card.catalogID == "bochk.go.diamond" })
+        #expect(goResult.offers.allSatisfy { $0.rateBps < 800 })
+    }
+
     @Test func foreignCurrencyNeverSelectsRegionOrNeedsAnExchangeRate() throws {
         let input = RecommendationDraft(); input.currency = "CNY"
         #expect(input.region.isEmpty); #expect(input.validationError != nil)
