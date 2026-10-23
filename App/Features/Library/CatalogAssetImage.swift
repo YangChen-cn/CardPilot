@@ -8,6 +8,7 @@ struct CatalogAssetImage<Content: View, Placeholder: View>: View {
     @ViewBuilder let placeholder: () -> Placeholder
     @Environment(CatalogRepository.self) private var catalog
     @State private var image: CardImageAsset?
+    @State private var displayedHash: String?
     @State private var loading = false
 
     init(asset: CatalogAsset?,
@@ -34,10 +35,24 @@ struct CatalogAssetImage<Content: View, Placeholder: View>: View {
     }
 
     private func load() async {
-        image = nil
-        guard let asset else { return }
+        guard let asset else {
+            image = nil
+            displayedHash = nil
+            loading = false
+            return
+        }
+        // A catalog check is only a retry signal for missing images. Keeping
+        // a successfully decoded hash avoids flashing every card's placeholder.
+        guard image == nil || displayedHash != asset.sha256 else { return }
+        if displayedHash != asset.sha256 {
+            image = nil
+            displayedHash = nil
+        }
         loading = true
-        defer { loading = false }
-        image = await CatalogAssetStore.shared.image(for: asset, baseURL: catalog.assetBaseURL)
+        defer { if !Task.isCancelled { loading = false } }
+        let loaded = await CatalogAssetStore.shared.image(for: asset, baseURL: catalog.assetBaseURL)
+        guard !Task.isCancelled else { return }
+        image = loaded
+        displayedHash = loaded == nil ? nil : asset.sha256
     }
 }

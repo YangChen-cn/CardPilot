@@ -139,8 +139,13 @@ enum BenefitPeriodStatus: Equatable {
     /// Legacy initializer. Kept for personal rules and for reading old local
     /// records during migration. New official offers use `init(official:...)`.
     init(rule: RewardRule) {
-        let policy = try? RulePolicyStore.state(rule)
-        let extras = policy?.extras ?? RuleExtras()
+        self.init(rule: rule, policy: (try? RulePolicyStore.state(rule)) ?? RulePolicyState())
+    }
+
+    /// OfferStore supplies a policy from its per-projection document index.
+    /// Standalone readers retain the same default initializer above.
+    init(rule: RewardRule, policy: RulePolicyState) {
+        let extras = policy.extras
         let cardID = rule.card?.id
         let cardKey = rule.card?.overlayKey
         let external = rule.externalID
@@ -150,7 +155,7 @@ enum BenefitPeriodStatus: Equatable {
         self.cardID = cardID; self.cardKey = cardKey; cardName = rule.card?.displayName ?? "未关联卡片"
         title = rule.name; startsOn = rule.startsOn; endsOn = rule.endsOn
         sourceURL = rule.sourceURL; verifiedOn = rule.verifiedOn; updatedAt = nil
-        isArchived = (policy?.archived ?? false) || (policy?.isRetired ?? false)
+        isArchived = policy.archived || policy.isRetired
         isHidden = false
         isEnabled = rule.isEnabled
         hasKnownStart = !extras.periodUnverified
@@ -159,7 +164,7 @@ enum BenefitPeriodStatus: Equatable {
         isUserAdded = external.isEmpty
         isHistorical = !external.isEmpty
         personal = OfferPersonalState(hidden: isArchived, favorite: false, enrollment: .unknown,
-                                      notes: policy?.customized == true ? rule.notes : "")
+                                      notes: policy.customized ? rule.notes : "")
         trackingKey = cardKey.map { OfferTrackingStore.key(cardKey: $0, offerID: offerID) }
             ?? "welcomeTracking:offer:none:\(offerID)"
         overlayOfferID = offerID

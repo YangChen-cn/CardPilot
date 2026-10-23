@@ -5,6 +5,82 @@ import Testing
 
 @Suite(.serialized) @MainActor
 struct OfferSyncStabilityTests {
+    @Test func batchProjectionPreservesOverlayPriorityAndReadsSubsequentChanges() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let product = try #require(BankLibrary.load().product(id: "bochk.chill.platinum"))
+        let offerID = try #require(product.displayCatalog.rules.first?.id)
+        let card = BankCard(bank: "BOCHK", name: "测试持卡")
+        card.catalogID = product.id
+        context.insert(card)
+        let legacy = RewardRule(name: "旧权益", card: card)
+        legacy.externalID = offerID
+        legacy.notes = "保留用户修改的旧备注"
+        context.insert(legacy)
+        var policy = RulePolicyState()
+        policy.archived = true
+        policy.customized = true
+        try DocumentStore.put(policy, key: RulePolicyStore.key(legacy), kind: "policy", in: context)
+        let old = OfferPersonalState(hidden: true, favorite: false, enrollment: .notRegistered, notes: "UUID 旧状态")
+        let legacyKey = OfferStateStore.legacyKey(cardID: card.id, offerID: offerID)
+        try DocumentStore.put(old, key: legacyKey, kind: "offerState", in: context)
+        let stable = OfferPersonalState(hidden: false, favorite: true, enrollment: .registered, notes: "稳定键优先")
+        try OfferStateStore.save(stable, cardKey: card.overlayKey, offerID: offerID, in: context)
+
+        let first = try #require(OfferStore.offers(for: card, context: context).first { $0.overlayOfferID == offerID })
+        #expect(first.personal == stable)
+        var updated = stable
+        updated.notes = "保存后下次投影立即可见"
+        try OfferStateStore.save(updated, cardKey: card.overlayKey, offerID: offerID, in: context)
+        let all = try #require(OfferStore.offers(context: context).first { $0.overlayOfferID == offerID })
+        #expect(all.personal == updated)
+
+        try DocumentStore.remove(OfferStateStore.key(cardKey: card.overlayKey, offerID: offerID), in: context)
+        try context.save()
+        let uuidFallback = try #require(OfferStore.offers(for: card, context: context).first { $0.overlayOfferID == offerID })
+        #expect(uuidFallback.personal == old)
+        try DocumentStore.remove(legacyKey, in: context)
+        try context.save()
+        let policyFallback = try #require(OfferStore.offers(context: context).first { $0.overlayOfferID == offerID })
+        #expect(policyFallback.isHidden)
+        #expect(policyFallback.personal.notes == legacy.notes)
+
+        // A corrupt stable record keeps the previous load-error behavior: it
+        // does not silently replace the user's state with a lower-priority one.
+        let record = try #require(try DocumentStore.record(OfferStateStore.key(cardKey: card.overlayKey, offerID: offerID), in: context))
+        record.isDeleted = false
+        record.content = Data("invalid JSON".utf8)
+        try context.save()
+        let corrupt = try #require(OfferStore.offers(for: card, context: context).first { $0.overlayOfferID == offerID })
+        #expect(corrupt.personal == OfferPersonalState())
+    }
+
+    @Test func batchProjectionRetainsPersonalAndHistoricalRulePolicy() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "自定义银行", name: "自定义卡片")
+        context.insert(card)
+        for externalID in ["", "old.catalog.offer"] {
+            let rule = RewardRule(name: externalID.isEmpty ? "个人权益" : "历史权益", card: card)
+            rule.externalID = externalID
+            rule.notes = "个人修改说明"
+            context.insert(rule)
+            var policy = RulePolicyState()
+            policy.customized = true
+            policy.archived = externalID.isEmpty
+            policy.retired = !externalID.isEmpty
+            policy.extras.periodUnverified = true
+            policy.extras.benefitGroup = "merchant"
+            try DocumentStore.put(policy, key: RulePolicyStore.key(rule), kind: "policy", in: context)
+        }
+        try context.save()
+
+        let offers = OfferStore.offers(context: context)
+        #expect(offers.count == 2)
+        #expect(offers.contains { $0.origin == .personal })
+        #expect(offers.contains { $0.origin == .historical })
+        #expect(offers.allSatisfy { $0.isArchived && !$0.hasKnownPeriod && $0.group == .merchant })
+        #expect(offers.allSatisfy { $0.personal.notes == "个人修改说明" })
+    }
+
     @Test func personalOfferStateAndWelcomeProgressTravelBetweenIndependentLibraries() throws {
         let mac = try Persistence.makeContainer(inMemory: true)
         let phone = try Persistence.makeContainer(inMemory: true)

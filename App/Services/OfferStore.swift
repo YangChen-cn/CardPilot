@@ -213,18 +213,23 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
 
 @MainActor enum OfferStore {
     static func offers(context: ModelContext) -> [BenefitInfo] {
-        let cards = (try? context.fetch(FetchDescriptor<BankCard>(sortBy: [SortDescriptor(\.createdAt)]))) ?? []
+        let cards = ((try? context.fetch(FetchDescriptor<BankCard>(sortBy: [SortDescriptor(\.createdAt)]))) ?? [])
+            .filter { !$0.isArchived }
         let library = try? BankLibrary.load()
-        return cards.flatMap { offers(for: $0, library: library, context: context) }
+        let documents = OfferProjectionDocuments(cards: cards, library: library, context: context)
+        return cards.flatMap { offers(for: $0, library: library, documents: documents) }
     }
 
     static func offers(for card: BankCard, context: ModelContext) -> [BenefitInfo] {
-        offers(for: card, library: try? BankLibrary.load(), context: context)
+        guard !card.isArchived else { return [] }
+        let library = try? BankLibrary.load()
+        let documents = OfferProjectionDocuments(cards: [card], library: library, context: context)
+        return offers(for: card, library: library, documents: documents)
     }
 
     /// Current official offers are pure projections of the read-only catalog.
     /// Legacy rules are used only for user-created offers, migration and history.
-    private static func offers(for card: BankCard, library: BankLibrary?, context: ModelContext) -> [BenefitInfo] {
+    private static func offers(for card: BankCard, library: BankLibrary?, documents: OfferProjectionDocuments) -> [BenefitInfo] {
         guard !card.isArchived else { return [] }
         let product = library?.product(id: card.catalogID)
         let isCurrentProduct = library?.products.contains { $0.id == card.catalogID } ?? false
@@ -234,19 +239,18 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
 
         for rule in officialRules {
             let legacy = card.rules.first { $0.externalID == rule.id }
-            let state = (try? OfferStateStore.load(cardKey: card.overlayKey, cardID: card.id, offerID: rule.id,
-                                                   legacy: legacy, in: context)) ?? OfferPersonalState()
+            let state = (try? documents.state(card: card, offerID: rule.id, legacy: legacy)) ?? OfferPersonalState()
             result.append(BenefitInfo(official: rule, product: product!, card: card, state: state,
                                       historical: !isCurrentProduct))
         }
 
         for rule in card.rules {
             if rule.externalID.isEmpty {
-                result.append(BenefitInfo(rule: rule))
+                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
             } else if !officialIDs.contains(rule.externalID), product != nil {
-                result.append(BenefitInfo(rule: rule))
+                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
             } else if product == nil {
-                result.append(BenefitInfo(rule: rule))
+                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
             }
         }
         return result.sorted { lhs, rhs in

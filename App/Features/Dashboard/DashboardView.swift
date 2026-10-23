@@ -3,16 +3,20 @@ import SwiftData
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
     @Query(sort: \BankCard.createdAt) private var cards: [BankCard]
-    @Query(sort: \SpendTransaction.date, order: .reverse) private var transactions: [SpendTransaction]
     @Query private var documents: [DomainRecord]
     @State private var adding = false
     @State private var editing: SpendTransaction?
     @State private var showTrends = false
     @State private var wide = false
+    @State private var snapshot = DashboardSnapshot(inputs: [], now: .now)
+    @State private var recentTransactions: [SpendTransaction] = []
+    @State private var spendingRevision = 0
+    @State private var spendingError = false
 
     private var orderedCards: [BankCard] {
         CardOrderStore.ordered(cards, context: context)
@@ -28,7 +32,6 @@ struct DashboardView: View {
 
     var body: some View {
         let _ = documents.map(\.modifiedAt)
-        let snapshot = DashboardSnapshot(cards: orderedCards, transactions: transactions)
         ScrollView {
             VStack(alignment: .leading, spacing: phoneLayout ? PilotTheme.phoneSectionSpacing : 28) {
                 wallet
@@ -84,11 +87,42 @@ struct DashboardView: View {
         .onGeometryChange(for: Bool.self) { $0.size.width >= 1000 } action: { wide = $0 }
         .sheet(isPresented: $adding) { TransactionEditor() }
         .sheet(item: $editing) { TransactionEditor(transaction: $0) }
+        .task(id: spendingRevision) { await refreshSpending() }
+        .task {
+            // Use the accounting timezone even when the device travels or stays open overnight.
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(max(1, HKCalendar.dayAfter(.now).timeIntervalSinceNow))) }
+                catch { return }
+                spendingRevision &+= 1
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave).receive(on: RunLoop.main)) { notification in
+            guard let saved = notification.object as? ModelContext,
+                  saved.container === context.container else { return }
+            spendingRevision &+= 1
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { spendingRevision &+= 1 }
+        }
+    }
+
+    private func refreshSpending() async {
+        do {
+            let data = try await DashboardSpendingData.load(in: context)
+            snapshot = data.snapshot
+            recentTransactions = data.recent
+            spendingError = false
+        } catch is CancellationError { }
+        catch { spendingError = true }
     }
 
     private func spending(_ snapshot: DashboardSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             DashboardBalance(snapshot: snapshot)
+            if spendingError {
+                Button("消费统计暂未更新，重试", systemImage: "arrow.clockwise") { spendingRevision &+= 1 }
+                    .font(.caption).buttonStyle(.plain).foregroundStyle(.secondary)
+            }
             if phoneLayout {
                 Button("记一笔", systemImage: "plus", action: { adding = true }).phonePrimaryAction()
             } else {
@@ -175,17 +209,17 @@ struct DashboardView: View {
                 Spacer()
                 NavigationLink("全部交易") { TransactionsView() }.font(.subheadline).frame(minHeight: phoneLayout ? 44 : nil)
             }
-            if transactions.isEmpty {
+            if recentTransactions.isEmpty {
                 Text("手动记录，或连接银行邮件与快捷指令。")
                     .font(.subheadline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 16)
             } else {
                 VStack(spacing: 0) {
-                    ForEach(transactions.prefix(3)) { transaction in
+                    ForEach(recentTransactions) { transaction in
                         Button(action: { editing = transaction }) {
                             TransactionRow(transaction: transaction)
                                 .padding(.vertical, 8).contentShape(.rect)
                         }.buttonStyle(.plain)
-                        if transaction.id != transactions.prefix(3).last?.id { Divider() }
+                        if transaction.id != recentTransactions.last?.id { Divider() }
                     }
                 }
             }
