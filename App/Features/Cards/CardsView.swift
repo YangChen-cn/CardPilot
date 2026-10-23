@@ -128,6 +128,7 @@ struct CardsView: View {
         .minimizedSearchToolbar()
         .background(PilotTheme.canvas)
         #if os(iOS)
+        .sensoryFeedback(.selection, trigger: kindFilter)
         .toolbar {
             if isCompact && !cards.isEmpty {
                 ToolbarItemGroup(placement: .topBarTrailing) {

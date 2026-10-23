@@ -26,6 +26,7 @@ struct CompactWalletCardItem: View {
         }
         .buttonStyle(WalletCardButtonStyle())
         .contentShape(.rect)
+        .accessibilityHint("打开卡片详情")
         .dropDestination(for: String.self) { items, location in
             guard let source = items.first else { return false }
             return onDrop(source, height > 0 && location.y > height / 2)
