@@ -12,14 +12,3 @@
 验证：macOS 构建及 17 项针对性测试通过，范围为 `DashboardSpendingTests`、`OfferSyncStabilityTests`、`CatalogAssetStoreTests`、`CardOrderTests`。新增用例覆盖查询窗口、保存修改／删除、月份切换、同步后刷新、个人状态优先级与历史回退。iOS Simulator 目标编译通过。没有进行 UI 自动化或运行速度倍数测量；这些结果不能替代用户的实际界面验收。
 
 阶段一提交：`Reduce dashboard queries and batch offer state reads`。
-
-## 阶段二：iPhone 卡包
-
-- 卡片菜单增加“精选卡片／紧凑列表”，偏好存为 `cards.phonePresentation`，不修改桌面 `cards.displayMode`。默认精选只展示一张可横向分页的卡面，下面集中显示当前卡名称、权益、账本及预选卡记账。
-- 下方紧凑行支持点选当前卡并回到卡面；紧凑模式则直接打开详情。继续复用稳定卡片身份、搜索、分类、归档、加卡及拖动排序／辅助功能移序，不复制业务逻辑或伪造余额。
-- 官方横竖图片均完整 fit，缩略图仅整体缩放；卡面不随文字字号改变比例，元数据继续支持 Dynamic Type。VoiceOver 可调节精选卡，Reduce Motion 下关闭切卡和移序动画。
-- macOS 继续原网格和工具栏，常规宽度布局不增加手机卡包；未更改共享 `WalletCardTile`、资料库或存储模型。
-
-验证：iOS Simulator 增量编译通过；macOS 已在阶段一针对性测试时完成编译，17 项相关回归通过，不因纯布局重复执行全量。通过 `script/run_ios.sh 'iPhone 17'` 构建、安装并启动最新版，保留模拟器既有数据，不导入真实 Mac 账本。实际卡片分页、紧凑列表、深浅色和大字体效果由用户验收；未运行 UI 自动化或截图巡检。
-
-阶段二提交：`Refine the iPhone wallet with featured cards and a compact list`。
