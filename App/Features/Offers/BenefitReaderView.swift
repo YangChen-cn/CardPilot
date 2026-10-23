@@ -121,9 +121,10 @@ struct BenefitDetailView: View {
             }
             .background(PilotTheme.canvas)
             .navigationTitle("权益详情")
+            .inlineNavigationTitle()
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭", action: { dismiss() })
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("完成", action: { dismiss() })
                 }
             }
         }
@@ -135,23 +136,24 @@ struct BenefitDetailView: View {
     }
 
     private var personalSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("我的记录").font(.headline)
-            HStack(alignment: .firstTextBaseline) {
-                Text("登记状态").font(.subheadline)
-                Spacer(minLength: 12)
-                Picker("登记状态", selection: $personal.enrollment) {
-                    ForEach(OfferEnrollment.allCases, id: \.rawValue) { value in
-                        Text(value.label).tag(value)
+        GroupBox("我的记录") {
+            VStack(alignment: .leading, spacing: 12) {
+                LabeledContent("登记状态") {
+                    Picker("登记状态", selection: $personal.enrollment) {
+                        ForEach(OfferEnrollment.allCases, id: \.rawValue) { value in
+                            Text(value.label).tag(value)
+                        }
                     }
+                    .labelsHidden()
+                    .onChange(of: personal.enrollment) { _, _ in savePersonal() }
                 }
-                .labelsHidden()
-                .onChange(of: personal.enrollment) { _, _ in savePersonal() }
+                Text("只记录你是否已登记，不会改动官方活动内容。")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            Text("只记录你是否已登记，不会改动官方活动内容。")
-                .font(.caption).foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 4)
         }
-        .pilotPanel()
     }
 
     private func savePersonal() {
@@ -186,51 +188,56 @@ struct BenefitDetailView: View {
 
     private func welcome(_ tracking: WelcomeTracking) -> some View {
         let status = tracking.effectiveStatus()
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline) {
-                Label(status.label, systemImage: status.symbol)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(PilotTheme.accent)
-                Spacer(minLength: 12)
-                Button("更新状态", action: { editingWelcome = true })
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+        return GroupBox {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline) {
+                    Label(status.label, systemImage: status.symbol)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(PilotTheme.accent)
+                    Spacer(minLength: 12)
+                    Button("更新状态", action: { editingWelcome = true })
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+                if !tracking.rewardContent.isEmpty {
+                    Text(tracking.rewardContent).font(.headline)
+                }
+                if tracking.thresholdCents > 0 {
+                    DetailFact(label: "个人消费门槛", value: Money.text(tracking.thresholdCents))
+                }
+                if tracking.hasKnownDeadline {
+                    DetailFact(label: "个人截止日", value: tracking.deadline.formatted(.dateTime.year().month().day()))
+                }
+                if !tracking.notes.isEmpty {
+                    Text(tracking.notes)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .lineSpacing(4)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
-            if !tracking.rewardContent.isEmpty {
-                Text(tracking.rewardContent).font(.headline)
-            }
-            if tracking.thresholdCents > 0 {
-                DetailFact(label: "个人消费门槛", value: Money.text(tracking.thresholdCents))
-            }
-            if tracking.hasKnownDeadline {
-                DetailFact(label: "个人截止日", value: tracking.deadline.formatted(.dateTime.year().month().day()))
-            }
-            if !tracking.notes.isEmpty {
-                Text(tracking.notes)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .lineSpacing(4)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 4)
         }
-        .pilotPanel()
     }
 
     private func facts(_ info: BenefitInfo) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            DetailFact(label: "活动期", value: period(info))
-            Divider().padding(.vertical, 12)
-            DetailFact(label: "资料核实", value: info.verifiedOn.isEmpty ? "待核实" : info.verifiedOn)
-            if let updated = info.updatedAt, !updated.isEmpty {
+        GroupBox("活动信息") {
+            VStack(alignment: .leading, spacing: 0) {
+                DetailFact(label: "活动期", value: period(info))
                 Divider().padding(.vertical, 12)
-                DetailFact(label: "内容更新", value: updated)
+                DetailFact(label: "资料核实", value: info.verifiedOn.isEmpty ? "待核实" : info.verifiedOn)
+                if let updated = info.updatedAt, !updated.isEmpty {
+                    Divider().padding(.vertical, 12)
+                    DetailFact(label: "内容更新", value: updated)
+                }
+                if !info.sourceURL.isEmpty {
+                    Divider().padding(.vertical, 12)
+                    DetailFact(label: "资料来源", value: sourceHost(info.sourceURL))
+                }
             }
-            if !info.sourceURL.isEmpty {
-                Divider().padding(.vertical, 12)
-                DetailFact(label: "资料来源", value: sourceHost(info.sourceURL))
-            }
+            .padding(.top, 4)
         }
-        .pilotPanel()
     }
 
     private func terms(_ info: BenefitInfo) -> some View {

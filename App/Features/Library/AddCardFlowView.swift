@@ -45,10 +45,10 @@ struct AddCardFlowView: View {
                     ProgressView("正在打开资料库").frame(maxWidth: .infinity).padding()
                 }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(PilotTheme.canvas)
+            .groupedListStyle()
+            .background(PilotTheme.groupedCanvas)
             .searchable(text: $search, prompt: "搜索银行")
+            .minimizedSearchToolbar()
             .navigationTitle("添加银行卡")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("关闭", action: finish) }

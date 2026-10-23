@@ -83,7 +83,7 @@ struct DashboardView: View {
             }
             .padding(phoneLayout ? PilotTheme.phonePagePadding : PilotTheme.pagePadding).frame(maxWidth: 1160).frame(maxWidth: .infinity)
         }
-        .background(PilotTheme.canvas)
+        .background(phoneLayout ? PilotTheme.groupedCanvas : PilotTheme.canvas)
         .onGeometryChange(for: Bool.self) { $0.size.width >= 1000 } action: { wide = $0 }
         .sheet(isPresented: $adding) { TransactionEditor() }
         .sheet(item: $editing) { TransactionEditor(transaction: $0) }
@@ -118,111 +118,85 @@ struct DashboardView: View {
 
     private func spending(_ snapshot: DashboardSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            DashboardBalance(snapshot: snapshot)
+            GroupBox {
+                DashboardBalance(snapshot: snapshot)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if spendingError {
                 Button("消费统计暂未更新，重试", systemImage: "arrow.clockwise") { spendingRevision &+= 1 }
                     .font(.caption).buttonStyle(.plain).foregroundStyle(.secondary)
             }
-            if phoneLayout {
-                Button("记一笔", systemImage: "plus", action: { adding = true }).phonePrimaryAction()
-            } else {
+            HStack(spacing: 12) {
                 Button("记一笔", systemImage: "plus", action: { adding = true })
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.borderedProminent)
+                NavigationLink { OffersView() } label: {
+                    Label("查看权益", systemImage: "gift")
+                }
+                .buttonStyle(.bordered)
             }
+            .controlSize(.large)
         }
     }
 
     private var wallet: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                SectionHeading(title: "我的银行卡")
-                Spacer()
-                NavigationLink("全部卡片") { CardsView() }.font(.subheadline).frame(minHeight: phoneLayout ? 44 : nil)
-            }
-            if orderedCards.contains(where: { !$0.isArchived }) {
-                if phoneLayout {
-                    ScrollView(.horizontal) {
-                        LazyHStack(alignment: .top, spacing: 16) {
-                            ForEach(orderedCards.filter { !$0.isArchived }.prefix(6)) { card in
-                                NavigationLink { CardDetailView(card: card) } label: {
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        CardArtwork(card: card, compact: true)
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 180)
-                                        Text(card.name).font(.headline)
-                                        Text(card.bank + " · " + card.kindLabel)
-                                            .font(.subheadline).foregroundStyle(.secondary)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .containerRelativeFrame(.horizontal)
-                                    .contentShape(.rect)
-                                }.buttonStyle(.plain)
-                            }
-                        }.scrollTargetLayout().padding(.vertical, 8)
+        NavigationLink { CardsView() } label: {
+            GroupBox {
+                HStack(spacing: 14) {
+                    Image(systemName: "creditcard")
+                        .font(.title3)
+                        .foregroundStyle(PilotTheme.accent)
+                        .frame(width: 44, height: 44)
+                        .background(PilotTheme.accent.opacity(0.12), in: .rect(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(orderedCards.contains(where: { !$0.isArchived }) ? "我的银行卡" : "添加第一张银行卡")
+                            .font(.headline)
+                        Text(walletSubtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
-                    .scrollTargetBehavior(.viewAligned)
-                    .scrollIndicators(.hidden)
-                } else {
-                    ScrollView(.horizontal) {
-                    LazyHStack(alignment: .top, spacing: 22) {
-                        ForEach(orderedCards.filter { !$0.isArchived }.prefix(6)) { card in
-                            NavigationLink { CardDetailView(card: card) } label: {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    HStack(spacing: 0) {
-                                        Spacer(minLength: 0)
-                                        CardArtwork(card: card, compact: true)
-                                            .frame(height: 164)
-                                            .fixedSize(horizontal: true, vertical: false)
-                                        Spacer(minLength: 0)
-                                    }
-                                    .frame(minWidth: 170)
-                                    Text(card.name).font(.subheadline.weight(.medium)).lineLimit(2)
-                                        .frame(width: 170, alignment: .leading)
-                                    Text(card.bank + " · " + card.kindLabel).font(.caption).foregroundStyle(.secondary)
-                                        .frame(width: 170, alignment: .leading)
-                                }.fixedSize(horizontal: true, vertical: false)
-                            }.buttonStyle(.plain)
-                        }
-                    }.padding(.vertical, 8)
-                    }.scrollIndicators(.hidden)
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
-            } else {
-                NavigationLink { CardsView() } label: {
-                    HStack(spacing: 16) {
-                        Image(systemName: "creditcard.badge.plus").font(.title2)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("添加第一张银行卡").font(.headline)
-                            Text("收藏权益，轻松查优惠。 ").font(.subheadline).foregroundStyle(.secondary)
-                        }
-                        Spacer(minLength: 0)
-                        Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
-                    }.frame(minHeight: 70).contentShape(.rect)
-                }.buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 2)
             }
         }
+        .buttonStyle(.plain)
+    }
+
+    private var walletSubtitle: String {
+        let active = orderedCards.filter { !$0.isArchived }
+        if active.isEmpty { return "从资料库选择一张卡，开始整理权益。" }
+        return "\(active.count) 张使用中 · 管理卡面与顺序"
     }
 
     private var recent: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                SectionHeading(title: "最近消费")
-                Spacer()
-                NavigationLink("全部交易") { TransactionsView() }.font(.subheadline).frame(minHeight: phoneLayout ? 44 : nil)
-            }
-            if recentTransactions.isEmpty {
-                Text("手动记录，或连接银行邮件与快捷指令。")
-                    .font(.subheadline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 16)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(recentTransactions) { transaction in
-                        Button(action: { editing = transaction }) {
-                            TransactionRow(transaction: transaction)
-                                .padding(.vertical, 8).contentShape(.rect)
-                        }.buttonStyle(.plain)
-                        if transaction.id != recentTransactions.last?.id { Divider() }
+        GroupBox {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("最近消费").font(.headline)
+                    Spacer()
+                    NavigationLink("全部交易") { TransactionsView() }.font(.subheadline)
+                }
+                if recentTransactions.isEmpty {
+                    Text("手动记录，或连接银行邮件与快捷指令。")
+                        .font(.subheadline).foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 8)
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(recentTransactions) { transaction in
+                            Button(action: { editing = transaction }) {
+                                TransactionRow(transaction: transaction)
+                                    .padding(.vertical, 8).contentShape(.rect)
+                            }.buttonStyle(.plain)
+                            if transaction.id != recentTransactions.last?.id { Divider() }
+                        }
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 2)
         }
     }
 

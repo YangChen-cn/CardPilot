@@ -27,19 +27,23 @@ struct CardProductPreviewView: View {
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
-                VStack(spacing: 14) {
-                    if product.baseRewardVerified, let rate = product.catalog.baseRatePercent {
-                        LabeledContent("基础回赠", value: rate.formatted(.number.precision(.fractionLength(0...2))) + "%")
-                    } else {
-                        LabeledContent("基础回赠", value: "待核实")
+                GroupBox("卡片信息") {
+                    VStack(spacing: 14) {
+                        if product.baseRewardVerified, let rate = product.catalog.baseRatePercent {
+                            LabeledContent("基础回赠", value: rate.formatted(.number.precision(.fractionLength(0...2))) + "%")
+                        } else {
+                            LabeledContent("基础回赠", value: "待核实")
+                        }
+                        if let fee = product.catalog.foreignFeePercent {
+                            LabeledContent("外币手续费", value: fee.formatted(.number.precision(.fractionLength(0...2))) + "%")
+                        }
+                        if let fee = product.catalog.annualFeeNote, !fee.isEmpty {
+                            LabeledContent("年费", value: fee)
+                        }
                     }
-                    if let fee = product.catalog.foreignFeePercent {
-                        LabeledContent("外币手续费", value: fee.formatted(.number.precision(.fractionLength(0...2))) + "%")
-                    }
-                    if let fee = product.catalog.annualFeeNote, !fee.isEmpty {
-                        LabeledContent("年费", value: fee)
-                    }
-                }.font(.subheadline).pilotPanel()
+                    .font(.subheadline)
+                    .padding(.top, 4)
+                }
                 if !generalRules.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("日常优惠").font(.title3).bold()
@@ -69,6 +73,7 @@ struct CardProductPreviewView: View {
         }
         .background(PilotTheme.canvas)
         .navigationTitle("卡片资料")
+        .inlineNavigationTitle()
         .safeAreaInset(edge: .bottom) {
             Button(action: add) {
                 Label(adding ? "正在添加…" : (existingCard == nil ? "添加到卡包" : "设置我的卡片"), systemImage: existingCard == nil ? "plus" : "slider.horizontal.3")
@@ -76,7 +81,8 @@ struct CardProductPreviewView: View {
             }
             .buttonStyle(.borderedProminent).controlSize(.large).disabled(adding)
             .padding(PilotTheme.pagePadding).frame(maxWidth: 760).frame(maxWidth: .infinity)
-            .background(PilotTheme.surface)
+            .background(.bar)
+            .overlay(alignment: .top) { Divider() }
         }
         .navigationDestination(isPresented: $showingSetup) {
             if let savedCard { PersonalCardSetupView(card: savedCard, product: product, onFinish: onFinish) }

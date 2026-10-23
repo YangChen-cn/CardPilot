@@ -4,6 +4,7 @@ import SwiftData
 struct CardsView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var typeSize
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
@@ -27,6 +28,13 @@ struct CardsView: View {
         #else
         false
         #endif
+    }
+
+    /// Card artwork is decorative at accessibility sizes. Switching to the
+    /// compact row keeps names, metadata, and actions readable without
+    /// squeezing the card face into a fixed-height slot.
+    private var usesCompactList: Bool {
+        isCompact && (showsCompactList || typeSize.isAccessibilitySize)
     }
 
     private var displayMode: CardDisplayMode {
@@ -112,10 +120,12 @@ struct CardsView: View {
                     }
                 }
                 .padding(isCompact ? 16 : PilotTheme.pagePadding)
+                .padding(.bottom, isCompact ? 28 : 0)
                 .frame(maxWidth: 1180).frame(maxWidth: .infinity)
             }
         }
         .searchable(text: $search, prompt: "银行或卡片名称")
+        .minimizedSearchToolbar()
         .background(PilotTheme.canvas)
         #if os(iOS)
         .toolbar {
@@ -210,19 +220,18 @@ struct CardsView: View {
     private func cardCollection(_ items: [BankCard]) -> some View {
         if isCompact {
             Group {
-                if showsCompactList {
+                if usesCompactList {
                     LazyVStack(spacing: 0) {
                         ForEach(items) { card in
                             phoneCard(card)
-                            if card.id != items.last?.id { Divider().padding(.leading, 98) }
+                            if card.id != items.last?.id { Divider().padding(.leading, 102) }
                         }
                     }
-                    .background(PilotTheme.surface, in: .rect(cornerRadius: PilotTheme.radius))
+                    .background(PilotTheme.surface, in: .rect(cornerRadius: PilotTheme.cardCornerRadius, style: .continuous))
                 } else {
-                    LazyVStack(spacing: 28) {
+                    LazyVStack(spacing: 24) {
                         ForEach(items) { card in
                             phoneCard(card)
-                            if card.id != items.last?.id { Divider() }
                         }
                     }
                 }
@@ -234,7 +243,7 @@ struct CardsView: View {
     }
 
     private func phoneCard(_ card: BankCard) -> some View {
-        CompactWalletCardItem(card: card, transition: cardTransition, showsCompactRow: showsCompactList,
+        CompactWalletCardItem(card: card, transition: cardTransition, showsCompactRow: usesCompactList,
                               onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
                               onMoveToStart: { move(card, toEnd: false) },
                               onMoveToEnd: { move(card, toEnd: true) })

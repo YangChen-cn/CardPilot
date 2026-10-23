@@ -3,15 +3,16 @@ import SwiftUI
 /// The compact list changes presentation only; navigation and ordering stay in the card item.
 struct CompactWalletCardRow: View {
     let card: BankCard
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         HStack(spacing: 14) {
-            CardArtwork(card: card, compact: true)
-                .environment(\.dynamicTypeSize, .medium)
-                .frame(width: 288, height: 208)
-                .scaleEffect(0.25)
-                .frame(width: 72, height: 52)
-                .accessibilityHidden(true)
+            if !typeSize.isAccessibilitySize {
+                CardFaceFrame {
+                    CardArtwork(card: card, compact: true)
+                }
+                .frame(width: 76)
+            }
             VStack(alignment: .leading, spacing: 5) {
                 Text(card.name).font(.body).bold().foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)

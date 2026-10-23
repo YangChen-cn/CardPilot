@@ -5,7 +5,6 @@ struct WalletCardTile: View {
     let card: BankCard
     @Environment(\.modelContext) private var context
     @Environment(CatalogRepository.self) private var catalog
-    @Environment(\.dynamicTypeSize) private var typeSize
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
@@ -27,16 +26,7 @@ struct WalletCardTile: View {
         let pricing = PricingStore.current(card)
         let baseText = pricing.baseRateBps > 0 ? Money.percent(pricing.baseRateBps) + " 基础权益" : nil
         VStack(alignment: .leading, spacing: isCompact ? 14 : 18) {
-            if isCompact {
-                CardArtwork(card: card, compact: true)
-                    .frame(maxWidth: .infinity, maxHeight: typeSize.isAccessibilitySize && card.imageData == nil ? nil : 250)
-                    .accessibilityHidden(true)
-            } else {
-                CardArtwork(card: card, compact: true)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: typeSize.isAccessibilitySize && card.imageData == nil ? nil : 230)
-                    .accessibilityHidden(true)
-            }
+            WalletCardFace(card: card)
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(card.name).font(.headline).foregroundStyle(.primary)
@@ -64,7 +54,7 @@ struct WalletCardTile: View {
                 } else {
                     HStack(spacing: 10) {
                         if let baseText {
-                            Text(baseText).foregroundStyle(PilotTheme.accent)
+                            Text(baseText).foregroundStyle(.secondary)
                         }
                         Text("\(benefits.count) 项权益").foregroundStyle(.secondary)
                     }.font(.caption)

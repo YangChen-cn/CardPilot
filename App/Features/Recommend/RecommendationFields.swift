@@ -25,26 +25,33 @@ struct RecommendationFields: View {
     }
 
     private var phoneFields: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("消费类别").font(.subheadline).foregroundStyle(.secondary)
-                Picker("消费类别", selection: $draft.category) {
-                    ForEach(SpendCategory.allCases) { Label($0.rawValue, systemImage: $0.symbol).tag($0.rawValue) }
+        VStack(alignment: .leading, spacing: 16) {
+            GroupBox {
+                VStack(spacing: 0) {
+                    LabeledContent("消费类别") {
+                        Picker("消费类别", selection: $draft.category) {
+                            ForEach(SpendCategory.allCases) { Label($0.rawValue, systemImage: $0.symbol).tag($0.rawValue) }
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
+                        .accessibilityLabel("消费类别")
+                    }
+                    .frame(minHeight: 44)
+                    Divider()
+                    LabeledContent("消费地区") {
+                        Picker("消费地区", selection: $draft.region) {
+                            Text("请选择地区").tag("")
+                            Text("香港").tag("HK"); Text("中国内地").tag("CN")
+                            Text("澳门").tag("MO"); Text("其他地区").tag("other")
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
+                        .accessibilityLabel("消费地区")
+                    }
+                    .frame(minHeight: 44)
                 }
-                .labelsHidden().pickerStyle(.menu).frame(minHeight: 44, alignment: .leading)
-                .accessibilityLabel("消费类别")
+                .padding(.vertical, 2)
             }
-            VStack(alignment: .leading, spacing: 8) {
-                Text("消费地区").font(.subheadline).foregroundStyle(.secondary)
-                Picker("消费地区", selection: $draft.region) {
-                    Text("请选择地区").tag("")
-                    Text("香港").tag("HK"); Text("中国内地").tag("CN")
-                    Text("澳门").tag("MO"); Text("其他地区").tag("other")
-                }
-                .labelsHidden().pickerStyle(.menu).frame(minHeight: 44, alignment: .leading)
-                .accessibilityLabel("消费地区")
-            }
-            Divider()
             PilotDisclosureGroup("支付方式、金额与商户（选填）") {
                 VStack(alignment: .leading, spacing: 16) {
                     Picker("支付方式", selection: $draft.paymentMethod) {

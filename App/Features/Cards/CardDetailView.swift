@@ -68,50 +68,56 @@ struct CardDetailView: View {
                     }
                 }
                 if !historicalBenefits.isEmpty {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("历史活动与个人记录").font(.headline)
-                        Text("旧版本中保存的活动、备注和日期，仅作历史保留，不代表当前官方条款。")
-                            .font(.caption).foregroundStyle(.secondary)
-                        ForEach(historicalBenefits) { info in
-                            Button { readingHistory = info } label: {
-                                HStack(alignment: .top, spacing: 12) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(info.title).font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
-                                        Text(info.periodDescription).font(.caption).foregroundStyle(.secondary)
-                                        if !info.personal.notes.isEmpty {
-                                            Text(info.personal.notes).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                    GroupBox("历史活动与个人记录") {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("旧版本中保存的活动、备注和日期，仅作历史保留，不代表当前官方条款。")
+                                .font(.caption).foregroundStyle(.secondary)
+                            ForEach(historicalBenefits) { info in
+                                Button { readingHistory = info } label: {
+                                    HStack(alignment: .top, spacing: 12) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(info.title).font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
+                                            Text(info.periodDescription).font(.caption).foregroundStyle(.secondary)
+                                            if !info.personal.notes.isEmpty {
+                                                Text(info.personal.notes).font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                                            }
                                         }
+                                        Spacer(minLength: 8)
+                                        Text("历史记录")
+                                            .font(.caption.weight(.medium))
+                                            .foregroundStyle(.secondary)
                                     }
-                                    Spacer(minLength: 8)
-                                    Text("历史记录")
-                                        .font(.caption.weight(.medium))
-                                        .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .contentShape(.rect)
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .contentShape(.rect)
+                                .buttonStyle(.plain)
+                                if info.id != historicalBenefits.last?.id { Divider() }
                             }
-                            .buttonStyle(.plain)
-                            if info.id != historicalBenefits.last?.id { Divider() }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 4)
                     }
-                    .pilotPanel()
                 }
                 Divider()
                 CardFinancialSummary(card: card)
                 if !details.annualFeeNote.isEmpty || !details.caveats.isEmpty || pricing.foreignFeeBps > 0 || pricing.overseasHKDFeeBps > 0 {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("费用与其他说明").font(.headline)
-                        if pricing.foreignFeeBps > 0 { LabeledContent("外币手续费", value: Money.percent(pricing.foreignFeeBps)) }
-                        if pricing.overseasHKDFeeBps > 0 { LabeledContent("境外港币手续费", value: Money.percent(pricing.overseasHKDFeeBps)) }
-                        if !details.annualFeeNote.isEmpty { Text(details.annualFeeNote).font(.subheadline) }
-                        if !details.caveats.isEmpty { Text(details.caveats).font(.caption).foregroundStyle(.secondary) }
+                    GroupBox("费用与其他说明") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            if pricing.foreignFeeBps > 0 { LabeledContent("外币手续费", value: Money.percent(pricing.foreignFeeBps)) }
+                            if pricing.overseasHKDFeeBps > 0 { LabeledContent("境外港币手续费", value: Money.percent(pricing.overseasHKDFeeBps)) }
+                            if !details.annualFeeNote.isEmpty { Text(details.annualFeeNote).font(.subheadline) }
+                            if !details.caveats.isEmpty { Text(details.caveats).font(.caption).foregroundStyle(.secondary) }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 4)
                     }
                 }
             }
             .padding(PilotTheme.pagePadding).frame(maxWidth: 940).frame(maxWidth: .infinity)
         }
         .background(PilotTheme.canvas)
-        .navigationTitle(card.name)
+        .navigationTitle("卡片详情")
+        .inlineNavigationTitle()
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu("卡片操作", systemImage: "ellipsis") {

@@ -8,6 +8,20 @@ enum AppSection: String, CaseIterable, Identifiable {
     case recommend = "选卡建议"
     case settings = "设置"
     var id: String { rawValue }
+
+    /// Short titles used by the iPhone tab bar and navigation bars. The longer
+    /// `rawValue` remains the descriptive label in the macOS sidebar.
+    var navigationTitle: String {
+        switch self {
+        case .cards: "卡片"
+        case .dashboard: "总览"
+        case .offers: "优惠"
+        case .transactions: "账本"
+        case .recommend: "推荐"
+        case .settings: "设置"
+        }
+    }
+
     var symbol: String {
         switch self {
         case .dashboard: "square.grid.2x2"

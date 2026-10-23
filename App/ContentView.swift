@@ -27,11 +27,13 @@ struct ContentView: View {
                     Tab("账本", systemImage: "list.bullet.rectangle", value: .transactions) { mobile(.transactions) }
                     Tab("推荐", systemImage: "sparkles", value: .recommend) { mobile(.recommend) }
                 }
+                .tabBarMinimizeBehavior(.onScrollDown)
             } else { desktop }
             #else
             desktop
             #endif
         }
+        .tint(PilotTheme.accent)
         .sheet(isPresented: $showingTransaction) { TransactionEditor() }
         .sheet(isPresented: $showingSettings) {
             NavigationStack {
@@ -119,18 +121,22 @@ struct ContentView: View {
     #if os(iOS)
     private func mobile(_ section: AppSection) -> some View {
         NavigationStack {
-            sectionView(section).navigationTitle(title(section))
+            sectionView(section)
+                .navigationTitle(title(section))
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("设置", systemImage: "gearshape", action: { showingSettings = true })
-                            .labelStyle(.iconOnly)
+                    if section == .dashboard {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("设置", systemImage: "gearshape", action: { showingSettings = true })
+                                .labelStyle(.iconOnly)
+                        }
                     }
                 }
         }
     }
     #endif
 
-    private func title(_ section: AppSection) -> String { section == .dashboard ? "CardPilot" : section.rawValue }
+    private func title(_ section: AppSection) -> String { section.navigationTitle }
 
     @ViewBuilder private func sectionView(_ section: AppSection) -> some View {
         switch section {

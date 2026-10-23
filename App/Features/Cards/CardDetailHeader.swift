@@ -9,14 +9,14 @@ struct CardDetailHeader: View {
         Group {
             if wide && !typeSize.isAccessibilitySize {
                 HStack(alignment: .center, spacing: 32) {
-                    CardArtwork(card: card).frame(width: 340, height: 270)
+                    WalletCardFace(card: card)
+                        .frame(width: 380)
                     CardDetailOverview(card: card)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 24) {
-                    CardArtwork(card: card)
-                        .frame(maxWidth: 400)
-                        .frame(height: typeSize.isAccessibilitySize && card.imageData == nil ? nil : 260)
+                    WalletCardFace(card: card)
+                        .frame(maxWidth: 460)
                         .frame(maxWidth: .infinity)
                     CardDetailOverview(card: card)
                 }

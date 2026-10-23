@@ -181,13 +181,11 @@ struct TransactionsView: View {
                 } description: {
                     Text(cards.isEmpty ? "选择银行卡，再记录日常消费。" : "记录金额、商户和类别，了解日常消费。")
                 } actions: {
-                    Button(action: { if cards.isEmpty { addingCard = true } else { adding = true } }) {
-                        Label(cards.isEmpty ? "从资料库添加" : "记一笔", systemImage: "plus")
-                            .labelStyle(.titleAndIcon)
-                            .font(.headline).foregroundStyle(.white)
-                            .padding(.horizontal, 12)
-                            .frame(minHeight: PilotTheme.minimumTouchTarget)
-                    }.phonePrimaryAction()
+                    Button(cards.isEmpty ? "从资料库添加" : "记一笔", systemImage: "plus") {
+                        if cards.isEmpty { addingCard = true } else { adding = true }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
                 .padding(.horizontal, PilotTheme.phonePagePadding)
                 .padding(.vertical, PilotTheme.phoneSectionSpacing)
@@ -209,7 +207,7 @@ struct TransactionsView: View {
                     Section {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("没有符合条件的交易").font(.headline)
-                            Text("试试其他关键词，或清除筛选。 ").font(.subheadline).foregroundStyle(.secondary)
+                            Text("试试其他关键词，或清除筛选。").font(.subheadline).foregroundStyle(.secondary)
                             Button("清除筛选", action: clearFilters).frame(minHeight: PilotTheme.minimumTouchTarget)
                         }.padding(.vertical, 12)
                     }.listRowSeparator(.hidden)
@@ -232,10 +230,10 @@ struct TransactionsView: View {
                 }
                 if let error { Text(error).font(.subheadline).foregroundStyle(.red) }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(PilotTheme.canvas)
+            .groupedListStyle()
+            .background(PilotTheme.groupedCanvas)
             .searchable(text: $search, prompt: "搜索商户或分类")
+            .minimizedSearchToolbar()
         }
     }
 

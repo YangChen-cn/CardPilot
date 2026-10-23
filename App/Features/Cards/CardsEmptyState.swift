@@ -1,40 +1,21 @@
 import SwiftUI
 
-/// A plain scrollable empty state keeps actions out of system unavailable-view sizing.
+/// Uses the system empty-state presentation so actions, Dynamic Type, and
+/// VoiceOver follow the same rules as the rest of the app.
 struct CardsEmptyState: View {
     let onCatalog: () -> Void
     let onManual: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "creditcard")
-                .font(.largeTitle)
-                .foregroundStyle(.secondary)
-                .accessibilityHidden(true)
-            VStack(spacing: 10) {
-                Text("你的第一张卡").font(.title2.bold())
-                Text("添加银行卡，集中查看权益、优惠与消费。")
-                    .font(.body).foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            VStack(spacing: 8) {
-                Button(action: onCatalog) {
-                    Label("从资料库添加", systemImage: "plus")
-                        .labelStyle(.titleAndIcon)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                }
-                .phonePrimaryAction()
-                .buttonBorderShape(.roundedRectangle(radius: 14))
-                Button(action: onManual) {
-                    Text("手动添加").frame(minHeight: 44)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(PilotTheme.accent)
-            }
-            .padding(.top, 4)
+        ContentUnavailableView {
+            Label("你的第一张卡", systemImage: "creditcard")
+        } description: {
+            Text("添加银行卡，集中查看权益、优惠与消费。")
+        } actions: {
+            Button("从资料库添加", systemImage: "plus", action: onCatalog)
+                .buttonStyle(.borderedProminent)
+            Button("手动添加", action: onManual)
+                .buttonStyle(.bordered)
         }
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: 360)
     }
 }
