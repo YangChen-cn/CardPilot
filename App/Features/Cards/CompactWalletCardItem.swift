@@ -4,6 +4,7 @@ import SwiftUI
 struct CompactWalletCardItem: View {
     let card: BankCard
     let transition: Namespace.ID
+    var showsCompactRow = false
     let onDrop: (String, Bool) -> Bool
     let onMoveToStart: () -> Bool
     let onMoveToEnd: () -> Bool
@@ -13,7 +14,13 @@ struct CompactWalletCardItem: View {
         NavigationLink {
             WalletCardDestination(card: card, transition: transition)
         } label: {
-            WalletCardTile(card: card)
+            Group {
+                if showsCompactRow {
+                    CompactWalletCardRow(card: card)
+                } else {
+                    WalletCardTile(card: card)
+                }
+            }
                 .matchedTransitionSource(id: card.id, in: transition)
                 .draggable(card.syncKey)
         }

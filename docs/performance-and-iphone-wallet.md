@@ -12,3 +12,9 @@
 验证：macOS 构建及 17 项针对性测试通过，范围为 `DashboardSpendingTests`、`OfferSyncStabilityTests`、`CatalogAssetStoreTests`、`CardOrderTests`。新增用例覆盖查询窗口、保存修改／删除、月份切换、同步后刷新、个人状态优先级与历史回退。iOS Simulator 目标编译通过。没有进行 UI 自动化或运行速度倍数测量；这些结果不能替代用户的实际界面验收。
 
 阶段一提交：`Reduce dashboard queries and batch offer state reads`。
+
+## iPhone 卡片样式
+
+2026-10-23：在回退后的卡片页仅补回“紧凑列表”选项。右上角“…” → “卡片样式”可选择卡面展示或紧凑列表，独立偏好 `cards.phoneCompactList` 默认关闭；一起显示与按类型分组均可使用。紧凑行完整显示缩略卡面、名称、银行／卡组织／尾号，继续复用原有详情导航、拖动排序、账本菜单和辅助功能移序。macOS 维持现有网格。
+
+此局部布局修改已通过 iOS Simulator、macOS 增量构建；已用现有脚本打开 iPhone 17 模拟器最新版，保留既有卡片与交易数据。未重复跑业务测试或自行进行 UI 验收。提交：`Add an optional compact list to the iPhone card page`。

@@ -284,6 +284,7 @@
 		A6A56D9090262D437106A3A8 /* OriginalCurrencyTotals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A47DACC2DCF8F396F119A3 /* OriginalCurrencyTotals.swift */; };
 		A6D590098D66449835499CD4 /* chill-platinum.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CB538ED7B62B9FABD1FB0DF /* chill-platinum.png */; };
 		A73CF5AB738A9AE5B11EEE03 /* CardDetailHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A5FB0DD9D61D19C21D845 /* CardDetailHeader.swift */; };
+		A746D3677C5CF6EA369252DB /* CompactWalletCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B78B64B8A79BE375EB5943 /* CompactWalletCardRow.swift */; };
 		A7D02A3603330FF4EECF3A21 /* BenefitReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495A16D5600A779077D000C9 /* BenefitReaderView.swift */; };
 		A7D1A9801380EB2C4FEE9942 /* OfferProjectionDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D011A3CEAB45E588551F4096 /* OfferProjectionDocuments.swift */; };
 		A8954C73DD0CE01F91DF4791 /* SyncMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76905566A1EA37CBDE1F220D /* SyncMerger.swift */; };
@@ -317,6 +318,7 @@
 		BA67F3759D40D715976A313C /* CatalogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FF3BC46239F146F9A7FD0B /* CatalogRepository.swift */; };
 		BAC7B12ED093F0C9882DD3A1 /* SpendTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B575000DFB4206FAD3A05BEF /* SpendTransaction.swift */; };
 		BAFA1A475315BEA54312D7A5 /* TransactionBatchRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F71616FD7E1FE87381AEE0 /* TransactionBatchRecorder.swift */; };
+		BB32FD58CB1A7D5E3E6616E1 /* CompactWalletCardRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B78B64B8A79BE375EB5943 /* CompactWalletCardRow.swift */; };
 		BBCA3F5532D1C26A8981F63E /* CSVImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E11ADEC2BF57AF406F9DF3A /* CSVImportView.swift */; };
 		BD1A271578D8C3104AF5B95F /* LocalSchemaV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BB563ABB8F94CEC86A0942 /* LocalSchemaV3.swift */; };
 		BD6C030DCCA3E8D5E9E23A31 /* FolderSyncSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3702882101982E21904198 /* FolderSyncSettingsSection.swift */; };
@@ -623,6 +625,7 @@
 		B2462110ED445C3A28C55EF1 /* BenefitInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenefitInfo.swift; sourceTree = "<group>"; };
 		B441BF0AA49C999E1A4A0527 /* SyncIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncIdentity.swift; sourceTree = "<group>"; };
 		B47EA92170A6E000FC4B11C4 /* CardOrderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOrderStore.swift; sourceTree = "<group>"; };
+		B4B78B64B8A79BE375EB5943 /* CompactWalletCardRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactWalletCardRow.swift; sourceTree = "<group>"; };
 		B575000DFB4206FAD3A05BEF /* SpendTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendTransaction.swift; sourceTree = "<group>"; };
 		B57DE37979379F00854CF706 /* RecommendationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationTests.swift; sourceTree = "<group>"; };
 		B5935E2035C6CFCF0121D1C1 /* TransactionRecordResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecordResult.swift; sourceTree = "<group>"; };
@@ -946,6 +949,7 @@
 				776C40FC772FDB88C59857A6 /* CardsEmptyState.swift */,
 				F3C5D7056AF967FE20950603 /* CardsView.swift */,
 				E492A08CFADA50BA08ECB78B /* CompactWalletCardItem.swift */,
+				B4B78B64B8A79BE375EB5943 /* CompactWalletCardRow.swift */,
 				B89BCB7370A6AD281D55309B /* WalletCardButtonStyle.swift */,
 				54C692E8A2402867DC552404 /* WalletCardDestination.swift */,
 				F4555D2E0096B0BB3D4FCA20 /* WalletCardTile.swift */,
@@ -1329,6 +1333,7 @@
 				B6C9787A1D43253B8BEA3A18 /* CategoryChart.swift in Sources */,
 				5B8DA5C4AA310F443BFFE9B8 /* CategoryTotal.swift in Sources */,
 				E40CD9122651B4222D799503 /* CompactWalletCardItem.swift in Sources */,
+				BB32FD58CB1A7D5E3E6616E1 /* CompactWalletCardRow.swift in Sources */,
 				E6B15CA2F7D6E617CA6CE08D /* ContentView.swift in Sources */,
 				C301B400D9EE9B19B4A8DE2B /* CreditGroup.swift in Sources */,
 				0316B1201F4B8551C5F7E856 /* CreditGroupEditor.swift in Sources */,
@@ -1564,6 +1569,7 @@
 				60E6AFB86779E8EB30C0FDEA /* CategoryChart.swift in Sources */,
 				4DA530F95B0EC12F572A5428 /* CategoryTotal.swift in Sources */,
 				4889477E5C913A63E944E920 /* CompactWalletCardItem.swift in Sources */,
+				A746D3677C5CF6EA369252DB /* CompactWalletCardRow.swift in Sources */,
 				C5EB9BD4AE53C17CC5463697 /* ContentView.swift in Sources */,
 				A9CE0EC046E7F189EBD24A97 /* CreditGroup.swift in Sources */,
 				626F82B2E29435E3BDB63F3D /* CreditGroupEditor.swift in Sources */,

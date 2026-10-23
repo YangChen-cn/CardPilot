@@ -17,6 +17,7 @@ struct CardsView: View {
     @State private var search = ""
     @State private var showArchived = false
     @AppStorage("cards.displayMode") private var displayModeRaw = CardDisplayMode.together.rawValue
+    @AppStorage("cards.phoneCompactList") private var showsCompactList = false
     @State private var kindFilter: CardKind?
     @Namespace private var cardTransition
 
@@ -178,6 +179,10 @@ struct CardsView: View {
 
     private var compactOptions: some View {
         Menu("卡片选项", systemImage: "ellipsis") {
+            Picker("卡片样式", selection: $showsCompactList) {
+                Text("卡面展示").tag(false)
+                Text("紧凑列表").tag(true)
+            }
             Picker("显示方式", selection: $displayModeRaw) {
                 ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
             }
@@ -204,19 +209,35 @@ struct CardsView: View {
     @ViewBuilder
     private func cardCollection(_ items: [BankCard]) -> some View {
         if isCompact {
-            LazyVStack(spacing: 28) {
-                ForEach(items) { card in
-                    CompactWalletCardItem(card: card, transition: cardTransition,
-                                          onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
-                                          onMoveToStart: { move(card, toEnd: false) },
-                                          onMoveToEnd: { move(card, toEnd: true) })
-                    if card.id != items.last?.id { Divider() }
+            Group {
+                if showsCompactList {
+                    LazyVStack(spacing: 0) {
+                        ForEach(items) { card in
+                            phoneCard(card)
+                            if card.id != items.last?.id { Divider().padding(.leading, 98) }
+                        }
+                    }
+                    .background(PilotTheme.surface, in: .rect(cornerRadius: PilotTheme.radius))
+                } else {
+                    LazyVStack(spacing: 28) {
+                        ForEach(items) { card in
+                            phoneCard(card)
+                            if card.id != items.last?.id { Divider() }
+                        }
+                    }
                 }
             }
             .animation(reduceMotion ? nil : .snappy, value: items.map(\.syncKey))
         } else {
             cardGrid(items)
         }
+    }
+
+    private func phoneCard(_ card: BankCard) -> some View {
+        CompactWalletCardItem(card: card, transition: cardTransition, showsCompactRow: showsCompactList,
+                              onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
+                              onMoveToStart: { move(card, toEnd: false) },
+                              onMoveToEnd: { move(card, toEnd: true) })
     }
 
     private func resetFilters() {
