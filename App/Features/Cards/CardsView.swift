@@ -18,6 +18,11 @@ struct CardsView: View {
     @State private var showArchived = false
     @AppStorage("cards.displayMode") private var displayModeRaw = CardDisplayMode.together.rawValue
     @State private var kindFilter: CardKind?
+    #if os(iOS)
+    @AppStorage("cards.phonePresentation") private var phonePresentation = PhoneCardPresentation.featured
+    @State private var phoneSelectedKey: String?
+    @State private var phoneRecordingCard: BankCard?
+    #endif
     @Namespace private var cardTransition
 
     private var isCompact: Bool {
@@ -40,7 +45,7 @@ struct CardsView: View {
         let matching = orderedCards.filter {
             $0.isArchived == showArchived && (search.isEmpty || $0.displayName.localizedStandardContains(search))
         }
-        guard displayMode == .together, let kindFilter else { return matching }
+        guard (isCompact || displayMode == .together), let kindFilter else { return matching }
         return matching.filter { $0.cardKind == kindFilter }
     }
 
@@ -51,67 +56,71 @@ struct CardsView: View {
     var body: some View {
         let _ = documents.map(\.modifiedAt)
         let visible = filtered
-        ScrollView {
-            if cards.isEmpty && isCompact {
-                CardsEmptyState(onCatalog: { showingCatalog = true }, onManual: { showingAdd = true })
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, isCompact ? 24 : PilotTheme.pagePadding)
-                    .padding(.vertical, isCompact ? 44 : 64)
-            } else {
-                VStack(alignment: .leading, spacing: isCompact ? 24 : PilotTheme.spacing + 8) {
-                    if isCompact {
-                        Text(showArchived ? "\(cards.count(where: \.isArchived)) 张已归档" : "\(cards.count(where: { !$0.isArchived })) 张使用中")
-                            .font(.subheadline).foregroundStyle(.secondary)
-                    } else {
-                        desktopControls
-                    }
-                    if cards.isEmpty {
-                        ContentUnavailableView {
-                            Label("你的第一张卡", systemImage: "creditcard")
-                        } description: {
-                            Text("添加银行卡，集中查看权益、优惠与消费。")
-                        } actions: {
-                            Button("从资料库添加", action: { showingCatalog = true }).buttonStyle(.borderedProminent)
-                            Button("手动添加", action: { showingAdd = true }).buttonStyle(.bordered)
+        ScrollViewReader { scrollProxy in
+            ScrollView {
+                if cards.isEmpty && isCompact {
+                    CardsEmptyState(onCatalog: { showingCatalog = true }, onManual: { showingAdd = true })
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, isCompact ? 24 : PilotTheme.pagePadding)
+                        .padding(.vertical, isCompact ? 44 : 64)
+                } else {
+                    VStack(alignment: .leading, spacing: isCompact ? 24 : PilotTheme.spacing + 8) {
+                        if isCompact {
+                            Text(showArchived ? "\(cards.count(where: \.isArchived)) 张已归档" : "\(cards.count(where: { !$0.isArchived })) 张使用中")
+                                .font(.subheadline).foregroundStyle(.secondary)
+                        } else {
+                            desktopControls
                         }
-                    } else if visible.isEmpty {
-                        ContentUnavailableView {
-                            Label("没有符合条件的卡片", systemImage: "creditcard")
-                        } description: {
-                            Text("试试其他卡片类型、状态，或清除搜索。")
-                        } actions: {
-                            Button("重置筛选", action: resetFilters)
-                        }
-                    } else if displayMode == .grouped {
-                        ForEach(CardKind.allCases) { kind in
-                            let group = cards(of: kind)
-                            if !group.isEmpty {
-                                VStack(alignment: .leading, spacing: isCompact ? 16 : 12) {
-                                    HStack(alignment: .firstTextBaseline) {
-                                        Text(kind.label).font(.headline)
-                                        Text("\(group.count) 张").font(.caption).foregroundStyle(.secondary)
+                        if cards.isEmpty {
+                            ContentUnavailableView {
+                                Label("你的第一张卡", systemImage: "creditcard")
+                            } description: {
+                                Text("添加银行卡，集中查看权益、优惠与消费。")
+                            } actions: {
+                                Button("从资料库添加", action: { showingCatalog = true }).buttonStyle(.borderedProminent)
+                                Button("手动添加", action: { showingAdd = true }).buttonStyle(.bordered)
+                            }
+                        } else if visible.isEmpty {
+                            ContentUnavailableView {
+                                Label("没有符合条件的卡片", systemImage: "creditcard")
+                            } description: {
+                                Text("试试其他卡片类型、状态，或清除搜索。")
+                            } actions: {
+                                Button("重置筛选", action: resetFilters)
+                            }
+                        } else if isCompact {
+                            phoneCollection(visible, scrollProxy: scrollProxy)
+                        } else if displayMode == .grouped {
+                            ForEach(CardKind.allCases) { kind in
+                                let group = cards(of: kind)
+                                if !group.isEmpty {
+                                    VStack(alignment: .leading, spacing: isCompact ? 16 : 12) {
+                                        HStack(alignment: .firstTextBaseline) {
+                                            Text(kind.label).font(.headline)
+                                            Text("\(group.count) 张").font(.caption).foregroundStyle(.secondary)
+                                        }
+                                        cardCollection(group)
                                     }
-                                    cardCollection(group)
                                 }
                             }
+                        } else {
+                            cardCollection(visible)
                         }
-                    } else {
-                        cardCollection(visible)
+                        if !cards.isEmpty {
+                            NavigationLink {
+                                FinanceView()
+                            } label: {
+                                HStack {
+                                    Label("额度、账单与还款", systemImage: "chart.pie")
+                                    Spacer()
+                                    Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+                                }.frame(minHeight: 44).pilotPanel()
+                            }.buttonStyle(.plain)
+                        }
                     }
-                    if !cards.isEmpty {
-                        NavigationLink {
-                            FinanceView()
-                        } label: {
-                            HStack {
-                                Label("额度、账单与还款", systemImage: "chart.pie")
-                                Spacer()
-                                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
-                            }.frame(minHeight: 44).pilotPanel()
-                        }.buttonStyle(.plain)
-                    }
+                    .padding(isCompact ? 16 : PilotTheme.pagePadding)
+                    .frame(maxWidth: 1180).frame(maxWidth: .infinity)
                 }
-                .padding(isCompact ? 16 : PilotTheme.pagePadding)
-                .frame(maxWidth: 1180).frame(maxWidth: .infinity)
             }
         }
         .searchable(text: $search, prompt: "银行或卡片名称")
@@ -132,6 +141,9 @@ struct CardsView: View {
         #endif
         .sheet(isPresented: $showingAdd) { CardEditor() }
         .sheet(isPresented: $showingCatalog) { AddCardFlowView() }
+        #if os(iOS)
+        .sheet(item: $phoneRecordingCard) { TransactionEditor(cardID: $0.id) }
+        #endif
         #if os(macOS)
         .sheet(item: $ledgerCard) { CardLedgerSheet(card: $0) }
         #endif
@@ -178,14 +190,16 @@ struct CardsView: View {
 
     private var compactOptions: some View {
         Menu("卡片选项", systemImage: "ellipsis") {
-            Picker("显示方式", selection: $displayModeRaw) {
-                ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
-            }
-            if displayMode == .together {
-                Picker("卡片类型", selection: $kindFilter) {
-                    Text("全部卡片").tag(CardKind?.none)
-                    ForEach(CardKind.allCases) { kind in Text(kind.label).tag(Optional(kind)) }
+            #if os(iOS)
+            Picker("卡包显示", selection: $phonePresentation) {
+                ForEach(PhoneCardPresentation.allCases) { mode in
+                    Label(mode.label, systemImage: mode.symbol).tag(mode)
                 }
+            }
+            #endif
+            Picker("卡片类型", selection: $kindFilter) {
+                Text("全部卡片").tag(CardKind?.none)
+                ForEach(CardKind.allCases) { kind in Text(kind.label).tag(Optional(kind)) }
             }
             if cards.contains(where: \.isArchived) {
                 Picker("卡片状态", selection: $showArchived) {
@@ -202,21 +216,32 @@ struct CardsView: View {
     }
 
     @ViewBuilder
-    private func cardCollection(_ items: [BankCard]) -> some View {
-        if isCompact {
-            LazyVStack(spacing: 28) {
-                ForEach(items) { card in
-                    CompactWalletCardItem(card: card, transition: cardTransition,
-                                          onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
-                                          onMoveToStart: { move(card, toEnd: false) },
-                                          onMoveToEnd: { move(card, toEnd: true) })
-                    if card.id != items.last?.id { Divider() }
-                }
+    private func phoneCollection(_ items: [BankCard], scrollProxy: ScrollViewProxy) -> some View {
+        #if os(iOS)
+        if let selected = items.first(where: { $0.syncKey == phoneSelectedKey }) ?? items.first {
+            let benefits = OfferStore.offers(for: selected, context: context).filter {
+                !$0.isHidden && !$0.isArchived && !$0.isEnded && !$0.isHistorical
             }
-            .animation(reduceMotion ? nil : .snappy, value: items.map(\.syncKey))
-        } else {
-            cardGrid(items)
+            PhoneWalletContent(cards: items, presentation: phonePresentation,
+                               selectedKey: $phoneSelectedKey, transition: cardTransition,
+                               benefits: benefits,
+                               onSelect: { card in
+                                   withAnimation(reduceMotion ? nil : .snappy) {
+                                       phoneSelectedKey = card.syncKey
+                                       scrollProxy.scrollTo("phone-wallet", anchor: .top)
+                                   }
+                               },
+                               onRecord: { phoneRecordingCard = $0 },
+                               onDrop: { source, target, after in reorder(source, onto: target, after: after) },
+                               onMoveToStart: { move($0, toEnd: false) },
+                               onMoveToEnd: { move($0, toEnd: true) })
+                .id("phone-wallet")
         }
+        #endif
+    }
+
+    private func cardCollection(_ items: [BankCard]) -> some View {
+        cardGrid(items)
     }
 
     private func resetFilters() {
