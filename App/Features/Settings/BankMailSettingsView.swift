@@ -21,7 +21,7 @@ struct BankMailSettingsView: View {
                     .font(.headline)
                 Text("云端每天整理银行交易提醒，打开 CardPilot 时导入并核对。")
                     .font(.subheadline).foregroundStyle(.secondary)
-                Text("支持中银、东亚消费通知及汇丰扣账卡网上消费；转账、还款和投资通知不会计为消费。")
+                Text("支持中银、东亚消费通知及汇丰信用卡、扣账卡消费；转账、还款和投资通知不会计为消费。")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("云端连接") {
@@ -50,7 +50,7 @@ struct BankMailSettingsView: View {
             }
             Section("邮件核对") {
                 NavigationLink("待核对邮件 · \(pendingCount) 笔", destination: ReviewTransactionsView())
-                Text("邮件优先校正已匹配消费。有多笔候选、未找到卡片或缺少汇率时，先由你核对。")
+                Text("邮件优先校正已匹配消费。有多笔候选、未找到卡片或交易信息冲突时，先由你核对。")
                     .font(.caption).foregroundStyle(.secondary)
                 Button("粘贴短信记账", systemImage: "text.bubble", action: { importingSMS = true })
                 Button("从邮件资料文件导入", systemImage: "doc.badge.plus", action: { importing = true })

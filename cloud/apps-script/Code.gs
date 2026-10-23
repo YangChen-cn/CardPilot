@@ -62,7 +62,8 @@ function checkCardPilotMessageFormat() {
   var report = { checkedAt: new Date().toISOString(), stage: 'LIST_GMAIL', nodes: [] };
   try {
     var result = Gmail.Users.Messages.list('me', { maxResults: 20,
-      q: 'newer_than:30d -in:spam -in:trash {from:istatement@bochk.com from:lcccaut@hkbea.com from:onlineservicesnotification@hsbc.com.hk} {subject:"Transaction Notification" subject:"Online Transaction has been made on your Debit Card"}' });
+      q: 'newer_than:30d -in:spam -in:trash ' + cardPilotSenderQuery_() +
+        ' {subject:"Transaction Notification" subject:"Online Transaction has been made on your Debit Card" subject:"滙豐信用卡交易通知"}' });
     var candidates = result.messages || [];
     for (var i = 0; i < candidates.length; i++) {
       report.stage = 'READ_GMAIL';
@@ -215,8 +216,7 @@ function doPost(event) {
 
 function listCardPilotMessageIDs_(from, through) {
   var query = 'after:' + Math.floor(from / 1000) + ' before:' + (Math.floor(through / 1000) + 1) +
-    ' -in:spam -in:trash {' +
-    'from:istatement@bochk.com from:lcccaut@hkbea.com from:onlineservicesnotification@hsbc.com.hk}';
+    ' -in:spam -in:trash ' + cardPilotSenderQuery_();
   var ids = [], seen = Object.create(null), page;
   do {
     var options = { q: query, maxResults: 500, includeSpamTrash: false };
@@ -229,6 +229,11 @@ function listCardPilotMessageIDs_(from, through) {
     page = result.nextPageToken;
   } while (page);
   return ids;
+}
+
+function cardPilotSenderQuery_() {
+  return '{from:istatement@bochk.com from:lcccaut@hkbea.com ' +
+    'from:onlineservicesnotification@hsbc.com.hk from:hsbc_cnp@notification.hsbc.com.hk}';
 }
 
 function normalizeCardPilotMessage_(raw, mailboxID) {
@@ -265,6 +270,9 @@ function cardPilotBankRule_(sender) {
       return { domain: 'hkbea.com', subject: /^Contactless Payment Transaction Notification(?:\s+非接觸式付款交易通知)?$/i };
     case 'onlineservicesnotification@hsbc.com.hk':
       return { domain: 'hsbc.com.hk', subject: /^Online Transaction has been made on your Debit Card(?:\s+您的扣賬卡網上交易已完成)?$/i };
+    case 'hsbc_cnp@notification.hsbc.com.hk':
+      // Gmail authenticates this subdomain sender against HSBC's parent domain.
+      return { domain: 'hsbc.com.hk', subject: /^HSBC Credit Card Transaction Notification(?:\s*(?:\/\s*)?滙豐信用卡交易通知)?$/i };
     default: return null;
   }
 }
@@ -328,6 +336,7 @@ function cardPilotText_(body) {
     .replace(/[\t\r ]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
   // Keep the evidence, not promotional footers, duplicated translations or message links.
   var patterns = [
+    /(Credit card number\s*:?\s*Ending with\s+\d{4}\s+Merchant\s*:?\s*[\s\S]*?\s+Date\s*:?\s*\d{1,2}\s+[A-Za-z]{3,9}(?:\s+\d{4})?\s+Amount\s*:?\s*[A-Z]{3}\s*[\d,]+(?:\.\d{1,2})?)(?=\s*(?:\n|$))/i,
     /(Card Account Number Ending with:[\s\S]*?Transaction Amount:[^\n]+)(?:\n|$)/i,
     /(your BEA Credit Card\s*\(last 4 digits[\s\S]*?\bon\s+\d{4}\/\d{2}\/\d{2}\.?)/i,
     /(The online transaction has been successfully made[\s\S]*?Transaction date and time:\s*\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})/i

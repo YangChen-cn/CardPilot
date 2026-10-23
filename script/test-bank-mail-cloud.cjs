@@ -14,8 +14,10 @@ function fixture() {
   let nextFile = 0;
   let uploads = 0;
   let listCalls = 0;
+  const listQueries = [];
   const rawByID = new Map();
   let pages = [{ messages: [] }];
+  let listResponder;
   let failUpload = false;
   let failGet = false;
   const prop = {
@@ -35,9 +37,13 @@ function fixture() {
       base64DecodeWebSafe: value => [...Buffer.from(value, 'base64url')]
     },
     ScriptApp: { getOAuthToken: () => 'mock-oauth-never-real' },
+    Logger: { log: () => {} },
     UrlFetchApp: { fetch: () => ({ getResponseCode: () => 200, getContentText: () => JSON.stringify(archive) }) },
     Gmail: { Users: { Messages: {
-      list: (_, options) => { listCalls++; return pages[options.pageToken ? Number(options.pageToken) : 0]; },
+      list: (_, options) => {
+        listCalls++; listQueries.push(options.q);
+        return listResponder ? listResponder(options) : pages[options.pageToken ? Number(options.pageToken) : 0];
+      },
       get: (_, id) => { if (failGet) throw new Error('mock secret should never escape'); return rawByID.get(id); }
     } } },
     Drive: { Files: {
@@ -53,7 +59,8 @@ function fixture() {
   return {
     context, properties, rawByID,
     setPages(value) { pages = value; }, setFailUpload(value) { failUpload = value; }, setFailGet(value) { failGet = value; },
-    archive: () => archive, uploads: () => uploads, listCalls: () => listCalls
+    setListResponder(value) { listResponder = value; },
+    archive: () => archive, uploads: () => uploads, listCalls: () => listCalls, listQueries: () => listQueries
   };
 }
 
@@ -69,6 +76,26 @@ function mail(id = 'invented-1', overrides = {}) {
       { name: 'Authentication-Results', value: overrides.auth || 'mx.google.com; dmarc=pass header.from=' + domain }
     ], body: { data: Buffer.from(body).toString('base64url') } }
   };
+}
+
+function hsbcCreditMail(id = 'invented-credit-1', overrides = {}) {
+  return mail(id, {
+    sender: 'HSBC_CNP@notification.hsbc.com.hk',
+    subject: 'HSBC Credit Card Transaction Notification / 滙豐信用卡交易通知',
+    auth: 'mx.google.com; spf=pass; dmarc=pass (p=REJECT) header.from=hsbc.com.hk',
+    body: '<html><head><style>invented style</style></head><body>' +
+      '<p>A card-not-present transaction has been made on your credit card.</p>' +
+      '<table><tr><td>Credit card number</td><td>Ending with 1234</td></tr>' +
+      '<tr><td>Merchant</td><td>EXAMPLE<br>STORE</td></tr>' +
+      '<tr><td>Date</td><td>23 Oct</td></tr>' +
+      '<tr><td>Amount</td><td>HKD23.45</td></tr></table>' +
+      '<table><tr><td>信用卡號碼</td><td>尾數 1234</td></tr>' +
+      '<tr><td>商戶</td><td>EXAMPLE STORE</td></tr>' +
+      '<tr><td>日期</td><td>10月23日</td></tr>' +
+      '<tr><td>金額</td><td>HKD23.45</td></tr></table>' +
+      '<p>Promotional footer and unrelated message links.</p></body></html>',
+    ...overrides
+  });
 }
 
 test('only exact authenticated bank transaction templates enter the feed', () => {
@@ -102,6 +129,65 @@ test('BEA and HSBC keep observed fields without converting two messages in a thr
   }), 'example-mailbox');
   assert.match(hsbc.body, /2020-10-20 20:11/);
   assert.doesNotMatch(hsbc.body, /Need more help/);
+});
+
+test('HSBC credit table preserves one set of observed fields without inventing time or payment method', () => {
+  const { context } = fixture();
+  const credit = context.normalizeCardPilotMessage_(hsbcCreditMail(), 'example-mailbox');
+  assert.equal(credit.sender, 'hsbc_cnp@notification.hsbc.com.hk');
+  assert.equal(credit.id, 'example-mailbox:invented-credit-1');
+  assert.match(credit.body, /Credit card number\s+Ending with 1234/);
+  assert.match(credit.body, /Merchant\s+EXAMPLE\s+STORE/);
+  assert.match(credit.body, /Date\s+23 Oct/);
+  assert.equal(credit.body.match(/HKD23\.45/g).length, 1);
+  assert.doesNotMatch(credit.body, /信用卡號碼|Promotional footer|invented style|card-not-present|Apple Pay|online|\d{4}-\d{2}-\d{2}|\d{2}:\d{2}/i);
+  for (const subject of ['HSBC Credit Card Transaction Notification', 'HSBC Credit Card Transaction Notification 滙豐信用卡交易通知', 'HSBC Credit Card Transaction Notification / 滙豐信用卡交易通知']) {
+    assert.ok(context.normalizeCardPilotMessage_(hsbcCreditMail('subject-form', { subject }), 'example-mailbox'));
+  }
+});
+
+test('HSBC credit sender, subject and Gmail parent-domain DMARC remain strictly checked', () => {
+  const { context } = fixture();
+  for (const overrides of [
+    { sender: 'hsbc_cnp@notification.hsbc.com.hk.attacker.example' },
+    { sender: 'hsbc_cnp@hsbc.com.hk' },
+    { sender: 'other@notification.hsbc.com.hk' },
+    { subject: 'HSBC Credit Card Transaction Notification Special Offer' },
+    { subject: '滙豐信用卡交易通知' },
+    { auth: 'mx.google.com; dmarc=fail header.from=hsbc.com.hk' },
+    { auth: 'attacker.example; dmarc=pass header.from=hsbc.com.hk' },
+    { auth: 'mx.google.com; dmarc=pass header.from=attacker.example' },
+    { auth: 'mx.google.com; dmarc=pass header.from=notification.hsbc.com.hk' }
+  ]) {
+    assert.equal(context.normalizeCardPilotMessage_(hsbcCreditMail('rejected-credit', overrides), 'example-mailbox'), null);
+  }
+  const forged = hsbcCreditMail('forged-auth', { auth: 'mx.google.com; dmarc=fail header.from=hsbc.com.hk' });
+  forged.payload.headers.push({ name: 'Authentication-Results', value: 'mx.google.com; dmarc=pass header.from=hsbc.com.hk' });
+  assert.equal(context.normalizeCardPilotMessage_(forged, 'example-mailbox'), null);
+});
+
+test('collector and diagnostics query the new credit sender; bilingual re-reads keep one envelope', () => {
+  const f = fixture();
+  f.rawByID.set('new-credit', hsbcCreditMail('new-credit'));
+  f.setListResponder(options => ({ messages: options.q.includes('from:hsbc_cnp@notification.hsbc.com.hk') ? [{ id: 'new-credit' }] : [] }));
+  const diagnostic = f.context.checkCardPilotMessageFormat();
+  assert.equal(diagnostic.stage, 'COMPLETE');
+  assert.equal(diagnostic.accepted, true);
+  const now = Date.now();
+  f.properties.set('CARDPILOT_SCAN_CURSOR', String(now));
+  assert.equal(f.context.collectBankMail().accepted, 1);
+  assert.equal(f.archive().messages.length, 1);
+  assert.equal(f.archive().messages[0].body.match(/HKD23\.45/g).length, 1);
+  assert.equal(f.context.collectBankMail().accepted, 0);
+  assert.equal(f.archive().messages.length, 1);
+  for (const query of f.listQueries()) {
+    assert.match(query, /from:istatement@bochk\.com/);
+    assert.match(query, /from:lcccaut@hkbea\.com/);
+    assert.match(query, /from:onlineservicesnotification@hsbc\.com\.hk/);
+    assert.match(query, /from:hsbc_cnp@notification\.hsbc\.com\.hk/);
+  }
+  assert.match(f.listQueries()[0], /subject:"滙豐信用卡交易通知"/);
+  assert.match(f.listQueries()[1], new RegExp('after:' + Math.floor((now - 7 * 86400000) / 1000)));
 });
 
 test('real Apps Script decoded Byte arrays are not decoded again; REST Base64url remains supported', () => {

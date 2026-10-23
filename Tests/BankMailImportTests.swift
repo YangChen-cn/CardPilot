@@ -76,6 +76,21 @@ struct BankMailImportTests {
         #expect(MailImportService.compatibleCards(for: debitMail, cards: [credit, debit]).map(\.id) == [debit.id])
     }
 
+    @Test func hsbcCreditMailMatchesCreditOnlyAndRepeatedImportIsIdempotent() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let credit = try card(context, bank: "hsbc")
+        let debit = BankCard(bank: "HSBC", name: "Fictional debit", kind: "借记卡", lastFour: "0007")
+        context.insert(debit); try context.save()
+        var notification = mail(); notification.bankID = "hsbc"; notification.cardKind = "信用卡"
+        notification.paymentMethod = nil; notification.region = nil; notification.channel = nil
+        #expect(MailImportService.compatibleCards(for: notification, cards: [debit, credit]).map(\.id) == [credit.id])
+        #expect(try MailImportService.importTransactions([notification], in: context).saved == 1)
+        #expect(try MailImportService.importTransactions([notification], in: context).duplicate == 1)
+        let saved = try #require(context.fetch(FetchDescriptor<SpendTransaction>()).first)
+        #expect(saved.card?.id == credit.id)
+        #expect(try context.fetchCount(FetchDescriptor<SpendTransaction>()) == 1)
+    }
+
     @Test func requestedProductSetupAddsOnlyRequestedCardsPreservesPreferencesAndRetries() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
         let library = try BankLibrary.load()

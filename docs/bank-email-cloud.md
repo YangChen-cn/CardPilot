@@ -35,7 +35,7 @@ macOS 现由独立、无界面依赖的 `CardPilotMailKeychain` 组件读写原�
 |---|---|---|
 | BOCHK | `istatement@bochk.com` 的「交易通知 (Transaction Notification)」 | 保留尾号、商户、原币金额和交易日；通知只有日/月时不能伪造具体时分 |
 | BEA | `lcccaut@hkbea.com` 的「Contactless Payment Transaction Notification」 | 保留尾号、非接触式消费金额、商户和交易日期；同一邮件线程中多封提醒分别保留 |
-| HSBC | `onlineservicesnotification@hsbc.com.hk` 的「Online Transaction has been made on your Debit Card」 | 已核对的是扣账卡网上交易模板，含日期及时间；未找到真实信用卡消费提醒样本，本轮不宣称支持该模板 |
+| HSBC | `onlineservicesnotification@hsbc.com.hk` 的「Online Transaction has been made on your Debit Card」 | 扣账卡网上交易模板，含日期及时间 |
 
 采集端必须同时通过精确发件人、受支持主题以及 Gmail 添加的 `mx.google.com` Authentication-Results 中对齐银行域名的 `dmarc=pass`。展示名称、邮件正文中的银行 Logo 和转发说明都不能代替验证。失败的认证只保留被检查邮件的 ID，不保存其正文。
 
@@ -43,7 +43,7 @@ macOS 现由独立、无界面依赖的 `CardPilotMailKeychain` 组件读写原�
 
 ## 卡片匹配与重新核对
 
-资料库只包含官方产品、卡面和通用优惠，不知道你的个人卡片尾号。邮件使用银行及后 4 位匹配已添加的个人卡片，不需要完整卡号、安全码或账单账号。请在卡片个人设置填写尾号；同一家银行多张卡不能仅凭银行名称猜选。现有 HSBC 适配器明确解析扣账卡网上消费，不会将其计入汇财金等信用卡；已同步的旧 HSBC 提醒同样按扣账卡处理。
+资料库只包含官方产品、卡面和通用优惠，不知道你的个人卡片尾号。邮件使用银行及后 4 位匹配已添加的个人卡片，不需要完整卡号、安全码或账单账号。请在卡片个人设置填写尾号；同一家银行多张卡不能仅凭银行名称猜选。HSBC 信用卡与扣账卡分别匹配，不能互相计入；已同步的旧 HSBC 提醒仍按扣账卡处理。
 
 补上卡片或尾号后，在「交易核对」点「重新匹配」，可直接重试本地已保存的待核对邮件，无需重新授权 Gmail 或重抓邮件。邮件设置中的「立即更新」也会先重试旧项。成功入账的项退出待核对，缺卡片、疑似重复或财务事实冲突的项保留并更新原因，已忽略的邮件不恢复。缺少汇率、支付方式、地区或渠道不阻止原币入账，也不要求逐笔资格确认。
 
@@ -95,3 +95,11 @@ GET 不返回账户资料。Apps Script ContentService 不提供自定义 HTTP �
 不要在 GitHub Actions 中使用 Gmail 插件的令牌：该授权不能转移给独立 runner。若未来改用 Actions，需独立 Google OAuth、加密输出、持久游标及单独部署方案；不能把私人交易数据提交到代码仓库。本方案把 Gmail 与归档留在同一 Google 账户，设备凭据只访问受支持的交易 feed。
 
 无凭据的本地检查：`node --test script/test-bank-mail-cloud.cjs`。它模拟 Google 服务，覆盖发件人验证、分页、同线程多笔、幂等、失败游标保护及追加游标；不会连接私人邮箱。模拟通过不能代替用户在 Google 账户中的首次授权和真实云端触发器运行验收。
+
+### 汇丰信用卡提醒（2026-10-23 核实）
+
+新增 `HSBC_CNP@notification.hsbc.com.hk` 的 `HSBC Credit Card Transaction Notification / 滙豐信用卡交易通知` 模板。仅在 Gmail 的 DMARC 验证通过 `hsbc.com.hk` 时读取英文表格的尾号、商户、日期和金额。中文重复表格不会再生成一笔交易。日期没有年份和时分，以收件日期前 14 天内的有效日期定位年份，保留按日精度；不推断支付方式、地区或渠道。按信用卡类型、银行及个人尾号匹配，可用于已添加的学生金卡。
+
+更新 App 后，也必须更新原 Google Apps Script 项目的 `Code.gs` 并发布现有部署的新版本（保留 URL、连接码和权限），再运行 `collectBankMail`。无需重新运行 setup 或建立新项目。默认重扫最近 7 天会采集此前未纳入查询的新发件人邮件；原邮件 ID 和去重机制保持不变。
+
+本轮验证：已用授权邮箱中的真实 HTML 邮件验证云端裁剪与本地解析结果一致；真实样本仅用于本机临时验证，不进入仓库。已更新原部署至新版本并手动采集，Mac 客户端实际导入一笔信用卡交易，重复更新没有新增记录。解析和导入的针对性测试、云端 12 项测试通过。

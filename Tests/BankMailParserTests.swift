@@ -66,6 +66,57 @@ import Testing
         #expect(try BankMailParser.parse(envelope) == nil)
     }
 
+    private func creditMessage(date: String = "22 Oct", money: String = "HKD23.45") throws -> BankMailMessage {
+        var value = try message("hsbc", body: """
+        <table><tr><td>Credit card number</td><td>Ending with 1234</td></tr>
+        <tr><td>Merchant</td><td>EXAMPLE CAFE</td></tr>
+        <tr><td>Date</td><td>\(date)</td></tr>
+        <tr><td>Amount</td><td>\(money)</td></tr></table>
+        <table><tr><td>信用卡號碼</td><td>結尾數字 1234</td></tr></table>
+        """)
+        value.sender = "HSBC <HSBC_CNP@notification.hsbc.com.hk>"
+        value.subject = "HSBC Credit Card Transaction Notification / 滙豐信用卡交易通知"
+        return value
+    }
+
+    @Test func hsbcCreditBilingualHTMLPreservesDatePrecisionAndUnknownConditions() throws {
+        let value = try #require(try BankMailParser.parse(creditMessage()))
+        #expect(value.bankID == "hsbc"); #expect(value.cardKind == "信用卡")
+        #expect(value.lastFour == "1234"); #expect(value.merchant == "EXAMPLE CAFE")
+        #expect(value.amountCents == 2345); #expect(value.currency == "HKD")
+        #expect(value.date == (try time("2026-10-21T16:00:00Z"))); #expect(!value.hasExactTime)
+        #expect(value.paymentMethod == nil); #expect(value.channel == nil); #expect(value.region == nil)
+    }
+
+    @Test func hsbcCloudCellBreaksProduceTheSamePurchase() throws {
+        var envelope = try creditMessage()
+        let original = try #require(try BankMailParser.parse(envelope))
+        envelope.body = "Credit card number\n\nEnding with 1234\n\nMerchant\n\nEXAMPLE CAFE\n\nDate\n\n22 Oct\n\nAmount\n\nHKD23.45"
+        #expect(try BankMailParser.parse(envelope) == original)
+    }
+
+    @Test(arguments: ["31 Feb", "23 Oct", "01 Oct", "22 Foo"])
+    func hsbcCreditRejectsInvalidFutureAndStaleDates(_ raw: String) throws {
+        #expect(throws: (any Error).self) { try BankMailParser.parse(creditMessage(date: raw)) }
+    }
+
+    @Test func hsbcCreditSenderSubjectAuthenticationAndCurrencyStayStrict() throws {
+        var value = try creditMessage(money: "USD1,234.56")
+        #expect(try BankMailParser.parse(value)?.amountCents == 123456)
+        value.authenticationResults = "mx.google.com; dmarc=fail header.from=hsbc.com.hk"
+        #expect(throws: (any Error).self) { try BankMailParser.parse(value) }
+        value = try creditMessage(); value.subject = "Welcome to HSBC credit cards"
+        #expect(try BankMailParser.parse(value) == nil)
+        value = try creditMessage(); value.sender = "HSBC@notification.hsbc.com.hk"
+        #expect(try BankMailParser.parse(value) == nil)
+        value = try creditMessage(money: "HKD1.234")
+        #expect(throws: (any Error).self) { try BankMailParser.parse(value) }
+        value = try creditMessage(); value.body = value.body.replacingOccurrences(of: "EXAMPLE CAFE", with: "")
+        #expect(throws: (any Error).self) { try BankMailParser.parse(value) }
+        value = try creditMessage(date: "31 Dec"); value.receivedAt = try time("2027-01-01T02:00:00Z")
+        #expect(try BankMailParser.parse(value)?.date == (try time("2026-12-30T16:00:00Z")))
+    }
+
     @Test func htmlTableFormattingAndEntitiesAreDecodedWithoutExecutingMarkup() throws {
         let html = """
         <html><style>ignored</style><table>

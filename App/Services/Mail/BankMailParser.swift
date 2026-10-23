@@ -32,15 +32,18 @@ enum BankMailParser {
         switch sender {
         case "istatement@bochk.com": bank = "bochk"; domain = "bochk.com"
         case "lcccaut@hkbea.com": bank = "bea"; domain = "hkbea.com"
-        case "onlineservicesnotification@hsbc.com.hk": bank = "hsbc"; domain = "hsbc.com.hk"
+        case "hsbc_cnp@notification.hsbc.com.hk", "onlineservicesnotification@hsbc.com.hk": bank = "hsbc"; domain = "hsbc.com.hk"
         default: return nil
         }
         let subject = message.subject.lowercased()
+        let isHSBCCredit = sender == "hsbc_cnp@notification.hsbc.com.hk"
         let supported: Bool
         switch bank {
         case "bochk": supported = subject.contains("transaction notification") || subject.contains("交易通知")
         case "bea": supported = subject.contains("contactless payment transaction notification")
-        default: supported = subject.contains("online transaction has been made on your debit card") || subject.contains("您的扣賬卡網上交易已完成")
+        default: supported = isHSBCCredit
+            ? subject.range(of: #"^hsbc credit card transaction notification(?:\s*(?:/\s*)?滙豐信用卡交易通知)?$"#, options: .regularExpression) != nil
+            : subject.contains("online transaction has been made on your debit card") || subject.contains("您的扣賬卡網上交易已完成")
         }
         guard supported else { return nil }
         guard authenticated(message.authenticationResults, domain: domain) else { throw invalid("银行交易邮件未通过 Gmail 发件域验证。") }
@@ -49,7 +52,7 @@ enum BankMailParser {
         switch bank {
         case "bochk": return try bochk(message, body: body)
         case "bea": return try bea(message, body: body)
-        default: return try hsbc(message, body: body)
+        default: return try isHSBCCredit ? hsbcCredit(message, body: body) : hsbc(message, body: body)
         }
     }
 
@@ -86,13 +89,30 @@ enum BankMailParser {
                            payment: "网上支付", channel: "online", region: region)
     }
 
+    private static func hsbcCredit(_ message: BankMailMessage, body: String) throws -> BankMailTransaction {
+        let tail = try required(#"(?:^|\n)\s*Credit\s+card\s+number\s*[:：]?\s*Ending\s+with\s*(\d{4})(?!\d)"#, in: body)
+        let merchant = try required(#"(?:^|\n)[ \t]*Merchant[ \t]*[:：]?[ \t]*(?:\n[ \t]*)*([^\n]+?)[ \t]*(?=\n+\s*Date\b)"#, in: body)
+        let rawDate = try required(#"(?:^|\n)\s*Date\s*[:：]?\s*(\d{1,2}\s+[A-Za-z]{3})(?=\s|$)"#, in: body)
+        let money = try required(#"(?:^|\n)\s*Amount\s*[:：]?\s*((?:HKD|CNY|USD)\s*[\d,]+(?:\.\d{1,2})?)(?![\d.])"#, in: body)
+        let parts = rawDate.split(whereSeparator: { $0.isWhitespace })
+        let months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+        guard parts.count == 2, let month = months.firstIndex(of: parts[1].lowercased()) else {
+            throw invalid("汇丰交易日期无效。")
+        }
+        let date = try yearlessDate("\(parts[0])/\(month + 1)", receivedAt: message.receivedAt)
+        let (currency, cents) = try amount(money)
+        // Card-not-present does not identify a wallet, channel, or transaction region.
+        return transaction(message, bank: "hsbc", tail: tail, merchant: merchant, cents: cents,
+                           currency: currency, date: date, exact: false, cardKind: "信用卡")
+    }
+
     private static func transaction(_ message: BankMailMessage, bank: String, tail: String, merchant: String,
                                     cents: Int64, currency: String, date: Date, exact: Bool,
-                                    payment: String? = nil, channel: String? = nil, region: String? = nil) -> BankMailTransaction {
+                                    payment: String? = nil, channel: String? = nil, region: String? = nil, cardKind: String? = nil) -> BankMailTransaction {
         BankMailTransaction(messageID: message.id, bankID: bank, lastFour: tail, merchant: merchant,
             amountCents: cents, currency: currency, date: date, hasExactTime: exact, receivedAt: message.receivedAt,
             paymentMethod: payment, channel: channel, region: region, bankReference: nil,
-            cardKind: bank == "hsbc" ? "借记卡" : bank == "bea" ? "信用卡" : nil)
+            cardKind: cardKind ?? (bank == "hsbc" ? "借记卡" : bank == "bea" ? "信用卡" : nil))
     }
 
     private static func emailAddress(_ sender: String) -> String? {
@@ -127,7 +147,7 @@ enum BankMailParser {
 
     private static func yearlessDate(_ raw: String, receivedAt: Date) throws -> Date {
         let parts = raw.split(separator: "/").compactMap { Int($0) }
-        guard parts.count == 2 else { throw invalid("中银交易日期无效。") }
+        guard parts.count == 2 else { throw invalid("银行交易日期无效。") }
         let year = HKCalendar.calendar.component(.year, from: receivedAt)
         for candidateYear in [year, year - 1] {
             let components = DateComponents(year: candidateYear, month: parts[1], day: parts[0])
@@ -138,7 +158,7 @@ enum BankMailParser {
                   (0...14).contains(age) else { continue }
             return date
         }
-        throw invalid("中银交易日期与收件日期不符，请人工核对。")
+        throw invalid("银行交易日期与收件日期不符，请人工核对。")
     }
 
     private static func fullDate(_ raw: String, format: String, receivedAt: Date) throws -> Date {
