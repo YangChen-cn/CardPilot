@@ -23,8 +23,6 @@ struct CardsView: View {
     @State private var kindFilter: CardKind?
     @State private var highlightedCardKey: String?
     @State private var addedFeedback = 0
-    @State private var showingOverview = false
-    @State private var showingRecommendations = false
     @Namespace private var cardTransition
 
     private var isCompact: Bool {
@@ -179,8 +177,6 @@ struct CardsView: View {
         #if os(macOS)
         .sheet(item: $ledgerCard) { CardLedgerSheet(card: $0) }
         #endif
-        .navigationDestination(isPresented: $showingOverview) { DashboardView() }
-        .navigationDestination(isPresented: $showingRecommendations) { RecommendView() }
     }
 
     private var desktopControls: some View {
@@ -245,10 +241,6 @@ struct CardsView: View {
                     Text("使用中").tag(false)
                     Text("已归档").tag(true)
                 }
-            }
-            Section("更多") {
-                Button("总览", systemImage: "square.grid.2x2") { showingOverview = true }
-                Button("选卡建议", systemImage: "sparkles") { showingRecommendations = true }
             }
             if cards.count > 1 {
                 Section("卡片顺序") {
