@@ -43,8 +43,8 @@
 | `bochk-go.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_195.png | 旧组合图，仅用于识别并修复老版本已保存图片；新产品不再使用 |
 | `bochk-go-cf.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/GOCard_CF.png | 旧组合备选，同样只用于旧图识别 |
 | `bochk-gba-youth.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_219.png | 青年卡独立卡面，示例头像及号码为银行发布的产品样图 |
-| `bochk-mastercard-debit.png` | https://www.bochk.com/dam/more/bocdebitcard/card/images/card-4.png | 中银万事达扣账卡灰色Platinum版卡面，151×240 |
-| `Catalog/images/cards/bea-hku-student-visa.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c34.png | 官方HKU学生申请表c34的独立Visa卡面 |
+| `bochk-mastercard-debit.png` | https://www.bochk.com/dam/more/bocdebitcard/card/images/card-4.png | 中银万事达扣账卡灰色Platinum版横版卡面；已移除卡号尾号后再发布 |
+| `Catalog/images/cards/bea-hku-student-visa.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c34.png | 官方HKU学生卡横版卡面；已用高清版本替换并移除卡号尾号后再发布 |
 | `bea-udc-diamond.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c05D.png | 官方UDC申请表实际card-face=c05D；普通及学生共用此卡面，产品ID仍分开 |
 | `bochk-logo.png` | https://www.bochk.com/etc/designs/bochk_web/images/logo.png | 银行官网页首logo |
 | `bea-logo.png` | https://www.hkbea.com/images-solar/logo.png | 银行官网页首logo |

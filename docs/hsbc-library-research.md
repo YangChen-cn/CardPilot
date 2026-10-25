@@ -37,7 +37,7 @@
 - 稳定产品 ID：`hsbc.mastercard.debit`；种类：借记卡，卡组织 Mastercard，与学生汇财金 Visa 信用卡独立。银行产品页核实12种货币（含HKD/CNY/USD）从对应账户直接扣款，合资格签账0.4%现金回赠，免外币交易费及年费；余额不足时可能有兑换，原币记账不代表自行推定港币换汇。
 - 官方产品及基础权益：https://www.hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/
 - 当前使用条款（页面标示2026-09-20起生效）：https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/debit-cards/mastercard-debit-card/terms-and-conditions.pdf
-- 官方卡面原始及实际下载来源：https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg 。原图640×1024，本地缓存 `BankLibrary/Catalog/images/cards/hsbc-mastercard-debit.jpg`，保持完整卡面。
+- 官方卡面原始来源：https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg 。原图为竖版 640×1024；目录改用横版卡面，本地缓存 `Catalog/images/cards/hsbc-mastercard-debit.png`，并已移除卡号尾号后再发布。
 - 支付宝推广包含首次绑卡优惠券、即时折扣及Mastercard额外奖赏；2026-06-15至12-31期间AlipayHK不合资格。未将最高CNY300写成固定迎新或通用返现规则；本次不导入不可准确表达的加码活动。
 
 2026-10-25：当前资料库重新编码的同尺寸原图 SHA-256 为 `49448f56b8136d8fef39656e5c0f5e8a4cba60f0c884bde249bca9b0c3c6c3b0`；与旧版 `0a5d027b…` 共用上述裁边视口。新安装、离线资料库、云端缓存及原有持卡图片均通过共享解码器显示。未知指纹保持原图，不猜测裁边。

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102307,
-  "publishedAt": "2026-10-23",
+  "contentVersion": 2026102308,
+  "publishedAt": "2026-10-25",
   "banks": [
     {
       "id": "hsbc",
@@ -499,9 +499,9 @@
       "id": "hsbc.mastercard.debit",
       "bankID": "hsbc",
       "artwork": {
-        "path": "images/cards/hsbc-mastercard-debit.jpg",
-        "sha256": "8930843185ec45397cf2fcb88fa31cd3ce6e4df17828c4c27654559cc0985d5a",
-        "contentType": "image/jpeg"
+        "path": "images/cards/hsbc-mastercard-debit.png",
+        "sha256": "da50f350af69c8d10a14c064d9aa3a419a679751d2ab9aa12b74e5a8811a2122",
+        "contentType": "image/png"
       },
       "baseRewardVerified": true,
       "welcomePlans": [],
@@ -532,7 +532,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-chill-platinum.png",
-        "sha256": "81361e9f5cbf7c44e3fb1b28e5e156faee9f3326b604c8736ea7fecfa33c9efc",
+        "sha256": "311f3a442baa9eba3a485571ce986a29b966b1e8850c64b3c6b83778a5a585b1",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1260,7 +1260,7 @@
       "bankID": "bea",
       "artwork": {
         "path": "images/cards/bea-hku-student-visa.png",
-        "sha256": "27e9a8d2fb185d9588a8de6e88d46b6ca6cd0b11ccd87cd663ef57232d63648f",
+        "sha256": "5082e1250fe4a0ee7a0fd3b75836d169a3758be3d1a184e06ee1d6ba277012ee",
         "contentType": "image/png"
       },
       "baseRewardVerified": false,
@@ -1762,7 +1762,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-mastercard-debit.png",
-        "sha256": "e90b1724c2a9d82b0d63f32a349b704efa744ba1192325d9e3787a34cae1516c",
+        "sha256": "7830cd9857fedab01ca172a7668ab697871b8fd1e82d3d6cc0fe77a4b221dccb",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -2232,7 +2232,7 @@
       },
       "artwork": {
         "path": "images/cards/bocom-hk-gba-unionpay-diamond.png",
-        "sha256": "5aac8a28ecb657bfbcf38b59206cfed3a992e343255b60937f87c6f3a6e43c0e",
+        "sha256": "c81a6d15ca999e394aadc12f8c687f4018193a7e2e2ac74ac755b4ba880192bf",
         "contentType": "image/png"
       }
     }
