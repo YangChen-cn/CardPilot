@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102310,
+  "contentVersion": 2026102311,
   "publishedAt": "2026-10-25",
   "banks": [
     {
@@ -1143,7 +1143,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-gba-youth.png",
-        "sha256": "f19dd05ea0f5bd279b9d67b62693bf779eec36ccca46ec1eaef374e450a2bbbb",
+        "sha256": "b2fc7c41fb92a65f71e5d8945e7953bf6527e25d344e7ceb5b10e68adfc5d4a6",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
