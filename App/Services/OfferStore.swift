@@ -252,13 +252,16 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
         }
 
         for rule in card.rules {
-            if rule.externalID.isEmpty {
-                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
-            } else if !officialIDs.contains(rule.externalID), product != nil {
-                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
-            } else if product == nil {
-                result.append(BenefitInfo(rule: rule, policy: documents.policy(for: rule)))
+            let shouldInclude = rule.externalID.isEmpty
+                || (product != nil && !officialIDs.contains(rule.externalID))
+                || product == nil
+            guard shouldInclude else { continue }
+            var info = BenefitInfo(rule: rule, policy: documents.policy(for: rule))
+            if info.cardKey != nil,
+               let state = try? documents.state(card: card, offerID: info.overlayOfferID, legacy: rule) {
+                info.personal = state
             }
+            result.append(info)
         }
         return result.sorted { lhs, rhs in
             if lhs.isWelcome != rhs.isWelcome { return lhs.isWelcome && !rhs.isWelcome }

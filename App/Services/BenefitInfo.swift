@@ -61,7 +61,7 @@ enum BenefitPeriodStatus: Equatable {
     let origin: BenefitOrigin
     let isUserAdded: Bool
     let isHistorical: Bool
-    let personal: OfferPersonalState
+    var personal: OfferPersonalState
     let trackingKey: String
     /// Stable offer identifier used by the personal overlay. Official and
     /// historical rules use the same value for reading and saving.

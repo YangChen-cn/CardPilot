@@ -107,6 +107,24 @@ struct OfferSyncStabilityTests {
         #expect(unfavorited == initial)
     }
 
+    @Test func personalFavoriteAppearsInTheOfferProjection() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "自定义银行", name: "个人收藏")
+        context.insert(card)
+        let rule = RewardRule(name: "个人权益", card: card, rateBps: 200)
+        context.insert(rule)
+        try context.save()
+
+        let before = try #require(OfferStore.offers(for: card, context: context)
+            .first { $0.origin == .personal })
+        #expect(!before.personal.favorite)
+        try OfferStateStore.setFavorite(true, cardKey: card.overlayKey, cardID: card.id,
+                                        offerID: before.overlayOfferID, legacy: rule, in: context)
+        let after = try #require(OfferStore.offers(for: card, context: context)
+            .first { $0.overlayOfferID == before.overlayOfferID })
+        #expect(after.personal.favorite)
+    }
+
     @Test func personalOfferStateAndWelcomeProgressTravelBetweenIndependentLibraries() throws {
         let mac = try Persistence.makeContainer(inMemory: true)
         let phone = try Persistence.makeContainer(inMemory: true)

@@ -14,7 +14,12 @@ import SwiftData
                 requested.insert(OfferStateStore.key(cardKey: card.overlayKey, offerID: rule.id))
                 requested.insert(OfferStateStore.legacyKey(cardID: card.id, offerID: rule.id))
             }
-            for rule in card.rules { requested.insert(RulePolicyStore.key(rule)) }
+            for rule in card.rules {
+                requested.insert(RulePolicyStore.key(rule))
+                let offerID = rule.externalID.isEmpty ? rule.id.uuidString : rule.externalID
+                requested.insert(OfferStateStore.key(cardKey: card.overlayKey, offerID: offerID))
+                requested.insert(OfferStateStore.legacyKey(cardID: card.id, offerID: offerID))
+            }
         }
         guard !requested.isEmpty else { contents = [:]; return }
         let keys = Array(requested)
