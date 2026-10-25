@@ -16,6 +16,18 @@ struct RecommendationTests {
         let query = RecommendationDraft(); query.region = "HK"; return query
     }
 
+    @Test func suppliedDateControlsOfferAvailabilityIncludingTheLastDay() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "Example", name: "Dated offer"); context.insert(card)
+        _ = try rule(card, context: context)
+        let input = query()
+        #expect(RecommendationEngine.suggest(cards: [card], query: input, now: try day("2026-09-30")).isEmpty)
+        #expect(RecommendationEngine.suggest(cards: [card], query: input, now: try day("2026-10-01")).count == 1)
+        let lastEvening = try day("2026-12-31").addingTimeInterval(23 * 3600)
+        #expect(RecommendationEngine.suggest(cards: [card], query: input, now: lastEvening).count == 1)
+        #expect(RecommendationEngine.suggest(cards: [card], query: input, now: try day("2027-01-01")).isEmpty)
+    }
+
     @Test func optionalAmountAndMerchantDoNotPreventCategorySuggestions() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
         let card = BankCard(bank: "Example", name: "Dining"); context.insert(card)

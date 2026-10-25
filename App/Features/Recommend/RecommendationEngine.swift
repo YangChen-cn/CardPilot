@@ -57,7 +57,8 @@ import Foundation
         guard !info.isWelcome, !info.isHistorical, !info.isArchived, !info.isHidden else { return nil }
         let extras = info.extras
         var matched: [String] = [], missing: [String] = [], keyMissing: [String] = []
-        if info.isEnded || info.isNotStarted { return nil }
+        if info.hasKnownEnd, info.endsOn < HKCalendar.start(now) { return nil }
+        if info.hasKnownStart, info.startsOn > now { return nil }
         if !info.hasKnownStart {
             missing.append("活动开始日期未核实，请先确认本次消费是否已开始。")
         }
