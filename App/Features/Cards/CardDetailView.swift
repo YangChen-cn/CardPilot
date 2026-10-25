@@ -5,6 +5,9 @@ struct CardDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Environment(CatalogRepository.self) private var catalog
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
     @Query private var documents: [DomainRecord]
     let card: BankCard
     @State private var editing = false
@@ -19,6 +22,14 @@ struct CardDetailView: View {
     @State private var libraryProduct: CardProduct?
     @State private var personalProduct: CardProduct?
     @State private var readingHistory: BenefitInfo?
+
+    private var phoneLayout: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
+    }
 
     private var displayedBenefits: [BenefitInfo] {
         _ = catalog.revision
@@ -40,13 +51,15 @@ struct CardDetailView: View {
         let pricing = PricingStore.current(card)
         let details = PricingStore.details(card)
         ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
+            VStack(alignment: .leading, spacing: phoneLayout ? 20 : 28) {
                 CardDetailHeader(card: card)
-                HStack(spacing: 12) {
-                    ledgerEntry
-                    Button("记一笔", systemImage: "plus", action: { addingTransaction = true }).buttonStyle(.bordered)
-                }.controlSize(.large)
-                Divider()
+                if !phoneLayout {
+                    HStack(spacing: 12) {
+                        ledgerEntry
+                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true }).buttonStyle(.bordered)
+                    }.controlSize(.large)
+                    Divider()
+                }
                 HStack {
                     Text("银行卡权益").font(.title3.weight(.semibold))
                     Spacer()
@@ -99,6 +112,12 @@ struct CardDetailView: View {
                     }
                 }
                 Divider()
+                if phoneLayout {
+                    HStack(spacing: 12) {
+                        ledgerEntry
+                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true }).buttonStyle(.bordered)
+                    }.controlSize(.large)
+                }
                 CardFinancialSummary(card: card)
                 if !details.annualFeeNote.isEmpty || !details.caveats.isEmpty || pricing.foreignFeeBps > 0 || pricing.overseasHKDFeeBps > 0 {
                     GroupBox("费用与其他说明") {
@@ -112,8 +131,12 @@ struct CardDetailView: View {
                         .padding(.top, 4)
                     }
                 }
+                if phoneLayout, !details.verifiedOn.isEmpty {
+                    Text("产品资料核实于 " + details.verifiedOn).font(.caption).foregroundStyle(.secondary)
+                }
             }
-            .padding(PilotTheme.pagePadding).frame(maxWidth: 940).frame(maxWidth: .infinity)
+            .padding(phoneLayout ? PilotTheme.phonePagePadding : PilotTheme.pagePadding)
+            .frame(maxWidth: 940).frame(maxWidth: .infinity)
         }
         .background(PilotTheme.canvas)
         .navigationTitle("卡片详情")
@@ -121,9 +144,19 @@ struct CardDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu("卡片操作", systemImage: "ellipsis") {
+                    if phoneLayout {
+                        NavigationLink { TransactionsView(card: card) } label: {
+                            Label("消费账本", systemImage: "list.bullet.rectangle")
+                        }
+                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true })
+                        Divider()
+                    }
                     Button("编辑卡片", systemImage: "pencil", action: { editing = true })
                     if libraryProduct != nil {
                         Button("个人持卡资料", systemImage: "person.crop.rectangle", action: { personalProduct = libraryProduct })
+                    }
+                    if phoneLayout, let url = URL(string: details.sourceURL), url.scheme == "https" {
+                        Link(destination: url) { Label("官方产品资料", systemImage: "safari") }
                     }
                     Button("删除卡片", systemImage: "trash", role: .destructive, action: { deleting = true })
                 }

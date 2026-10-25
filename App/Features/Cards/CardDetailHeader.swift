@@ -4,6 +4,17 @@ struct CardDetailHeader: View {
     let card: BankCard
     @State private var wide = false
     @Environment(\.dynamicTypeSize) private var typeSize
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
+
+    private var phoneLayout: Bool {
+        #if os(iOS)
+        sizeClass == .compact
+        #else
+        false
+        #endif
+    }
 
     var body: some View {
         Group {
@@ -14,11 +25,11 @@ struct CardDetailHeader: View {
                     CardDetailOverview(card: card)
                 }
             } else {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: phoneLayout ? 16 : 24) {
                     WalletCardFace(card: card)
-                        .frame(maxWidth: 460)
+                        .frame(maxWidth: phoneLayout ? 260 : 460)
                         .frame(maxWidth: .infinity)
-                    CardDetailOverview(card: card)
+                    CardDetailOverview(card: card, compact: phoneLayout)
                 }
             }
         }
