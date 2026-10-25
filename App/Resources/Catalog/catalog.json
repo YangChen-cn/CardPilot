@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102311,
+  "contentVersion": 2026102312,
   "publishedAt": "2026-10-25",
   "banks": [
     {
@@ -532,7 +532,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-chill-platinum.png",
-        "sha256": "311f3a442baa9eba3a485571ce986a29b966b1e8850c64b3c6b83778a5a585b1",
+        "sha256": "02a93e4cca4d27277186b20ce8cd6000556b42f2cad1483a8b800b7d68a93b88",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
