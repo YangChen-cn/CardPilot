@@ -203,7 +203,7 @@ struct StackedCardDeck: View {
         isSwitching = true
         switchTask?.cancel()
         // Only the front card leaves. The next card is already visible behind
-        // it and springs up to full size once the front card is out of view.
+        // it and becomes the full-size front once the old card is out of view.
         withAnimation(.easeIn(duration: 0.18)) {
             dragOffset = exitOffset
         }
@@ -214,9 +214,12 @@ struct StackedCardDeck: View {
                 dragOffset = 0
                 return
             }
-            withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
-                frontKey = cards[nextIndex].syncKey
+            // The old front is already offscreen. Do not animate the shared
+            // drag offset onto the incoming card, or the second-next card is
+            // briefly exposed while the incoming card springs in from the edge.
+            withTransaction(Transaction(animation: nil)) {
                 dragOffset = 0
+                frontKey = cards[nextIndex].syncKey
             }
             feedback &+= 1
             try? await Task.sleep(for: .milliseconds(320))
