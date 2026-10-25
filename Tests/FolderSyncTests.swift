@@ -194,6 +194,56 @@ struct FolderSyncTests {
         #expect(try FileManager.default.contentsOfDirectory(atPath: direct.path).count == 2)
     }
 
+    @Test func syncFailuresExplainActionableReasonAndPreserveLocalSafety() {
+        let downloading = FolderSyncController.failureMessage(for: SyncFailure.waitingForDownload)
+        #expect(downloading.contains("尚未下载完成"))
+        #expect(downloading.contains("本机资料已保留"))
+
+        let unsupported = FolderSyncController.failureMessage(for: SyncFailure.unsupportedSnapshot)
+        #expect(unsupported.contains("版本不兼容"))
+        #expect(unsupported.contains("更新两端"))
+
+        let permission = NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoPermissionError,
+                                 userInfo: [NSLocalizedDescriptionKey: "/Users/example/private/CardPilotSync"])
+        let permissionMessage = FolderSyncController.failureMessage(for: permission)
+        #expect(permissionMessage.contains("重新选择"))
+        #expect(permissionMessage.contains("本机资料已保留"))
+        #expect(!permissionMessage.contains("/Users/example"))
+
+        let decoded = FolderSyncController.failureMessage(for: DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "private path")))
+        #expect(decoded.contains("无法识别或已损坏"))
+        #expect(!decoded.contains("private path"))
+
+        let generic = FolderSyncController.failureMessage(for: NSError(domain: NSOSStatusErrorDomain, code: -1))
+        #expect(generic.contains("检查云盘连接"))
+        #expect(generic.contains("本机资料已保留"))
+    }
+
+    @Test func waitingForCloudSnapshotReportsDownloadingInsteadOfGenericFailure() async throws {
+        let folder = try folder(); defer { try? FileManager.default.removeItem(at: folder) }
+        let engine = FolderSyncEngine()
+        do {
+            _ = try await engine.read(folder: folder, deviceID: UUID(), local: [], previouslyPublished: true)
+            Issue.record("Expected a waiting-for-download failure")
+        } catch let failure as SyncFailure {
+            #expect(failure == .waitingForDownload)
+        }
+    }
+
+    @Test func unsupportedSnapshotVersionIsDistinguishedFromCorruptData() throws {
+        var snapshot = SyncSnapshot(deviceID: UUID(), updatedAt: .now, records: [])
+        snapshot.version = 99
+        let data = try SyncCodec.encoder().encode(snapshot)
+        do {
+            _ = try SyncCodec.decode(data)
+            Issue.record("Expected an unsupported snapshot version")
+        } catch let failure as SyncFailure {
+            #expect(failure == .unsupportedSnapshot)
+        } catch {
+            Issue.record("Unexpected error: \(error)")
+        }
+    }
+
     @Test func originalStoreMigratesWithoutLosingCardsRulesOrTransactions() throws {
         let folder = try folder(); defer { try? FileManager.default.removeItem(at: folder) }
         let url = folder.appending(path: "CardPilot.store")

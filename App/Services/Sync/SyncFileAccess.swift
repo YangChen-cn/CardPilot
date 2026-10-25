@@ -17,7 +17,7 @@ enum SyncFileAccess {
         }
         try Task.checkCancellation()
         if let error { throw error }
-        guard let result else { throw PilotError.invalid("暂时无法访问同步文件夹。") }
+        guard let result else { throw SyncFailure.folderUnavailable }
         return try result.get()
     }
 

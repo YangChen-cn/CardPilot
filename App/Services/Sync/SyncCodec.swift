@@ -22,13 +22,15 @@ enum SyncCodec {
         return decoder
     }
     static func decode(_ data: Data, expectedDevice: UUID? = nil) throws -> SyncSnapshot {
-        guard data.count <= 100_000_000 else { throw PilotError.invalid("同步资料过大，已保留本机账本。") }
+        guard data.count <= 100_000_000 else { throw SyncFailure.snapshotTooLarge }
         let snapshot = try decoder().decode(SyncSnapshot.self, from: data)
-        guard snapshot.format == "cardpilot.sync", [1, 2].contains(snapshot.version),
-              snapshot.records.count <= 200_000,
+        guard snapshot.format == "cardpilot.sync", [1, 2].contains(snapshot.version) else {
+            throw SyncFailure.unsupportedSnapshot
+        }
+        guard snapshot.records.count <= 200_000,
               expectedDevice == nil || snapshot.deviceID == expectedDevice,
               Set(snapshot.records.map(\.key)).count == snapshot.records.count else {
-            throw PilotError.invalid("同步资料无法识别，请更新两端的CardPilot。")
+            throw SyncFailure.invalidSnapshot
         }
         for record in snapshot.records { try validate(record) }
         return snapshot

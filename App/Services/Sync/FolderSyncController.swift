@@ -41,6 +41,56 @@ final class FolderSyncController {
         return isEnabled ? "自动同步已开启" : "保存在此设备"
     }
 
+    static func failureMessage(for error: any Error) -> String {
+        let reason: String
+        if let failure = error as? SyncFailure {
+            switch failure {
+            case .waitingForDownload:
+                reason = "云盘中的同步资料尚未下载完成，请稍后重试。"
+            case .unsupportedSnapshot:
+                reason = "同步资料版本不兼容，请更新两端的 CardPilot 后重试。"
+            case .invalidSnapshot:
+                reason = "同步资料不完整或已损坏，请更新两端 CardPilot 后重试。"
+            case .snapshotTooLarge:
+                reason = "同步资料过大，请减少卡面图片大小后重试。"
+            case .folderUnavailable:
+                reason = "无法访问共享文件夹，请重新选择该文件夹。"
+            }
+        } else if let pilot = error as? PilotError, let message = pilot.errorDescription {
+            if message.contains("同步文件夹") {
+                reason = "无法访问共享文件夹，请重新选择该文件夹。"
+            } else if message.contains("过大") {
+                reason = "同步资料过大，请减少卡面图片大小后重试。"
+            } else if message.contains("无法识别") || message.contains("不完整") || message.contains("无效") {
+                reason = "同步资料无法识别或已损坏，请更新两端 CardPilot 后重试。"
+            } else {
+                reason = message
+            }
+        } else if error is DecodingError {
+            reason = "同步资料无法识别或已损坏，请更新两端 CardPilot 后重试。"
+        } else {
+            let nsError = error as NSError
+            if nsError.domain == NSCocoaErrorDomain {
+                switch nsError.code {
+                case NSFileReadNoPermissionError, NSFileWriteNoPermissionError, NSFileWriteVolumeReadOnlyError:
+                    reason = "无法访问共享文件夹，请重新选择该文件夹或恢复云盘权限。"
+                case NSFileNoSuchFileError, NSFileReadNoSuchFileError, NSFileReadUnknownError:
+                    reason = "同步文件暂时不可用，请确认云盘已完成下载后重试。"
+                case NSFileWriteOutOfSpaceError:
+                    reason = "云盘空间不足，请释放空间后重试。"
+                case NSFileReadCorruptFileError, NSFileReadTooLargeError, NSFileReadInapplicableStringEncodingError:
+                    reason = "同步资料无法读取，请更新另一端后重试。"
+                default:
+                    reason = "暂时无法完成同步，请检查云盘连接后重试。"
+                }
+            } else {
+                reason = "暂时无法完成同步，请检查云盘连接后重试。"
+            }
+        }
+        guard !reason.contains("本机资料"), !reason.contains("本机账本") else { return reason }
+        return reason + "本机资料已保留。"
+    }
+
     init(defaults: UserDefaults = .standard, allowsSync: Bool = true) {
         self.defaults = defaults
         self.allowsSync = allowsSync
@@ -154,7 +204,7 @@ final class FolderSyncController {
             } catch is CancellationError { }
             catch {
                 guard generation == token else { return }
-                errorMessage = "暂时无法完成同步，本机资料已保留。请检查云盘连接后重试。"
+                errorMessage = Self.failureMessage(for: error)
             }
         }
     }

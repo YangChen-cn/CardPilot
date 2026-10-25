@@ -245,6 +245,7 @@
 		8BDC5A0671B9BE8942702FBD /* ReviewTransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38FA5CE417515DDA92B3EE0 /* ReviewTransactionsView.swift */; };
 		8C88066C5732261A90F9CA0B /* QuickEntryPreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BAC1612419D50053B7CEEA /* QuickEntryPreferencesStore.swift */; };
 		8D09087AA712E217C45A9C74 /* BankMailReviewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71861A22992A7813239175D5 /* BankMailReviewRow.swift */; };
+		8E089A5BE584F1442B1DEE6F /* SyncFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66B9A8384FDBEF18D73FBDE /* SyncFailure.swift */; };
 		8E36C43BF965E61E5D5E34FB /* WelcomeReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588E33981EE2015BACF56CAD /* WelcomeReminderService.swift */; };
 		8F2DF07E25C2E2C1328D59A9 /* TextDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2C0E8E754C627B5C550EF /* TextDocument.swift */; };
 		8F77D3A137BC9E83722ECA8B /* Mac-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 39892680554216234BB9686D /* Mac-Info.plist */; };
@@ -354,6 +355,7 @@
 		CD4BB4C96F53E162872EEFAC /* BankSMSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690866F8B684D93285032CD8 /* BankSMSParser.swift */; };
 		CDF9B4F3AE1C81CE39844C82 /* LibraryProductArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054C83ECD54E4D19DEEEB7A5 /* LibraryProductArtwork.swift */; };
 		CEEE271C3053A5EE00254FEF /* TransactionRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A4044950EC79899395597A6 /* TransactionRecorder.swift */; };
+		CF9C24788FF9D37493C3FA5E /* SyncFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66B9A8384FDBEF18D73FBDE /* SyncFailure.swift */; };
 		D01178919B0D11F298927982 /* StackedCardDeck.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA92DC461C69D785EF5511FC /* StackedCardDeck.swift */; };
 		D05A16D9344D4AF3DDBB11BC /* WelcomeCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FD1EBF9DD9E1879C74F5D10 /* WelcomeCenterView.swift */; };
 		D08F77B23D4B4B482A8007EC /* SpendFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14CCA3DC37C51545B24590C8 /* SpendFields.swift */; };
@@ -680,6 +682,7 @@
 		E3B08EAD4477792AEA98516C /* SpendInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendInput.swift; sourceTree = "<group>"; };
 		E492A08CFADA50BA08ECB78B /* CompactWalletCardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactWalletCardItem.swift; sourceTree = "<group>"; };
 		E5E8BA2E27800A9380C3BB48 /* CardOrderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOrderTests.swift; sourceTree = "<group>"; };
+		E66B9A8384FDBEF18D73FBDE /* SyncFailure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncFailure.swift; sourceTree = "<group>"; };
 		E796FF36044F95947F0F740B /* LocalSchemaV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSchemaV2.swift; sourceTree = "<group>"; };
 		E8AD7FA6E49353E85D826F2C /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		E9EADBF18566AC046CA21DFA /* PilotShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotShortcuts.swift; sourceTree = "<group>"; };
@@ -872,6 +875,7 @@
 				A1D858A6F10A0C663C3B0E42 /* RuleSyncData.swift */,
 				4899D75420E252F8331297BE /* StoreBackup.swift */,
 				AC39938A3451D65ACB282FF1 /* SyncCodec.swift */,
+				E66B9A8384FDBEF18D73FBDE /* SyncFailure.swift */,
 				A7A7E48D2DDF35290AB41B9F /* SyncFileAccess.swift */,
 				3A7EC5549B1F64C9B3159C33 /* SyncFolderAccess.swift */,
 				B441BF0AA49C999E1A4A0527 /* SyncIdentity.swift */,
@@ -1445,6 +1449,7 @@
 				150D6E3AF9B5617947038C55 /* StatementEditor.swift in Sources */,
 				2845833E93449BC1B15BE7E5 /* StoreBackup.swift in Sources */,
 				A9A6204323F935897D3D5A86 /* SyncCodec.swift in Sources */,
+				CF9C24788FF9D37493C3FA5E /* SyncFailure.swift in Sources */,
 				605CD1CA26D318CEA1BE46FB /* SyncFileAccess.swift in Sources */,
 				45885BD74042C46AA811F626 /* SyncFolderAccess.swift in Sources */,
 				EEA0DE8F1713420251ECED06 /* SyncIdentity.swift in Sources */,
@@ -1687,6 +1692,7 @@
 				BE04C3E62CE53B7AE0AB359E /* StatementEditor.swift in Sources */,
 				C3589AAD457CAB1F9594F539 /* StoreBackup.swift in Sources */,
 				FD7B24D10460F0D0C3B930C1 /* SyncCodec.swift in Sources */,
+				8E089A5BE584F1442B1DEE6F /* SyncFailure.swift in Sources */,
 				EA5FCF5E7ED04A0CB4FB6554 /* SyncFileAccess.swift in Sources */,
 				58B53285FCC7F15DEEFFD394 /* SyncFolderAccess.swift in Sources */,
 				5767154B0CBA322836F400E3 /* SyncIdentity.swift in Sources */,
