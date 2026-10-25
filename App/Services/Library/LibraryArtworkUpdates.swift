@@ -2,10 +2,14 @@ import Foundation
 import SwiftData
 
 /// One-time cleanup for cards that stored a copy of an official card face.
-/// It only clears the copy when the bytes match the current official asset (or
-/// a known legacy GO face). Anything uncertain stays as personal artwork.
+/// It clears the copy only when the bytes match the current official asset, a
+/// historical official asset for the same catalog product, or a known legacy GO
+/// face. Anything uncertain stays as personal artwork.
 @MainActor enum LibraryArtworkUpdates {
-    @discardableResult static func apply(in context: ModelContext) throws -> Int {
+    @discardableResult static func apply(
+        in context: ModelContext,
+        legacyFingerprints: [String: Set<String>] = LegacyArtworkFingerprints.byCatalogID
+    ) throws -> Int {
         let cards = try context.fetch(FetchDescriptor<BankCard>())
         let library = try? BankLibrary.load()
         let legacyGo = ["bochk-go.png", "bochk-go-cf.png"].compactMap { BankLibrary.imageData(resource: $0) }
@@ -25,12 +29,17 @@ import SwiftData
 
         for card in cards where card.imageData != nil {
             guard !card.catalogID.isEmpty else { continue }
-            let matchesCurrent = library?.product(id: card.catalogID)
+            let imageFingerprint = card.imageData.flatMap(ArtworkFingerprint.of)
+            let currentFingerprint = library?.product(id: card.catalogID)
                 .flatMap { $0.artwork.bundledData() }
-                .map { $0 == card.imageData } ?? false
+                .flatMap(ArtworkFingerprint.of)
+            let matchesCurrent = imageFingerprint != nil && imageFingerprint == currentFingerprint
             let isLegacyGO = card.catalogID == "bochk.go.diamond"
                 && legacyGo.contains(card.imageData ?? Data())
-            if matchesCurrent || isLegacyGO {
+            let isLegacyOfficial = imageFingerprint.map {
+                legacyFingerprints[card.catalogID]?.contains($0) ?? false
+            } ?? false
+            if matchesCurrent || isLegacyGO || isLegacyOfficial {
                 card.imageData = nil
                 changed.append(card)
             }

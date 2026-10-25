@@ -109,6 +109,30 @@ struct CatalogV2Tests {
         #expect(card.imageData == custom); #expect(card.artworkOrigin == "custom")
     }
 
+    @Test func historicalOfficialArtworkIsClearedWithoutTouchingPersonalArtwork() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "HSBC", name: "Test", lastFour: "1234", statementDay: 1, paymentDay: 1, baseRateBps: 40)
+        card.catalogID = "hsbc.mastercard.debit"
+        let oldImage = try #require(BankLibrary.load().product(id: "bea.udc.diamond")?.artwork.bundledData())
+        card.imageData = oldImage
+        context.insert(card)
+        try context.save()
+
+        let fingerprint = try #require(ArtworkFingerprint.of(oldImage))
+        let legacy = [card.catalogID: Set([fingerprint])]
+        #expect(try LibraryArtworkUpdates.apply(in: context, legacyFingerprints: legacy) == 1)
+        #expect(card.imageData == nil)
+        #expect(card.artworkOrigin == "official")
+        #expect(try LibraryArtworkUpdates.apply(in: context, legacyFingerprints: legacy) == 0)
+
+        let personal = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork.bundledData())
+        card.imageData = personal
+        try context.save()
+        #expect(try LibraryArtworkUpdates.apply(in: context, legacyFingerprints: legacy) == 0)
+        #expect(card.imageData == personal)
+        #expect(card.artworkOrigin == "custom")
+    }
+
     @Test func newOfficialCardCannotBeMarkedCustomByCatalogUpdate() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
         let product = try #require(BankLibrary.load().products.first { $0.id == "bochk.chill.platinum" })
