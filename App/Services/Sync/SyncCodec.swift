@@ -54,6 +54,9 @@ enum SyncCodec {
                   [value.baseRateBps, value.foreignFeeBps, value.overseasHKDFeeBps].allSatisfy({ (0...10_000).contains($0) }) else {
                 throw PilotError.invalid("同步卡片资料无效，已保留本机账本。")
             }
+            if value.artworkSource == .custom, value.imageData?.isEmpty != false {
+                throw PilotError.invalid("同步自定义卡面缺少图片，已保留本机账本。")
+            }
             if let image = value.imageData { try CatalogImporter.validateImage(image) }
         case "rule":
             let value = try decoder().decode(RuleSyncData.self, from: payload)

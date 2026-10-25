@@ -169,11 +169,10 @@ enum CatalogImporter {
                 else { try DocumentStore.remove("cardTerms:" + card.syncKey, in: context) }
                 card.sourceURL = incoming.sourceURL; card.verifiedOn = incoming.verifiedOn
                 card.annualFeeNote = incoming.annualFeeNote ?? ""; card.caveats = incoming.caveats ?? ""
-                if wasNew || card.imageData == nil { card.imageURL = incoming.imageURL ?? "" }
+                if wasNew || !card.isCustomArtwork { card.imageURL = incoming.imageURL ?? "" }
                 card.modifiedAt = .now
-                if (wasNew || card.imageData == nil), let data = incoming.imageBase64.flatMap({ Data(base64Encoded: $0) }) ?? images[incoming.id] {
-                    try validateImage(data); card.imageData = data
-                }
+                // Official images are resolved by catalog identity; never copy
+                // an imported product image into a personal card's custom slot.
                 for item in incoming.rules {
                     let existing = card.rules.first(where: { $0.externalID == item.id })
                     let rule = existing ?? RewardRule(name: item.name, card: card)

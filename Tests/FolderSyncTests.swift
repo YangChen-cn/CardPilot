@@ -20,6 +20,7 @@ struct FolderSyncTests {
         rule.externalID = "dining"; rule.modifiedAt = .now; context.insert(rule)
         let imageURL = try #require(Bundle.main.url(forResource: "chill-platinum", withExtension: "png"))
         card.imageData = try Data(contentsOf: imageURL)
+        try card.setArtworkSource(.custom, in: context)
         try context.save()
         return card
     }
@@ -66,6 +67,48 @@ struct FolderSyncTests {
         #expect(try !SyncStore.apply(stable, context: a.mainContext))
         _ = try await engineA.publish(folder: folder, deviceID: deviceA, records: stable)
         #expect(try await engineA.publish(folder: folder, deviceID: deviceA, records: stable) == false)
+    }
+
+    @Test func tiedProfileRevisionCannotFlipArtworkAfterReplayingAnOriginalSnapshot() throws {
+        let container = try Persistence.makeContainer(inMemory: true)
+        let card = try sample(container.mainContext)
+        var a = CardSyncData(card)
+        a.profileRevision = Date(timeIntervalSince1970: 1000)
+        a.annualFeeNote = "A"
+        var b = a
+        b.annualFeeNote = "Z"
+        b.artworkSource = .catalog; b.imageData = nil
+        let originalA = SyncRecord(key: card.syncKey, kind: "card", revision: Date(timeIntervalSince1970: 3000),
+                                   deleted: false, payload: try SyncCodec.encoder().encode(a))
+        let originalB = SyncRecord(key: card.syncKey, kind: "card", revision: Date(timeIntervalSince1970: 2000),
+                                   deleted: false, payload: try SyncCodec.encoder().encode(b))
+        let merged = SyncMerger.merge([originalA, originalB])
+        #expect(merged == SyncMerger.merge([originalB, originalA]))
+        let value = try SyncCodec.decoder().decode(CardSyncData.self, from: #require(merged.first?.payload))
+        #expect(value.annualFeeNote == "A")
+        #expect(value.artworkSource == .custom); #expect(value.imageData == a.imageData)
+        #expect(SyncMerger.merge(merged + [originalA]) == merged)
+        #expect(SyncMerger.merge(merged + [originalB]) == merged)
+        #expect(SyncMerger.merge(merged + [originalB, originalA]) == merged)
+        #expect(SyncMerger.merge([originalA] + merged) == merged)
+    }
+
+    @Test func tiedWelcomeProfileKeepsPersonalDatesStableWhenReplayingSnapshots() throws {
+        let start = try CatalogImporter.date("2026-10-01"), end = try CatalogImporter.date("2026-12-31")
+        let rule = RewardRule(name: "Example welcome", kind: "welcome", startsOn: start, endsOn: end)
+        var a = RuleSyncData(rule); a.profileRevision = Date(timeIntervalSince1970: 1000)
+        var b = a; b.startsOn = start.addingTimeInterval(-86400); b.bonusCents = 100
+        let originalA = SyncRecord(key: "rule:example", kind: "rule", revision: Date(timeIntervalSince1970: 3000),
+                                   deleted: false, cardKey: "card:example", payload: try SyncCodec.encoder().encode(a))
+        let originalB = SyncRecord(key: "rule:example", kind: "rule", revision: Date(timeIntervalSince1970: 2000),
+                                   deleted: false, cardKey: "card:example", payload: try SyncCodec.encoder().encode(b))
+        let merged = SyncMerger.merge([originalA, originalB])
+        #expect(merged == SyncMerger.merge([originalB, originalA]))
+        let value = try SyncCodec.decoder().decode(RuleSyncData.self, from: #require(merged.first?.payload))
+        #expect(value.startsOn == a.startsOn); #expect(value.bonusCents == a.bonusCents)
+        #expect(SyncMerger.merge(merged + [originalA]) == merged)
+        #expect(SyncMerger.merge(merged + [originalB]) == merged)
+        #expect(SyncMerger.merge([originalA] + merged) == merged)
     }
 
     @Test func simultaneousDifferentRecordEditsAreBothKeptAndConverge() throws {

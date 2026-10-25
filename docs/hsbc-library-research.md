@@ -26,7 +26,7 @@
 
 学生卡对照官方八达通学生推广图中的香港金狮 Visa 款式，Pulse 对照官方产品图中的香港红狮银联双币钻石款式，未使用其他国家同名卡。银行图片和商标权利归相应持有人，未发现开源图片授权；不适用本项目代码许可证。备份站内容不作为优惠事实来源。
 
-学生卡原始资源是带大面积灰色外边距的 1600×900 宣传画布。展示层 `CardImageContentLayout` 仅在旧版或当前资料库版的来源字节 SHA-256 完全匹配时使用其中 `(440,224,720,453)` 的完整卡片区域，移除卡外背景；按解码缩放比例应用。资料库、预览与已保存个人卡面共用该展示规则。原文件及 SwiftData 中的图像数据不修改，不重绘卡面、不按颜色自动裁剪用户自定义图片。
+学生卡旧资源曾使用带灰色边距的宣传画布。当前 Catalog 已使用标准横版卡面，客户端直接显示当前 Catalog 图片，不再保留旧图片指纹与裁边分支；用户导入的自定义图片保持原始内容。
 
 ## 扩展提示
 
@@ -39,5 +39,3 @@
 - 当前使用条款（页面标示2026-09-20起生效）：https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/debit-cards/mastercard-debit-card/terms-and-conditions.pdf
 - 官方卡面原始来源：https://www.hsbc.com.hk/content/dam/hsbc/hk/images/mass/debit-card/card-face/17578-hsbc-world-debit-mastercard-640x1024.jpg 。原图为竖版 640×1024；目录改用横版卡面，本地缓存 `Catalog/images/cards/hsbc-mastercard-debit.png`，并已移除卡号尾号后再发布。
 - 支付宝推广包含首次绑卡优惠券、即时折扣及Mastercard额外奖赏；2026-06-15至12-31期间AlipayHK不合资格。未将最高CNY300写成固定迎新或通用返现规则；本次不导入不可准确表达的加码活动。
-
-2026-10-25：当前资料库重新编码的同尺寸原图 SHA-256 为 `49448f56b8136d8fef39656e5c0f5e8a4cba60f0c884bde249bca9b0c3c6c3b0`；与旧版 `0a5d027b…` 共用上述裁边视口。新安装、离线资料库、云端缓存及原有持卡图片均通过共享解码器显示。未知指纹保持原图，不猜测裁边。

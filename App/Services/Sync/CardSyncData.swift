@@ -24,8 +24,9 @@ struct CardSyncData: Codable, Equatable, Sendable {
     var overseasHKDFeeBps: Int
     var excludesWallets: Bool
     var imageData: Data?
+    var artworkSource: CardArtworkSource? = nil
 
-    init(_ model: BankCard) {
+    @MainActor init(_ model: BankCard) {
         bank = model.bank
         name = model.name
         network = model.network
@@ -46,10 +47,11 @@ struct CardSyncData: Codable, Equatable, Sendable {
         caveats = model.caveats
         overseasHKDFeeBps = model.overseasHKDFeeBps
         excludesWallets = model.excludesWallets
-        imageData = model.imageData
+        artworkSource = model.artworkSource
+        imageData = artworkSource == .custom ? model.imageData : nil
     }
 
-    func apply(to model: BankCard) {
+    @MainActor func apply(to model: BankCard) throws {
         model.bank = bank
         model.name = name
         model.network = network
@@ -70,6 +72,8 @@ struct CardSyncData: Codable, Equatable, Sendable {
         model.caveats = caveats
         model.overseasHKDFeeBps = overseasHKDFeeBps
         model.excludesWallets = excludesWallets
-        model.imageData = imageData
+        let source = artworkSource ?? .catalog
+        model.imageData = source == .custom ? imageData : nil
+        if let context = model.modelContext { try model.setArtworkSource(source, in: context) }
     }
 }

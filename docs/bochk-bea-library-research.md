@@ -40,8 +40,6 @@
 | `Catalog/images/cards/bochk-chill-platinum.png` | https://www.bochk.com/dam/boccreditcard/chillcard/images/cardface_platinum.png | 复用此前官方白金卡面，未替换为World |
 | `bochk-go-diamond.png` | https://www.bochk.com/creditcard/images/cardface/301_DD_0955_00012.png | 官方独立钻石数字卡面，1536×969，保留完整原图 |
 | `bochk-go-platinum.png` | https://www.bochk.com/creditcard/images/cardface/301_DG_0955_00012.png | 官方独立白金数字卡面，1536×969，保留完整原图 |
-| `bochk-go.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_195.png | 旧组合图，仅用于识别并修复老版本已保存图片；新产品不再使用 |
-| `bochk-go-cf.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/GOCard_CF.png | 旧组合备选，同样只用于旧图识别 |
 | `bochk-gba-youth.png` | https://www.bochk.com/dam/boccreditcard/cardproductlisting/images/layout/credit-card/cardType_219.png | 青年卡独立卡面，示例头像及号码为银行发布的产品样图 |
 | `bochk-mastercard-debit.png` | https://www.bochk.com/dam/more/bocdebitcard/card/images/card-4.png | 中银万事达扣账卡灰色Platinum版横版卡面；已移除卡号尾号后再发布 |
 | `Catalog/images/cards/bea-hku-student-visa.png` | https://www.hkbea.com/images/eform/app/bea/eFrom/card/c34.png | 官方HKU学生卡横版卡面；已用高清版本替换并移除卡号尾号后再发布 |
@@ -64,3 +62,5 @@ Catalog V2 的 `products` 保留原有所有卡片和规则ID，包含 `bea.udc.
 官方现行《新客户限时双重迎新奖赏优惠条款及细则》：https://www.bochk.com/dam/creditcard/banner/GoCard/DoubleWG_TC.pdf 。核实时该 PDF 为2026-10-01至12-31申请推广期，要求同一历日提交至少两张合资格卡申请，其中一张GO卡，并于2027-01-31前获批；GO与另一合资格卡可分别取得迎新资格，仍须满足各卡签账要求。Chill属于合资格卡。此前将全部中银迎新无条件锁成一项，遗漏了限时例外。
 
 按用户要求，App不再强制执行跨卡互斥；银行条件保留供参考，不替用户决定能否同时开启。未更改各卡已保存奖励金额、消费条件或个人到账记录。产品主方案仍是同一张卡的一项选择，不用另造“双重奖励”叠加同一张卡的迎新金额。
+
+2026-10-25：删除客户端仅为识别旧 GO 组合图保留的素材与字节/像素比对。现有 GO 产品仍使用上述独立官方 Catalog 卡面，不按旧图片推断所有权。

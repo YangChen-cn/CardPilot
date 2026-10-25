@@ -16,6 +16,7 @@ final class CardDraft {
     var overseasHKDPercent = Decimal(0)
     var theme = "teal"
     var isArchived = false
+    var artworkSource: CardArtworkSource = .catalog
     var imageData: Data?
     var sourceURL = ""
     var error: String?
@@ -31,8 +32,20 @@ final class CardDraft {
         basePercent = Decimal(pricing.baseRateBps) / 100; feePercent = Decimal(pricing.foreignFeeBps) / 100
         overseasHKDPercent = Decimal(pricing.overseasHKDFeeBps) / 100
         theme = card.theme; isArchived = card.isArchived
-        imageData = card.imageData; sourceURL = card.sourceURL
+        artworkSource = card.artworkSource
+        imageData = artworkSource == .custom ? card.imageData : nil; sourceURL = card.sourceURL
         terms = pricing.terms
+    }
+
+    func importArtwork(_ data: Data) throws {
+        try CatalogImporter.validateImage(data)
+        imageData = data
+        artworkSource = .custom
+    }
+
+    func restoreCatalogArtwork() {
+        imageData = nil
+        artworkSource = .catalog
     }
 
     func save(in context: ModelContext) -> Bool {
@@ -41,10 +54,12 @@ final class CardDraft {
         guard lastFour.isEmpty || (lastFour.count == 4 && lastFour.allSatisfy(\.isNumber)) else { error = "尾号须为4位数字，或留空。"; return false }
         guard [basePercent, feePercent, overseasHKDPercent].allSatisfy({ $0 >= 0 && $0 <= 100 }) else { error = "比例须在0–100%之间。"; return false }
         do {
+            if artworkSource == .custom {
+                guard let imageData, !imageData.isEmpty else { throw PilotError.invalid("请重新导入自定义卡面。") }
+                try CatalogImporter.validateImage(imageData)
+            }
             let official = existing.map { PricingStore.current($0, applyingOverride: false) }
             if !sourceURL.isEmpty { try CatalogImporter.validateHTTPS(sourceURL) }
-            let cardKey = existing?.syncKey
-            if let cardKey { try Persistence.setProfileRevision(cardKey: cardKey, date: .now, context: context, advancing: true) }
             try Persistence.save(context) {
                 let card = existing ?? BankCard(bank: bank, name: name)
                 if existing == nil { context.insert(card) }
@@ -56,8 +71,11 @@ final class CardDraft {
                 card.overseasHKDFeeBps = Int(Money.cents(overseasHKDPercent))
                 card.theme = theme; card.isArchived = isArchived
                 card.sourceURL = sourceURL
-                card.imageData = (imageData?.isEmpty == false) ? imageData : nil
+                card.imageData = artworkSource == .custom ? imageData : nil
+                try card.setArtworkSource(artworkSource, in: context)
                 card.modifiedAt = .now
+                try Persistence.setProfileRevision(cardKey: card.syncKey, date: card.modifiedAt,
+                                                   context: context, advancing: true)
                 if let terms { try DocumentStore.put(terms, key: "cardTerms:" + card.syncKey, kind: "cardTerms", in: context) }
                 if existing != nil, !card.catalogID.isEmpty, let official {
                     var requested = CardPricing(card)

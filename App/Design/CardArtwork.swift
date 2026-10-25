@@ -3,6 +3,8 @@ import SwiftUI
 struct CardArtwork: View {
     let card: BankCard
     var compact = false
+    var source: CardArtworkSource? = nil
+    @Environment(CatalogRepository.self) private var catalog
 
     private var product: CardProduct? {
         guard !card.catalogID.isEmpty else { return nil }
@@ -10,9 +12,15 @@ struct CardArtwork: View {
     }
 
     var body: some View {
+        let _ = catalog.revision
+        let _ = card.modifiedAt
         Group {
-            if let data = card.imageData, !data.isEmpty {
-                LocalCardImage(data: data)
+            if (source ?? card.artworkSource) == .custom {
+                if let data = card.imageData, !data.isEmpty {
+                    LocalCardImage(data: data)
+                } else {
+                    ContentUnavailableView("自定义卡面暂不可用", systemImage: "photo")
+                }
             } else if let product {
                 CatalogAssetImage(asset: product.artwork) { image in
                     Image(decorative: image.image, scale: 1)

@@ -16,7 +16,6 @@ struct BankLibrary: Sendable {
     }
 
     @MainActor private static var cached: BankLibrary?
-    @MainActor private static var images: [String: Data] = [:]
 
     var referencedArtworkHashes: Set<String> {
         var hashes = Set(banks.map { $0.logo.sha256 })
@@ -108,17 +107,4 @@ struct BankLibrary: Sendable {
         try product.artwork.validate()
     }
 
-    @MainActor static func imageData(resource: String) -> Data? {
-        if let data = images[resource] { return data }
-        guard let data = resourceData(resource) else { return nil }
-        images[resource] = data
-        return data
-    }
-
-    static func resourceData(_ resource: String) -> Data? {
-        let name = (resource as NSString).deletingPathExtension, ext = (resource as NSString).pathExtension
-        let url = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "BankLibrary") ??
-                  Bundle.main.url(forResource: name, withExtension: ext)
-        return url.flatMap { try? Data(contentsOf: $0) }
-    }
 }

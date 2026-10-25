@@ -10,7 +10,6 @@ struct ContentView: View {
     @State private var showingTransaction = false
     @State private var showingSettings = false
     @State private var tab: AppSection = .cards
-    @State private var artworkError: String?
     @State private var reminderRevision = 0
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -48,15 +47,11 @@ struct ContentView: View {
             }
         }
         .task {
-            do { try LibraryArtworkUpdates.apply(in: context) }
-            catch { artworkError = "未能更新银行卡面，请稍后重新打开。你的账本已保留。" }
+            await LibraryArtworkUpdates.retainHeldArtwork(in: context)
             await sync.attach(context)
             try? OfferMigration.migrateLegacy(in: context)
             await catalog.checkIfNeeded()
         }
-        .alert("银行卡资料未更新", isPresented: Binding(get: { artworkError != nil }, set: { if !$0 { artworkError = nil } })) {
-            Button("好", role: .cancel) { artworkError = nil }
-        } message: { Text(artworkError ?? "请稍后重试。") }
         .task(id: reminderRevision) { try? await WelcomeReminderService.refresh(context: context) }
         .onReceive(NotificationCenter.default.publisher(for: Persistence.didChange)) { _ in
             reminderRevision &+= 1

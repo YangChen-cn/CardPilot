@@ -43,6 +43,9 @@ import SwiftData
         markDeleted(key: card.syncKey, context: context)
         for rule in card.rules { markDeleted(key: rule.syncKey, context: context) }
         for transaction in card.transactions { markDeleted(key: transaction.syncKey, context: context) }
+        if let artwork = try? DocumentStore.record(card.artworkStateKey, in: context) {
+            artwork.isDeleted = true; artwork.modifiedAt = .now
+        }
         context.delete(card)
     }
 

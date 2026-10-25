@@ -41,13 +41,19 @@ final class BankCard {
     }
     var displayName: String { "\(bank) · \(name)" }
 
-    /// `official`, `custom`, or `unknown`, inferred without adding fields to the
-    /// SwiftData schema: any stored image is personal/legacy; no image plus a
-    /// catalog ID uses official artwork.
-    var artworkOrigin: String {
-        if imageData != nil { return "custom" }
-        return catalogID.isEmpty ? "unknown" : "official"
+    var artworkStateKey: String { "cardArtwork:" + syncKey }
+
+    @MainActor var artworkSource: CardArtworkSource {
+        guard let context = modelContext else { return .catalog }
+        return (try? DocumentStore.load(CardArtworkState.self, key: artworkStateKey, in: context))?.source ?? .catalog
     }
-    var isCustomArtwork: Bool { imageData != nil }
-    var isOfficialArtwork: Bool { imageData == nil && !catalogID.isEmpty }
+
+    @MainActor var isCustomArtwork: Bool { artworkSource == .custom }
+    @MainActor var isOfficialArtwork: Bool { artworkSource == .catalog && !catalogID.isEmpty }
+
+    /// Called within the caller's existing save transaction, including sync apply.
+    @MainActor func setArtworkSource(_ source: CardArtworkSource, in context: ModelContext) throws {
+        try DocumentStore.put(CardArtworkState(source: source), key: artworkStateKey,
+                              kind: "cardArtwork", in: context)
+    }
 }

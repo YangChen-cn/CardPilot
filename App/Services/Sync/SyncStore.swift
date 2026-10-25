@@ -32,7 +32,9 @@ import SwiftData
             records.append(SyncRecord(key: transaction.syncKey, kind: "transaction", revision: max(transaction.createdAt, transaction.modifiedAt),
                                       deleted: false, cardKey: transaction.card?.syncKey, payload: try encoder.encode(TransactionSyncData(transaction))))
         }
-        for document in try context.fetch(FetchDescriptor<DomainRecord>()) {
+        // Artwork source is a local projection of CardSyncData. Sending it as a
+        // separate document would let its LWW winner disagree with the image.
+        for document in try context.fetch(FetchDescriptor<DomainRecord>()) where document.kind != "cardArtwork" {
             let value = DocumentSyncData(key: document.key, kind: document.kind, content: document.content, isDeleted: document.isDeleted)
             records.append(SyncRecord(key: "document:" + document.key, kind: "document", revision: document.modifiedAt,
                                       deleted: false, payload: try encoder.encode(value)))
@@ -77,7 +79,7 @@ import SwiftData
                 let value = try SyncCodec.decoder().decode(CardSyncData.self, from: record.payload ?? Data())
                 let card = cards[record.key] ?? BankCard(bank: value.bank, name: value.name)
                 if card.modelContext == nil { card.id = SyncIdentity.id(for: record.key); context.insert(card) }
-                value.apply(to: card); card.modifiedAt = record.revision; cards[record.key] = card
+                try value.apply(to: card); card.modifiedAt = record.revision; cards[record.key] = card
                 if let date = value.profileRevision { try Persistence.setProfileRevision(cardKey: record.key, date: date, context: context) }
             }
             for record in merged where ["rule", "transaction"].contains(record.kind) && !record.deleted && current[record.key] != record {
@@ -99,7 +101,10 @@ import SwiftData
             }
             for record in merged where record.deleted {
                 Persistence.markDeleted(key: record.key, context: context, now: record.revision)
-                if record.kind == "card", let card = cards[record.key] { context.delete(card) }
+                if record.kind == "card", let card = cards[record.key] {
+                    try DocumentStore.remove(card.artworkStateKey, in: context)
+                    context.delete(card)
+                }
                 if record.kind == "rule", let rule = rules[record.key] { context.delete(rule) }
                 if record.kind == "transaction", let transaction = transactions[record.key] { context.delete(transaction) }
             }

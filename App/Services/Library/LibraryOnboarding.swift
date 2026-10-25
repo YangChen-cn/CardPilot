@@ -21,8 +21,15 @@ import SwiftData
         card.caveats = catalog.caveats ?? ""
         card.imageData = nil
         Task { await CatalogAssetStore.shared.retain(product.artwork, forCatalogID: product.id) }
-        if commit { try Persistence.save(context) { context.insert(card) } }
-        else { context.insert(card) }
+        if commit {
+            try Persistence.save(context) {
+                context.insert(card)
+                try card.setArtworkSource(.catalog, in: context)
+            }
+        } else {
+            context.insert(card)
+            try card.setArtworkSource(.catalog, in: context)
+        }
         return card
     }
 }

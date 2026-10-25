@@ -28,10 +28,11 @@ enum SyncMerger {
                var value = try? SyncCodec.decoder().decode(CardSyncData.self, from: winner.payload ?? Data()) {
                 let oldTime = Int64(((old.profileRevision ?? Date.distantPast).timeIntervalSince1970 * 1000).rounded())
                 let newTime = Int64(((new.profileRevision ?? Date.distantPast).timeIntervalSince1970 * 1000).rounded())
-                let profile = oldTime == newTime ? (oldPayload.lexicographicallyPrecedes(newPayload) ? new : old) : (oldTime > newTime ? old : new)
+                let profile = oldTime == newTime ? (cardProfilePrecedes(old, new) ? new : old) : (oldTime > newTime ? old : new)
                 value.lastFour = profile.lastFour; value.statementDay = profile.statementDay
                 value.paymentDay = profile.paymentDay; value.isArchived = profile.isArchived
-                value.imageData = profile.imageData
+                value.artworkSource = profile.artworkSource ?? .catalog
+                value.imageData = value.artworkSource == .custom ? profile.imageData : nil
                 value.profileRevision = profile.profileRevision
                 winner.payload = try? SyncCodec.encoder().encode(value)
             }
@@ -42,7 +43,7 @@ enum SyncMerger {
                var value = try? SyncCodec.decoder().decode(RuleSyncData.self, from: winner.payload ?? Data()), value.kind == "welcome" {
                 let oldTime = Int64(((old.profileRevision ?? Date.distantPast).timeIntervalSince1970 * 1000).rounded())
                 let newTime = Int64(((new.profileRevision ?? Date.distantPast).timeIntervalSince1970 * 1000).rounded())
-                let profile = oldTime == newTime ? (oldPayload.lexicographicallyPrecedes(newPayload) ? new : old) : (oldTime > newTime ? old : new)
+                let profile = oldTime == newTime ? (ruleProfilePrecedes(old, new) ? new : old) : (oldTime > newTime ? old : new)
                 value.startsOn = profile.startsOn; value.endsOn = profile.endsOn; value.isEnabled = profile.isEnabled
                 value.profileRevision = profile.profileRevision
                 winner.payload = try? SyncCodec.encoder().encode(value)
@@ -77,5 +78,25 @@ enum SyncMerger {
         if lhs.deleted != rhs.deleted { return !lhs.deleted }
         // Stable tie-breaking makes both devices converge even with identical clocks.
         return (lhs.payload ?? Data()).lexicographicallyPrecedes(rhs.payload ?? Data())
+    }
+
+    /// Public/catalog fields can come from a different revision. Comparing the
+    /// whole payload here would change the tie-break after projecting a profile,
+    /// letting an older image or personal setting win again on the next sync.
+    private static func cardProfilePrecedes(_ lhs: CardSyncData, _ rhs: CardSyncData) -> Bool {
+        let left = [lhs.lastFour, String(lhs.statementDay), String(lhs.paymentDay),
+                    String(lhs.isArchived), (lhs.artworkSource ?? .catalog).rawValue]
+        let right = [rhs.lastFour, String(rhs.statementDay), String(rhs.paymentDay),
+                     String(rhs.isArchived), (rhs.artworkSource ?? .catalog).rawValue]
+        if left != right { return left.lexicographicallyPrecedes(right) }
+        let leftImage = lhs.artworkSource == .custom ? lhs.imageData ?? Data() : Data()
+        let rightImage = rhs.artworkSource == .custom ? rhs.imageData ?? Data() : Data()
+        return leftImage.lexicographicallyPrecedes(rightImage)
+    }
+
+    private static func ruleProfilePrecedes(_ lhs: RuleSyncData, _ rhs: RuleSyncData) -> Bool {
+        if lhs.startsOn != rhs.startsOn { return lhs.startsOn < rhs.startsOn }
+        if lhs.endsOn != rhs.endsOn { return lhs.endsOn < rhs.endsOn }
+        return !lhs.isEnabled && rhs.isEnabled
     }
 }

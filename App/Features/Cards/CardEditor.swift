@@ -42,9 +42,19 @@ struct CardEditor: View {
                         Text("松石绿").tag("teal"); Text("紫罗兰").tag("purple"); Text("海蓝").tag("blue")
                         Text("朱红").tag("red"); Text("琥珀").tag("orange")
                     }
-                    if let image = draft.imageData { LocalCardImage(data: image).frame(height: 100) }
+                    if draft.artworkSource == .custom, let image = draft.imageData {
+                        LocalCardImage(data: image).frame(height: 100)
+                    } else if let card = draft.existing {
+                        CardArtwork(card: card, compact: true, source: .catalog).frame(height: 100)
+                    }
                     Button("导入卡面图片", systemImage: "photo", action: { choosingImage = true })
-                    if draft.imageData != nil { Button("移除卡面", role: .destructive, action: { draft.imageData = nil }) }
+                    if draft.artworkSource == .custom {
+                        if draft.existing?.catalogID.isEmpty == false {
+                            Button("恢复官方卡面", systemImage: "arrow.counterclockwise", action: draft.restoreCatalogArtwork)
+                        } else {
+                            Button("移除卡面", role: .destructive, action: draft.restoreCatalogArtwork)
+                        }
+                    }
                     TextField("官方资料 URL（选填）", text: $draft.sourceURL)
                     Toggle("归档卡片（隐藏卡片，保留账本与权益历史）", isOn: $draft.isArchived)
                 }
@@ -65,8 +75,8 @@ struct CardEditor: View {
                 defer { if access { url.stopAccessingSecurityScopedResource() } }
                 let values = try url.resourceValues(forKeys: [.fileSizeKey])
                 guard (values.fileSize ?? 0) <= 8_000_000 else { throw PilotError.invalid("图片超过8MB。") }
-                let data = try Data(contentsOf: url); try CatalogImporter.validateImage(data)
-                draft.imageData = data
+                let data = try Data(contentsOf: url)
+                try draft.importArtwork(data)
             } catch { draft.error = PilotError.message(error) }
         }
         .sensoryFeedback(.success, trigger: savedFeedback)

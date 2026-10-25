@@ -37,7 +37,7 @@ struct BankLibraryTests {
             let offers = OfferStore.offers(for: card, context: context)
             #expect(Set(offers.filter { $0.origin == .official }.map(\.title))
                     == Set(product.displayCatalog.rules.map(\.name)))
-            #expect(card.imageData == nil); #expect(card.artworkOrigin == "official")
+            #expect(card.imageData == nil); #expect(card.artworkSource == .catalog)
             if !product.baseRewardVerified { #expect(card.baseRateBps == 0) }
         }
     }
@@ -90,7 +90,7 @@ struct BankLibraryTests {
         let edit = RuleDraft(rule: welcome); edit.notes = "My activity note"; edit.endsOn = try day("2026-11-20")
         #expect(edit.save(in: context, cards: [card]))
         let customArtwork = try #require(self.product("bea.udc.diamond").artwork.bundledData())
-        let custom = CardDraft(card: card); custom.name = "My student card"; custom.imageData = customArtwork
+        let custom = CardDraft(card: card); custom.name = "My student card"; try custom.importArtwork(customArtwork)
         custom.basePercent = 0.8; #expect(custom.save(in: context))
         try CatalogImporter.apply(CatalogPackage(schemaVersion: 1, cards: [hsbcProduct.displayCatalog]), context: context)
         #expect(card.name == "My student card"); #expect(card.imageData == customArtwork); #expect(card.baseRateBps == 80)

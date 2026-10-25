@@ -20,7 +20,7 @@ actor CardImageStore {
                 kCGImageSourceShouldCacheImmediately: true
               ] as CFDictionary) else { return nil }
         try Task.checkCancellation()
-        let asset = CardImageAsset(image: CardImageContentLayout.image(image, sourceDigest: key))
+        let asset = CardImageAsset(image: image)
         images[key] = asset
         order.append(key)
         if order.count > 12 { images.removeValue(forKey: order.removeFirst()) }

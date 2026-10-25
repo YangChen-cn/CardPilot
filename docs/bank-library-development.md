@@ -38,7 +38,7 @@
 | CatalogAssetStore、CatalogAssetImage | 按SHA-256独立下载/校验/磁盘缓存卡面与Logo；3个并发上限、按sha去重、原子写入、内存解码有上限；离线用缓存或内置回退，单图失败只显示占位并可在下次检查重试 |
 | BankLibrary、CardProduct | 解码 Catalog V2；银行与产品不再硬编码白名单，验证bankID引用、产品/活动/迎新和asset描述；生产环境优先最后有效缓存，测试跳过用户缓存；displayCatalog补充无ruleIDs的文字迎新 |
 | LibraryOnboarding | 只为选中的产品创建个人BankCard实例；官方卡不复制imageData，只保存catalogID；个人状态使用卡片overlayKey隔离。所有权由`imageData`/`catalogID`推导，不新增SwiftData字段 |
-| CardArtwork、LibraryArtworkUpdates | 优先个人自定义图片；官方卡按catalogID读取当前CatalogAsset；启动时用**解码像素指纹**识别旧官方副本并转成当前引用（避开 iOS CgBI 重编码造成的字节 hash 不一致），无法确认的保留为custom，不覆盖用户图片 |
+| CardArtwork、LibraryArtworkUpdates | 以明确的 catalog/custom 来源选择卡面；官方卡按catalogID读取当前CatalogAsset，个人导入才写入custom；启动只保留持卡资源缓存引用，不再识别或迁移旧图片。来源与图片随卡片个人资料共同同步，不改 SwiftData Schema |
 | OfferStore、BenefitInfo | 从当前只读资料投影官方活动并合并个人overlay；展示自然语言限制、来源、日期；旧RewardRule只作为个人自建或历史迁移来源 |
 | OfferPanel、BenefitReaderView | 直接展示当前活动和自然语言限制、来源、日期；不读取交易历史 |
 | OfferStateStore、OfferTrackingStore | 官方活动的隐藏/收藏/登记/备注与迎新状态；key使用跨设备稳定的卡片overlayKey+活动稳定ID；旧UUID与WelcomeTrackingStore只读迁移 |
