@@ -22,6 +22,31 @@ import Testing
         #expect(try context.fetchCount(FetchDescriptor<SpendTransaction>()) == 0)
     }
 
+
+    @Test func compactPeriodLabelCoversAllKnownnessCombinations() throws {
+        let start = try day("2026-10-21")
+        let end = try day("2026-12-31")
+
+        let both = BenefitInfo.compactPeriodLabel(hasKnownStart: true, hasKnownEnd: true,
+                                                  startsOn: start, endsOn: end)
+        #expect(!both.contains("待核实"))
+        #expect(both.contains("–"))
+
+        let startOnly = BenefitInfo.compactPeriodLabel(hasKnownStart: true, hasKnownEnd: false,
+                                                       startsOn: start, endsOn: end)
+        #expect(startOnly.contains("起"))
+        #expect(startOnly.contains("截止日期待核实"))
+
+        let endOnly = BenefitInfo.compactPeriodLabel(hasKnownStart: false, hasKnownEnd: true,
+                                                     startsOn: start, endsOn: end)
+        #expect(endOnly.contains("截止"))
+        #expect(endOnly.contains("开始日期待核实"))
+
+        let neither = BenefitInfo.compactPeriodLabel(hasKnownStart: false, hasKnownEnd: false,
+                                                     startsOn: start, endsOn: end)
+        #expect(neither == "开始与截止日期待核实")
+    }
+
     @Test func publishedTermsExposeReadableLabelsAndChipLists() {
         let rule = RewardRule(name: "Streaming offer")
         rule.category = "串流"

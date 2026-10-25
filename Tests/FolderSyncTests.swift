@@ -3,6 +3,18 @@ import Foundation
 import SwiftData
 @testable import CardPilot
 
+
+private actor FolderSelectionStub {
+    private var fails = false
+
+    func fail() { fails = true }
+
+    func select(_ url: URL) throws -> Data {
+        if fails { throw NSError(domain: NSCocoaErrorDomain, code: NSFileReadNoPermissionError) }
+        return Data([1, 2, 3])
+    }
+}
+
 @Suite @MainActor
 struct FolderSyncTests {
     private func folder() throws -> URL {
@@ -265,5 +277,40 @@ struct FolderSyncTests {
         #expect(card.rules.count == 1); #expect(card.transactions.first?.amountCents == 9988)
         #expect(try migrated.mainContext.fetchCount(FetchDescriptor<SyncTombstone>()) == 0)
         #expect(FileManager.default.fileExists(atPath: folder.appending(path: "CardPilot Backups/Before Sync Upgrade/complete").path))
+    }
+
+    @Test func failedFolderSelectionKeepsPreviousFolderEnabled() async throws {
+        let suite = "FolderSyncTests." + UUID().uuidString
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let stub = FolderSelectionStub()
+        let controller = FolderSyncController(defaults: defaults,
+                                              selectOverride: { try await stub.select($0) })
+        await controller.selectFolder(URL(fileURLWithPath: "/tmp/previous-sync-folder"))
+        #expect(controller.isEnabled)
+        #expect(controller.hasFolder)
+
+        await stub.fail()
+        await controller.selectFolder(URL(fileURLWithPath: "/tmp/rejected-sync-folder"))
+        #expect(controller.isEnabled)
+        #expect(controller.hasFolder)
+        #expect(controller.errorMessage?.contains("已继续使用原共享文件夹") == true)
+        controller.suspend()
+    }
+
+    @Test func failedFirstFolderChoiceDisablesEnabledSync() async throws {
+        let suite = "FolderSyncTests." + UUID().uuidString
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(true, forKey: "sync.enabled")
+        let stub = FolderSelectionStub()
+        await stub.fail()
+        let controller = FolderSyncController(defaults: defaults,
+                                              selectOverride: { try await stub.select($0) })
+        #expect(controller.isEnabled)
+        await controller.selectFolder(URL(fileURLWithPath: "/tmp/rejected-first-folder"))
+        #expect(!controller.isEnabled)
+        #expect(!controller.hasFolder)
+        #expect(controller.errorMessage?.contains("请重新选择") == true)
     }
 }

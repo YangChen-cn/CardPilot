@@ -79,10 +79,7 @@ struct DeckCardSummary: View {
                             }
                             Text(info.headline).font(.subheadline.weight(.semibold))
                                 .foregroundStyle(PilotTheme.accent)
-                            Text(info.hasKnownEnd
-                                 ? info.endsOn.formatted(.dateTime.month().day()) + " 截止"
-                                    + (info.hasKnownStart ? "" : " · 开始日期待核实")
-                                 : "截止日期待核实")
+                            Text(info.compactPeriodLabel)
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         .fixedSize(horizontal: false, vertical: true)

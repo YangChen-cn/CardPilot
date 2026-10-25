@@ -39,7 +39,7 @@ import SwiftData
         }
         guard let legacy else { return OfferPersonalState() }
         let policy = policy(for: legacy)
-        return OfferPersonalState(hidden: policy.archived || policy.isRetired, favorite: false,
+        return OfferPersonalState(hidden: policy.archived, favorite: false,
                                   enrollment: .unknown, notes: policy.customized ? legacy.notes : "")
     }
 

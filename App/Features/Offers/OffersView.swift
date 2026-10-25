@@ -31,7 +31,8 @@ struct OffersView: View {
         let _ = documents.map(\.modifiedAt)
         let _ = catalog.revision
         return OfferStore.offers(context: context).filter { info in
-            (includeHidden || !info.isHidden) && !info.isArchived
+            let archiveVisible = info.isHistorical ? info.isHistoricalReadable : !info.isArchived
+            return archiveVisible && (includeHidden || !info.isHidden)
                 && (!favoritesOnly || (!info.isHistorical && info.personal.favorite))
                 && (includeEnded || (!info.isEnded && !info.isHistorical))
                 && (search.isEmpty || info.title.localizedStandardContains(search)

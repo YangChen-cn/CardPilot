@@ -110,7 +110,9 @@ struct OfferSyncStabilityTests {
         #expect(offers.count == 2)
         #expect(offers.contains { $0.origin == .personal })
         #expect(offers.contains { $0.origin == .historical })
-        #expect(offers.allSatisfy { $0.isArchived && !$0.hasKnownPeriod && $0.group == .merchant })
+        #expect(offers.allSatisfy { !$0.hasKnownPeriod && $0.group == .merchant })
+        #expect(offers.contains { $0.origin == .personal && $0.isUserArchived && !$0.isHistoricalReadable })
+        #expect(offers.contains { $0.origin == .historical && $0.isRetired && !$0.isUserArchived && $0.isHistoricalReadable })
         #expect(offers.allSatisfy { $0.personal.notes == "个人修改说明" })
     }
 

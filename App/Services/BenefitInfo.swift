@@ -53,7 +53,8 @@ enum BenefitPeriodStatus: Equatable {
     let sourceURL: String
     let verifiedOn: String
     let updatedAt: String?
-    let isArchived: Bool
+    let isRetired: Bool
+    let isUserArchived: Bool
     let isHidden: Bool
     let isEnabled: Bool
     let hasKnownStart: Bool
@@ -95,6 +96,11 @@ enum BenefitPeriodStatus: Equatable {
 
     var labeledTerms: [BenefitTerm] { terms.filter { $0.label != nil } }
     var noteTerms: [BenefitTerm] { terms.filter { $0.label == nil } }
+    var isArchived: Bool { isUserArchived || isRetired }
+    /// Historical offers remain readable unless the user archived them. A
+    /// retired official offer is not a current benefit, but its record stays
+    /// available in the history section.
+    var isHistoricalReadable: Bool { isHistorical && !isUserArchived && !isHidden }
     var isWelcome: Bool { group == .welcome }
     var canEdit: Bool { origin == .personal }
     var canChangeHiddenState: Bool { origin == .official }
@@ -127,6 +133,26 @@ enum BenefitPeriodStatus: Equatable {
         }
     }
 
+    static func compactPeriodLabel(hasKnownStart: Bool, hasKnownEnd: Bool,
+                                   startsOn: Date, endsOn: Date) -> String {
+        switch (hasKnownStart, hasKnownEnd) {
+        case (true, true):
+            return startsOn.formatted(.dateTime.month().day())
+                + " – " + endsOn.formatted(.dateTime.month().day())
+        case (true, false):
+            return startsOn.formatted(.dateTime.month().day()) + " 起 · 截止日期待核实"
+        case (false, true):
+            return "截止 " + endsOn.formatted(.dateTime.month().day()) + " · 开始日期待核实"
+        case (false, false):
+            return "开始与截止日期待核实"
+        }
+    }
+
+    var compactPeriodLabel: String {
+        Self.compactPeriodLabel(hasKnownStart: hasKnownStart, hasKnownEnd: hasKnownEnd,
+                                startsOn: startsOn, endsOn: endsOn)
+    }
+
     var periodStatus: BenefitPeriodStatus {
         if isEnded { return .ended }
         if isNotStarted { return .notStarted }
@@ -155,7 +181,8 @@ enum BenefitPeriodStatus: Equatable {
         self.cardID = cardID; self.cardKey = cardKey; cardName = rule.card?.displayName ?? "未关联卡片"
         title = rule.name; startsOn = rule.startsOn; endsOn = rule.endsOn
         sourceURL = rule.sourceURL; verifiedOn = rule.verifiedOn; updatedAt = nil
-        isArchived = policy.archived || policy.isRetired
+        isRetired = policy.isRetired
+        isUserArchived = policy.archived
         isHidden = false
         isEnabled = rule.isEnabled
         hasKnownStart = !extras.periodUnverified
@@ -163,7 +190,7 @@ enum BenefitPeriodStatus: Equatable {
         origin = external.isEmpty ? .personal : .historical
         isUserAdded = external.isEmpty
         isHistorical = !external.isEmpty
-        personal = OfferPersonalState(hidden: isArchived, favorite: false, enrollment: .unknown,
+        personal = OfferPersonalState(hidden: isUserArchived, favorite: false, enrollment: .unknown,
                                       notes: policy.customized ? rule.notes : "")
         trackingKey = cardKey.map { OfferTrackingStore.key(cardKey: $0, offerID: offerID) }
             ?? "welcomeTracking:offer:none:\(offerID)"
@@ -215,7 +242,8 @@ enum BenefitPeriodStatus: Equatable {
         capCents = Money.cents(rule.capHKD ?? 0); sharedCapGroup = rule.sharedCapGroup ?? ""
         catalogRule = rule; legacyRule = nil
         personal = state
-        isArchived = false; isHidden = state.hidden; isEnabled = true
+        isRetired = false; isUserArchived = false
+        isHidden = state.hidden; isEnabled = true
         origin = historical ? .historical : .official; isUserAdded = false; isHistorical = historical
         trackingKey = OfferTrackingStore.key(cardKey: cardKey, offerID: rule.id)
         overlayOfferID = rule.id

@@ -6,6 +6,7 @@ import SwiftData
 final class FolderSyncController {
     private let engine = FolderSyncEngine()
     private let access = SyncFolderAccess()
+    private let selectOverride: (@Sendable (URL) async throws -> Data)?
     private let defaults: UserDefaults
     private let allowsSync: Bool
     private let deviceID: UUID
@@ -91,8 +92,10 @@ final class FolderSyncController {
         return reason + "本机资料已保留。"
     }
 
-    init(defaults: UserDefaults = .standard, allowsSync: Bool = true) {
+    init(defaults: UserDefaults = .standard, allowsSync: Bool = true,
+         selectOverride: (@Sendable (URL) async throws -> Data)? = nil) {
         self.defaults = defaults
+        self.selectOverride = selectOverride
         self.allowsSync = allowsSync
         let id = defaults.string(forKey: "sync.deviceID").flatMap(UUID.init(uuidString:)) ?? UUID()
         deviceID = id; defaults.set(id.uuidString, forKey: "sync.deviceID")
@@ -112,11 +115,18 @@ final class FolderSyncController {
 
     func selectFolder(_ url: URL) async {
         guard allowsSync else { errorMessage = "演示账本不进行设备同步。"; return }
+        let hadPreviousFolder = folder != nil
+        let wasEnabled = isEnabled
         suspend(); isChoosing = true; errorMessage = nil
         let selection = UUID(); generation = selection
         defer { isChoosing = false }
         do {
-            let bookmark = try await access.select(url)
+            let bookmark: Data
+            if let selectOverride {
+                bookmark = try await selectOverride(url)
+            } else {
+                bookmark = try await access.select(url)
+            }
             guard generation == selection else { return }
             folder = url; folderName = url.lastPathComponent
             defaults.set(bookmark, forKey: "sync.bookmark")
@@ -124,7 +134,19 @@ final class FolderSyncController {
             defaults.set(false, forKey: "sync.previouslyPublished")
             if !isEnabled { isEnabled = true }
             else { startPolling(); syncNow() }
-        } catch { errorMessage = "无法打开这个文件夹，请重新选择。" }
+        } catch {
+            guard generation == selection else { return }
+            if wasEnabled, hadPreviousFolder {
+                // The picker failed after suspend(); resume the old folder so
+                // the enabled switch and the polling state stay consistent.
+                startPolling()
+                syncNow()
+                errorMessage = "无法打开这个文件夹，已继续使用原共享文件夹。"
+            } else {
+                if isEnabled { isEnabled = false }
+                errorMessage = "无法打开这个文件夹，请重新选择。"
+            }
+        }
     }
 
     func resume() { if isEnabled { Task { await activate() } } }

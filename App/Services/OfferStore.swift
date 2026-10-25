@@ -44,7 +44,7 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
         }
         guard let legacy else { return OfferPersonalState() }
         let policy = (try? RulePolicyStore.state(legacy)) ?? RulePolicyState()
-        return OfferPersonalState(hidden: policy.archived || policy.isRetired,
+        return OfferPersonalState(hidden: policy.archived,
                                   favorite: false,
                                   enrollment: .unknown,
                                   notes: policy.customized ? legacy.notes : "")
@@ -192,7 +192,7 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
                    let policy = try? RulePolicyStore.state(rule),
                    policy.archived || policy.isRetired || policy.customized {
                     seenStateKeys.insert(newStateKey)
-                    states.append((newStateKey, OfferPersonalState(hidden: policy.archived || policy.isRetired,
+                    states.append((newStateKey, OfferPersonalState(hidden: policy.archived,
                                                                    favorite: false, enrollment: .unknown,
                                                                    notes: policy.customized ? rule.notes : "")))
                 }

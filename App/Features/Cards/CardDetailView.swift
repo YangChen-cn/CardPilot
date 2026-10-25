@@ -35,7 +35,7 @@ struct CardDetailView: View {
         _ = catalog.revision
         _ = documents.map(\.modifiedAt)
         return OfferStore.offers(for: card, context: context)
-            .filter { !$0.isArchived && !$0.isHidden }
+            .filter { $0.isHistorical ? $0.isHistoricalReadable : (!$0.isArchived && !$0.isHidden) }
             .sorted {
                 if $0.isEnded != $1.isEnded { return !$0.isEnded }
                 if $0.hasKnownEnd != $1.hasKnownEnd { return $0.hasKnownEnd }
