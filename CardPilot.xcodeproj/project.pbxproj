@@ -151,6 +151,7 @@
 		538965C4C25CB2681B342FC6 /* DashboardActivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7257C83AFDA8FAFA2072D413 /* DashboardActivities.swift */; };
 		548A339E0E1FA0E8580FDA9E /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C5D4049CBF755D3293791 /* FlowLayout.swift */; };
 		552F67E3732E889D14547A62 /* PresentationStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94591DCF52C66A467553D400 /* PresentationStateTests.swift */; };
+		557AC271EDF2DF9056B1EFBB /* CardDeckInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565CCA7AD7835BB279B2874 /* CardDeckInteraction.swift */; };
 		573C965384DA8BDA7782B519 /* SpendInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B08EAD4477792AEA98516C /* SpendInput.swift */; };
 		5767154B0CBA322836F400E3 /* SyncIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B441BF0AA49C999E1A4A0527 /* SyncIdentity.swift */; };
 		584023ABEA55ED7D9D10308D /* CrossSourceTransactionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0223638B6C23FF26AEE3DACA /* CrossSourceTransactionTests.swift */; };
@@ -173,6 +174,7 @@
 		605CD1CA26D318CEA1BE46FB /* SyncFileAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7E48D2DDF35290AB41B9F /* SyncFileAccess.swift */; };
 		607A9C0C7B973A07631B6F57 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C5D4049CBF755D3293791 /* FlowLayout.swift */; };
 		60E6AFB86779E8EB30C0FDEA /* CategoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6628CE97CAA075EFAC4A6413 /* CategoryChart.swift */; };
+		616A6BB4B4837E0086A5BF06 /* CardDeckInteractionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BAFC1C4D492129A1419ABD /* CardDeckInteractionTests.swift */; };
 		61C927CEB2FF9FEE7C2D71E6 /* WalletCardTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4555D2E0096B0BB3D4FCA20 /* WalletCardTile.swift */; };
 		6217EAF83110C470B25543BD /* CardImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B282F5D069C36BC62BF3015 /* CardImageStore.swift */; };
 		6221F694C219A5C820FB549E /* BankSMSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690866F8B684D93285032CD8 /* BankSMSParser.swift */; };
@@ -317,6 +319,7 @@
 		B807BB94D300C6541F901BEF /* RecommendationWorkbench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39127A9E27C995B47EFBA240 /* RecommendationWorkbench.swift */; };
 		B90164E1C475219D567F410F /* WalletCardButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89BCB7370A6AD281D55309B /* WalletCardButtonStyle.swift */; };
 		BA0AE1D47C839DEA0BFCF857 /* MerchantMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA74BA35DA07BABD67E4641 /* MerchantMatcher.swift */; };
+		BA3D74F70023E142A795FDB5 /* CardDeckInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565CCA7AD7835BB279B2874 /* CardDeckInteraction.swift */; };
 		BA67F3759D40D715976A313C /* CatalogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FF3BC46239F146F9A7FD0B /* CatalogRepository.swift */; };
 		BAC7B12ED093F0C9882DD3A1 /* SpendTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B575000DFB4206FAD3A05BEF /* SpendTransaction.swift */; };
 		BAFA1A475315BEA54312D7A5 /* TransactionBatchRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F71616FD7E1FE87381AEE0 /* TransactionBatchRecorder.swift */; };
@@ -464,6 +467,7 @@
 		027EA52BDB4072CB0595F216 /* BankLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankLibraryTests.swift; sourceTree = "<group>"; };
 		0481520C2485BC49CA1AD7DD /* RemoteCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCatalog.swift; sourceTree = "<group>"; };
 		054C83ECD54E4D19DEEEB7A5 /* LibraryProductArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryProductArtwork.swift; sourceTree = "<group>"; };
+		0565CCA7AD7835BB279B2874 /* CardDeckInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDeckInteraction.swift; sourceTree = "<group>"; };
 		05C1C9851F59DC2FAD309E5F /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
 		068A4F1D37D4D0571720FDFC /* CardTerms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTerms.swift; sourceTree = "<group>"; };
 		08BAC1612419D50053B7CEEA /* QuickEntryPreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickEntryPreferencesStore.swift; sourceTree = "<group>"; };
@@ -580,6 +584,7 @@
 		7C488BCF2E512B7A1D96EA42 /* MailKeychainHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailKeychainHelperTests.swift; sourceTree = "<group>"; };
 		7CB538ED7B62B9FABD1FB0DF /* chill-platinum.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chill-platinum.png"; sourceTree = "<group>"; };
 		7F5ACD704832E3E3CEB868BC /* LibraryProductTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryProductTile.swift; sourceTree = "<group>"; };
+		80BAFC1C4D492129A1419ABD /* CardDeckInteractionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDeckInteractionTests.swift; sourceTree = "<group>"; };
 		823F820ED808C4953B9A4985 /* BenefitTrackingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenefitTrackingTests.swift; sourceTree = "<group>"; };
 		839E3071D5B68E6DBBB8C728 /* DashboardSpendingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSpendingTests.swift; sourceTree = "<group>"; };
 		83F324257C9F74F0EBF31296 /* PricingRevision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingRevision.swift; sourceTree = "<group>"; };
@@ -741,6 +746,7 @@
 				5EA4C8F938B0D5EF78029D12 /* BankMailParserTests.swift */,
 				823F820ED808C4953B9A4985 /* BenefitTrackingTests.swift */,
 				2C135D9C771CE9ED7D3E20B5 /* CardArtworkSourceTests.swift */,
+				80BAFC1C4D492129A1419ABD /* CardDeckInteractionTests.swift */,
 				71DE0A152BC10EA7F2DF07D4 /* CardImageTests.swift */,
 				E5E8BA2E27800A9380C3BB48 /* CardOrderTests.swift */,
 				9215EB88D98044170A577CF0 /* CardPricingStabilityTests.swift */,
@@ -943,6 +949,7 @@
 		94EE0A8F9751AF1D6DEC77F7 /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				0565CCA7AD7835BB279B2874 /* CardDeckInteraction.swift */,
 				D79A5FB0DD9D61D19C21D845 /* CardDetailHeader.swift */,
 				0950487C27CE2172BF3D7C33 /* CardDetailOverview.swift */,
 				641F0D61EC06CEA8A42E7275 /* CardDetailView.swift */,
@@ -1289,6 +1296,7 @@
 				6D3BE9436FA4F5DED1C05D5F /* CardArtwork.swift in Sources */,
 				149C2A0F5283E83081BE1988 /* CardArtworkSource.swift in Sources */,
 				8B2AB1EE067F69D38F22EDD7 /* CardArtworkState.swift in Sources */,
+				BA3D74F70023E142A795FDB5 /* CardDeckInteraction.swift in Sources */,
 				376A83778E9D3F9DA11EFEA5 /* CardDetailHeader.swift in Sources */,
 				ABF9FAC090A37CF24D08DF00 /* CardDetailOverview.swift in Sources */,
 				33009596ADD0C352489E94CB /* CardDetailView.swift in Sources */,
@@ -1483,6 +1491,7 @@
 				1137169D32524D88856F26B3 /* BankMailParserTests.swift in Sources */,
 				76F95D7096561DAC01031632 /* BenefitTrackingTests.swift in Sources */,
 				64C6D770B447BA212A080133 /* CardArtworkSourceTests.swift in Sources */,
+				616A6BB4B4837E0086A5BF06 /* CardDeckInteractionTests.swift in Sources */,
 				E627D9901FF17B3B2AC45ED4 /* CardImageTests.swift in Sources */,
 				A3C272F725B6BFD8FC1665FF /* CardOrderTests.swift in Sources */,
 				EBBC54267F3B5437DFBA99ED /* CardPricingStabilityTests.swift in Sources */,
@@ -1532,6 +1541,7 @@
 				3CFD2514AB60BAA0B83B4D7E /* CardArtwork.swift in Sources */,
 				FE08C0594677AB9CFF07D0A9 /* CardArtworkSource.swift in Sources */,
 				710763E04406DDBD8B27C386 /* CardArtworkState.swift in Sources */,
+				557AC271EDF2DF9056B1EFBB /* CardDeckInteraction.swift in Sources */,
 				A73CF5AB738A9AE5B11EEE03 /* CardDetailHeader.swift in Sources */,
 				DD8CA1F6E68CEE7C7D74454C /* CardDetailOverview.swift in Sources */,
 				21007B0C7125C5218F102FC4 /* CardDetailView.swift in Sources */,

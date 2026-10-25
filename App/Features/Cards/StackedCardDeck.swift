@@ -7,34 +7,39 @@ struct StackedCardDeck: View {
     let cards: [BankCard]
     let transition: Namespace.ID
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var frontKey: String?
-    @State private var dragOffset: CGFloat = 0
+    @State private var interaction: CardDeckInteraction
     @State private var deckWidth: CGFloat = 0
-    @State private var isHorizontalDragging = false
-    @State private var isSwitching = false
     @State private var openedCard: BankCard?
-    @State private var switchTask: Task<Void, Never>?
     @State private var feedback = 0
+    @GestureState private var gestureActive = false
+
+    init(cards: [BankCard], transition: Namespace.ID) {
+        self.cards = cards
+        self.transition = transition
+        _interaction = State(initialValue: CardDeckInteraction(keys: cards.map(\.syncKey)))
+    }
 
     private var count: Int { cards.count }
-
-    // A stable identity is the single source of selection. When filtering or
-    // deleting cards, a numeric index can be stale before onChange runs.
-    private var frontIndex: Int {
-        guard let frontKey else { return 0 }
-        return cards.firstIndex { $0.syncKey == frontKey } ?? 0
-    }
-
-    private var visibleIndices: [Int] {
-        guard count > 0 else { return [] }
-        return (0..<count).filter { depth(for: $0) < 4 }
-    }
+    private var frontIndex: Int { interaction.selectedIndex }
 
     var body: some View {
+        let renderedKeys = Set(interaction.renderedKeys)
         VStack(spacing: 8) {
             ZStack(alignment: .top) {
-                ForEach(visibleIndices, id: \.self) { index in
-                    layer(index)
+                // Keep each card's identity and artwork alive through the handoff.
+                ForEach(cards.filter { renderedKeys.contains($0.syncKey) }, id: \.syncKey) { card in
+                    layer(card)
+                }
+                if let card = frontCard {
+                    // The outgoing card's rear edge fades in underneath the deck.
+                    // At handoff its real layer occupies this exact same position.
+                    WalletCardFace(card: card)
+                        .scaleEffect(scale(at: interaction.depth(of: card.syncKey)))
+                        .offset(y: -interaction.depth(of: card.syncKey) * 10)
+                        .opacity(reduceMotion || interaction.depth(of: card.syncKey) >= 4 ? 0 : interaction.lift)
+                        .zIndex(-Double(interaction.depth(of: card.syncKey)))
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .top)
@@ -86,19 +91,27 @@ struct StackedCardDeck: View {
                     .transition(.opacity)
             }
         }
-        .onAppear { frontKey = frontCard?.syncKey }
-        .onChange(of: cards.map(\.syncKey)) { _, _ in
-            switchTask?.cancel()
-            isSwitching = false
-            isHorizontalDragging = false
-            dragOffset = 0
-            if !cards.contains(where: { $0.syncKey == frontKey }) {
-                frontKey = cards.first?.syncKey
+        .onChange(of: cards.map(\.syncKey)) { _, keys in
+            withoutAnimation { interaction.reconcile(keys: keys) }
+        }
+        .onChange(of: gestureActive) { _, active in
+            // GestureState also resets when the system cancels a touch (no onEnded).
+            if !active, interaction.phase == .dragging {
+                interaction.returnToRest()
+                animateHandoff()
+            } else if !active {
+                interaction.endTouch()
+                continuePendingSelection()
             }
         }
-        .onDisappear {
-            switchTask?.cancel()
+        .onChange(of: reduceMotion) { _, _ in
+            if interaction.phase == .settling {
+                completeHandoff(generation: interaction.generation)
+            } else {
+                withoutAnimation { interaction.cancel() }
+            }
         }
+        .onDisappear { withoutAnimation { interaction.cancel() } }
         .navigationDestination(isPresented: Binding(
             get: { openedCard != nil },
             set: { if !$0 { openedCard = nil } }
@@ -110,139 +123,95 @@ struct StackedCardDeck: View {
     }
 
     private var frontCard: BankCard? {
-        guard count > 0 else { return nil }
-        return cards[min(frontIndex, count - 1)]
-    }
-
-    private func depth(for index: Int) -> Int {
-        guard count > 0 else { return 0 }
-        return (index - frontIndex + count) % count
+        cards.first { $0.syncKey == interaction.selectedKey } ?? cards.first
     }
 
     private func open(_ card: BankCard) {
-        guard !isHorizontalDragging, !isSwitching else { return }
+        guard interaction.canSelect else { return }
         openedCard = card
     }
 
-    @ViewBuilder
-    private func layer(_ index: Int) -> some View {
-        let card = cards[index]
-        let depth = depth(for: index)
-        let base = WalletCardFace(card: card)
-            .scaleEffect(1 - CGFloat(depth) * 0.035)
-            .offset(y: -CGFloat(depth) * 10)
-            .accessibilityHidden(depth != 0)
+    private func scale(at depth: CGFloat) -> CGFloat {
+        1 - depth * 0.035
+    }
 
-        Group {
-            if depth == 0 {
-                base
-                    .offset(x: dragOffset)
-                    .matchedTransitionSource(id: card.id, in: transition)
-                    .onTapGesture { open(card) }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("\(card.name)，打开卡片详情")
-                    .accessibilityAddTraits(.isButton)
-                    .accessibilityAction(named: "打开卡片详情") { open(card) }
-            } else {
-                Button { select(index) } label: {
-                    base
-                }
-                .buttonStyle(.plain)
-                .allowsHitTesting(!isHorizontalDragging)
-                .accessibilityLabel("\(card.name)，移到最前")
+    private func layer(_ card: BankCard) -> some View {
+        let isFront = card.syncKey == interaction.selectedKey
+        let depth: CGFloat = isFront ? 0 : reduceMotion
+            ? interaction.restingDepth(of: card.syncKey)
+            : interaction.depth(of: card.syncKey)
+        return WalletCardFace(card: card)
+            .scaleEffect(scale(at: depth))
+            .offset(x: isFront && !reduceMotion ? interaction.offset : 0, y: -depth * 10)
+            .opacity(!isFront && depth > 3 ? max(0, Double(4 - depth)) : 1)
+            .matchedTransitionSource(id: card.id, in: transition)
+            .onTapGesture {
+                if isFront { open(card) } else { select(card.syncKey) }
             }
-        }
-        .zIndex(Double(-depth))
+            .accessibilityElement(children: .ignore)
+            .accessibilityHidden(!isFront)
+            .accessibilityLabel("\(card.name)，打开卡片详情")
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction(named: "打开卡片详情") { open(card) }
+            .zIndex(isFront ? 100 : -Double(depth))
     }
 
     private var dragGesture: some Gesture {
         DragGesture(minimumDistance: 12)
+            .updating($gestureActive) { _, active, _ in active = true }
             .onChanged { value in
-                guard !reduceMotion, !isSwitching else { return }
-                let horizontal = abs(value.translation.width) > abs(value.translation.height)
-                if horizontal {
-                    isHorizontalDragging = true
-                    dragOffset = value.translation.width
-                } else if isHorizontalDragging {
-                    isHorizontalDragging = false
-                    dragOffset = 0
-                }
+                interaction.updateDrag(x: value.translation.width, y: value.translation.height, width: deckWidth)
             }
             .onEnded { value in
-                let wasHorizontal = isHorizontalDragging
-                isHorizontalDragging = false
-                guard !reduceMotion, !isSwitching, wasHorizontal else {
-                    dragOffset = 0
-                    return
-                }
-                let threshold = max(56, deckWidth * 0.18)
-                let projected = value.predictedEndTranslation.width
-                guard abs(value.translation.width) > threshold || abs(projected) > threshold * 2 else {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) {
-                        dragOffset = 0
-                    }
-                    return
-                }
-                commitSwipe(direction: value.translation.width < 0 ? 1 : -1)
+                // Capture the final touch position, including reversals through zero.
+                interaction.updateDrag(x: value.translation.width, y: value.translation.height, width: deckWidth)
+                let needsAnimation = interaction.phase == .dragging
+                interaction.release(projectedX: value.predictedEndTranslation.width, width: deckWidth)
+                if needsAnimation { animateHandoff() } else { continuePendingSelection() }
             }
     }
 
-    private func commitSwipe(direction: Int) {
-        guard count > 1, !isSwitching else {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) { dragOffset = 0 }
-            return
-        }
-        let nextIndex = (frontIndex + direction + count) % count
+    private func animateHandoff() {
+        let generation = interaction.generation
         if reduceMotion {
-            select(nextIndex)
-            dragOffset = 0
+            completeHandoff(generation: generation)
             return
         }
-        let width = max(deckWidth, 320)
-        let exitOffset = direction > 0 ? -width : width
-        isSwitching = true
-        switchTask?.cancel()
-        // Only the front card leaves. The next card is already visible behind
-        // it and becomes the full-size front once the old card is out of view.
-        withAnimation(.easeIn(duration: 0.18)) {
-            dragOffset = exitOffset
+        let animation: Animation = interaction.phase == .returning
+            ? .spring(response: 0.3, dampingFraction: 0.86)
+            : .smooth(duration: 0.22)
+        withAnimation(animation, completionCriteria: .removed) {
+            interaction.finishMotion(width: deckWidth)
+        } completion: {
+            completeHandoff(generation: generation)
         }
-        switchTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(180))
-            guard !Task.isCancelled, cards.indices.contains(nextIndex) else {
-                isSwitching = false
-                dragOffset = 0
-                return
-            }
-            // The old front is already offscreen. Do not animate the shared
-            // drag offset onto the incoming card, or the second-next card is
-            // briefly exposed while the incoming card springs in from the edge.
-            withTransaction(Transaction(animation: nil)) {
-                dragOffset = 0
-                frontKey = cards[nextIndex].syncKey
-            }
-            feedback &+= 1
-            try? await Task.sleep(for: .milliseconds(320))
-            guard !Task.isCancelled else { return }
-            isSwitching = false
+    }
+
+    private func completeHandoff(generation: Int) {
+        withoutAnimation {
+            if interaction.complete(generation: generation) { feedback &+= 1 }
         }
+        continuePendingSelection()
+    }
+
+    private func continuePendingSelection() {
+        if let step = interaction.nextStep() { advance(by: step) }
     }
 
     private func advance(by step: Int) {
-        guard count > 1, !isSwitching else { return }
+        guard count > 1 else { return }
+        guard interaction.canSelect else { interaction.enqueue(step: step); return }
         let index = (frontIndex + step + count) % count
-        select(index)
+        if interaction.select(cards[index].syncKey, direction: step) { animateHandoff() }
     }
 
-    private func select(_ index: Int) {
-        guard cards.indices.contains(index), index != frontIndex else { return }
-        switchTask?.cancel()
-        isSwitching = false
-        withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
-            frontKey = cards[index].syncKey
-            dragOffset = 0
-        }
-        feedback &+= 1
+    private func select(_ key: String) {
+        if interaction.select(key, direction: interaction.direction) { animateHandoff() }
     }
 
+    private func withoutAnimation(_ changes: () -> Void) {
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction, changes)
+    }
 }
