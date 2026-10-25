@@ -145,6 +145,51 @@ struct RecommendationTests {
         #expect(input.validationError == nil)
     }
 
+    @Test(arguments: [10000, 399999, 400000])
+    func catalogOriginalCurrencyMinimumUsesTheEnteredCurrency(_ cents: Int64) throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let library = try BankLibrary.load()
+        let product = try #require(library.products.first { product in
+            product.catalog.rules.contains { $0.id == "cny6" }
+        })
+        let card = try LibraryOnboarding.add(product: product, in: context)
+        let input = query(); input.currency = "CNY"; input.region = "CN"; input.paymentMethod = "实体卡"
+        input.amount = Decimal(cents) / 100
+        let offers = RecommendationEngine.suggest(cards: [card], query: input).flatMap(\.offers)
+        let candidate = offers.first { $0.title.contains("CNY4,000") }
+        if cents == 400000 {
+            let match = try #require(candidate)
+            #expect(match.matchedConditions.contains("预计原币金额达到公开单笔门槛。"))
+            #expect(!match.confirmationNeeded.isEmpty)
+        } else {
+            #expect(candidate == nil)
+        }
+        input.amount = nil
+        let unknown = try #require(RecommendationEngine.suggest(cards: [card], query: input)
+            .flatMap(\.offers).first { $0.title.contains("CNY4,000") })
+        #expect(unknown.keyMissingConditions.contains("最低单笔消费"))
+        #expect(!unknown.matchedConditions.contains("预计原币金额达到公开单笔门槛。"))
+        input.amount = 4000; input.currency = "HKD"
+        #expect(RecommendationEngine.suggest(cards: [card], query: input)
+            .flatMap(\.offers).allSatisfy { !$0.title.contains("CNY4,000") })
+    }
+
+    @Test func unknownOriginalCurrencyAndUnconvertedHKDMinimumRemainUnconfirmed() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "Example", name: "Minimums"); context.insert(card)
+        let offer = try rule(card, context: context); offer.minimumCents = 50000
+        var extras = RuleExtras(); extras.minimumOriginalCents = 400000
+        try RulePolicyStore.imported(RuleSyncData(offer), extras: extras, into: offer, isNew: true, context: context)
+        let input = query(); input.currency = "CNY"; input.amount = 5000
+        let candidate = try #require(RecommendationEngine.suggest(cards: [card], query: input).first?.offers.first)
+        #expect(candidate.keyMissingConditions.contains("最低单笔消费"))
+        #expect(candidate.confirmationNeeded.contains { $0.contains("结算金额") })
+        #expect(candidate.confirmationNeeded.contains { $0.contains("交易币种及原币金额") })
+        #expect(!candidate.matchedConditions.contains { $0.contains("门槛") })
+        input.currency = "HKD"; input.amount = 499.99
+        #expect(RecommendationEngine.suggest(cards: [card], query: input).isEmpty)
+    }
+
     @Test func publishedRegionExclusionsAreRespectedWhileCapsStayUnconfirmed() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
         let card = BankCard(bank: "Example", name: "Mainland"); context.insert(card)

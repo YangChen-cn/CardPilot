@@ -123,7 +123,22 @@ import Foundation
             if query.currency == "HKD", let amount = query.amount {
                 guard Money.cents(amount) >= info.minimumCents else { return nil }
                 matched.append("预计金额达到公开单笔门槛。")
-            } else { missing.append("单笔消费门槛为" + Money.text(info.minimumCents) + "；请核对结算金额。") }
+            } else {
+                missing.append("单笔消费门槛为" + Money.text(info.minimumCents) + "；请核对结算金额。")
+                keyMissing.append("最低单笔消费")
+            }
+        }
+        if extras.minimumOriginalCents > 0 {
+            if !info.currency.isEmpty, query.currency == info.currency, let amount = query.amount {
+                guard Money.cents(amount) >= extras.minimumOriginalCents else { return nil }
+                matched.append("预计原币金额达到公开单笔门槛。")
+            } else {
+                let minimum = info.currency.isEmpty
+                    ? "活动指定原币的最低单笔消费"
+                    : Money.text(extras.minimumOriginalCents, currency: info.currency)
+                missing.append("需确认最低单笔消费：" + minimum + "；请核对交易币种及原币金额。")
+                keyMissing.append("最低单笔消费")
+            }
         }
         let monthlyPhysical = info.legacyRule?.monthlyPhysicalThresholdCents
             ?? info.catalogRule?.monthlyPhysicalThresholdHKD.map { Money.cents($0) } ?? 0
