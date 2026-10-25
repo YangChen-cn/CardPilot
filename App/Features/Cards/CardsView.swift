@@ -157,17 +157,19 @@ struct CardsView: View {
             guard highlightedCardKey != nil else { return }
             try? await Task.sleep(for: .seconds(1.2))
             guard !Task.isCancelled else { return }
-            withAnimation(.easeOut(duration: 0.25)) { highlightedCardKey = nil }
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { highlightedCardKey = nil }
         }
         .toolbar {
-            if isCompact && !cards.isEmpty {
+            if isCompact {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     compactOptions
-                    Menu("添加银行卡", systemImage: "plus") {
-                        addActions
+                    if !cards.isEmpty {
+                        Menu("添加银行卡", systemImage: "plus") {
+                            addActions
+                        }
+                        .labelStyle(.iconOnly)
+                        .accessibilityHint("从资料库或手动添加银行卡")
                     }
-                    .labelStyle(.iconOnly)
-                    .accessibilityHint("从资料库或手动添加银行卡")
                 }
             }
         }
@@ -222,18 +224,20 @@ struct CardsView: View {
 
     private var compactOptions: some View {
         Menu("卡片选项", systemImage: "ellipsis") {
-            Picker("卡片样式", selection: phoneStyleSelection) {
-                ForEach(CardPhoneStyle.allCases) { style in
-                    Label(style.label, systemImage: style.symbol).tag(style)
+            if !cards.isEmpty {
+                Picker("卡片样式", selection: phoneStyleSelection) {
+                    ForEach(CardPhoneStyle.allCases) { style in
+                        Label(style.label, systemImage: style.symbol).tag(style)
+                    }
                 }
-            }
-            Picker("显示方式", selection: $displayModeRaw) {
-                ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
-            }
-            if displayMode == .together {
-                Picker("卡片类型", selection: $kindFilter) {
-                    Text("全部卡片").tag(CardKind?.none)
-                    ForEach(CardKind.allCases) { kind in Text(kind.label).tag(Optional(kind)) }
+                Picker("显示方式", selection: $displayModeRaw) {
+                    ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
+                }
+                if displayMode == .together {
+                    Picker("卡片类型", selection: $kindFilter) {
+                        Text("全部卡片").tag(CardKind?.none)
+                        ForEach(CardKind.allCases) { kind in Text(kind.label).tag(Optional(kind)) }
+                    }
                 }
             }
             if cards.contains(where: \.isArchived) {

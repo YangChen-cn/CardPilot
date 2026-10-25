@@ -7,6 +7,7 @@ struct CardGridItem: View {
     let onMoveToStart: () -> Bool
     let onMoveToEnd: () -> Bool
     let onLedger: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var width: CGFloat = 0
     @State private var isDropTarget = false
 
@@ -27,8 +28,8 @@ struct CardGridItem: View {
                     .padding(1)
             }
         }
-        .scaleEffect(isDropTarget ? 1.012 : 1)
-        .animation(.snappy(duration: 0.2), value: isDropTarget)
+        .scaleEffect(isDropTarget && !reduceMotion ? 1.012 : 1)
+        .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: isDropTarget)
         .dropDestination(for: String.self) { items, location in
             guard let source = items.first else { return false }
             return onDrop(source, width > 0 && location.x > width / 2)

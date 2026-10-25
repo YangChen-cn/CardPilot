@@ -9,6 +9,7 @@ struct CompactWalletCardItem: View {
     let onDrop: (String, Bool) -> Bool
     let onMoveToStart: () -> Bool
     let onMoveToEnd: () -> Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var height: CGFloat = 0
     @State private var isDropTarget = false
 
@@ -31,7 +32,7 @@ struct CompactWalletCardItem: View {
                             .transition(.opacity)
                     }
                 }
-                .animation(.easeOut(duration: 0.25), value: isHighlighted)
+                .animation(reduceMotion ? nil : .easeOut(duration: 0.25), value: isHighlighted)
                 .overlay {
                     if isDropTarget {
                         RoundedRectangle(cornerRadius: showsCompactRow ? PilotTheme.cardCornerRadius : PilotTheme.radius, style: .continuous)
@@ -39,8 +40,8 @@ struct CompactWalletCardItem: View {
                             .padding(1)
                     }
                 }
-                .scaleEffect(isDropTarget ? 1.012 : 1)
-                .animation(.snappy(duration: 0.2), value: isDropTarget)
+                .scaleEffect(isDropTarget && !reduceMotion ? 1.012 : 1)
+                .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: isDropTarget)
                 .matchedTransitionSource(id: card.id, in: transition)
                 .draggable(card.syncKey)
         }

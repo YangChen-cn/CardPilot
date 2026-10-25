@@ -2,17 +2,23 @@ import SwiftUI
 
 /// A Wallet-like deck for iPhone. The front card opens its detail; the other
 /// cards stay reachable by swiping, tapping their exposed edge, or using the
-/// page controls. The deck only changes presentation, never card order.
+/// position controls. The deck only changes presentation, never card order.
 struct StackedCardDeck: View {
     let cards: [BankCard]
     let transition: Namespace.ID
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var frontIndex = 0
     @State private var frontKey: String?
     @State private var dragOffset: CGFloat = 0
     @State private var feedback = 0
 
     private var count: Int { cards.count }
+
+    // A stable identity is the single source of selection. When filtering or
+    // deleting cards, a numeric index can be stale before onChange runs.
+    private var frontIndex: Int {
+        guard let frontKey else { return 0 }
+        return cards.firstIndex { $0.syncKey == frontKey } ?? 0
+    }
 
     private var visibleIndices: [Int] {
         guard count > 0 else { return [] }
@@ -29,9 +35,9 @@ struct StackedCardDeck: View {
             .frame(maxWidth: .infinity, alignment: .top)
             .padding(.top, 32)
             .padding(.bottom, 8)
-            .offset(x: dragOffset * 0.08)
+            .offset(x: reduceMotion ? 0 : dragOffset * 0.08)
             .contentShape(.rect)
-            .gesture(dragGesture)
+            .simultaneousGesture(dragGesture)
             .accessibilityElement(children: .contain)
             .accessibilityLabel("叠放卡包，\(count) 张卡")
             .accessibilityValue(frontCard.map { "当前 \($0.name)，第 \(frontIndex + 1) 张，共 \(count) 张" } ?? "")
@@ -39,26 +45,42 @@ struct StackedCardDeck: View {
             .accessibilityAction(named: "上一张") { advance(by: -1) }
 
             if count > 1 {
-                HStack(spacing: 0) {
-                    ForEach(cards.indices, id: \.self) { index in
-                        pageDot(index)
+                // Keep a constant-width control group even with a large wallet.
+                // Every action remains a full touch target; no tiny compressed dots.
+                HStack(spacing: 16) {
+                    Button { advance(by: -1) } label: {
+                        Label("上一张", systemImage: "chevron.left")
+                            .labelStyle(.iconOnly)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(.rect)
                     }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(PilotTheme.accent)
+                    Text("\(frontIndex + 1) / \(count)")
+                        .font(.subheadline)
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel("第 \(frontIndex + 1) 张，共 \(count) 张")
+                    Button { advance(by: 1) } label: {
+                        Label("下一张", systemImage: "chevron.right")
+                            .labelStyle(.iconOnly)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(PilotTheme.accent)
                 }
                 .frame(maxWidth: .infinity)
                 .sensoryFeedback(.selection, trigger: feedback)
-                .accessibilityLabel("卡片位置")
             }
         }
         .onAppear { frontKey = frontCard?.syncKey }
         .onChange(of: cards.map(\.syncKey)) { _, _ in
-            if let frontKey, let index = cards.firstIndex(where: { $0.syncKey == frontKey }) {
-                frontIndex = index
-            } else {
-                frontIndex = 0
+            dragOffset = 0
+            if !cards.contains(where: { $0.syncKey == frontKey }) {
                 frontKey = cards.first?.syncKey
             }
         }
-        .animation(reduceMotion ? nil : .snappy(duration: 0.3), value: frontIndex)
     }
 
     private var frontCard: BankCard? {
@@ -91,13 +113,7 @@ struct StackedCardDeck: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("\(card.name)，打开卡片详情")
             } else {
-                Button {
-                    withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
-                        frontIndex = index
-                        frontKey = cards[index].syncKey
-                    }
-                    feedback &+= 1
-                } label: {
+                Button { select(index) } label: {
                     base
                 }
                 .buttonStyle(.plain)
@@ -108,13 +124,19 @@ struct StackedCardDeck: View {
     }
 
     private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 12)
+        DragGesture(minimumDistance: 20)
             .onChanged { value in
+                guard !reduceMotion,
+                      abs(value.translation.width) > abs(value.translation.height) else {
+                    dragOffset = 0
+                    return
+                }
                 dragOffset = value.translation.width
             }
             .onEnded { value in
                 defer { dragOffset = 0 }
-                guard abs(value.translation.width) > 44 else { return }
+                guard abs(value.translation.width) > 44,
+                      abs(value.translation.width) > abs(value.translation.height) else { return }
                 advance(by: value.translation.width < 0 ? 1 : -1)
             }
     }
@@ -122,32 +144,12 @@ struct StackedCardDeck: View {
     private func advance(by step: Int) {
         guard count > 1 else { return }
         let index = (frontIndex + step + count) % count
-        withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
-            frontIndex = index
-            frontKey = cards[index].syncKey
-        }
-        feedback &+= 1
-    }
-
-    private func pageDot(_ index: Int) -> some View {
-        let selected = index == frontIndex
-        return Button {
-            select(index)
-        } label: {
-            Capsule()
-                .fill(selected ? PilotTheme.accent : Color.secondary.opacity(0.35))
-                .frame(width: selected ? 18 : 6, height: 6)
-                .frame(width: 44, height: 44)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("第 \(index + 1) 张，\(cards[index].name)")
-        .accessibilityAddTraits(selected ? .isSelected : [])
+        select(index)
     }
 
     private func select(_ index: Int) {
+        guard cards.indices.contains(index), index != frontIndex else { return }
         withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
-            frontIndex = index
             frontKey = cards[index].syncKey
         }
         feedback &+= 1
