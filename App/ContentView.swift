@@ -23,6 +23,8 @@ struct ContentView: View {
                     Tab("卡包", systemImage: "creditcard", value: .cards) { mobile(.cards) }
                     Tab("权益", systemImage: "gift", value: .offers) { mobile(.offers) }
                     Tab("账本", systemImage: "list.bullet.rectangle", value: .transactions) { mobile(.transactions) }
+                    Tab("总览", systemImage: "square.grid.2x2", value: .dashboard) { mobile(.dashboard) }
+                    Tab("选卡建议", systemImage: "sparkles", value: .recommend) { mobile(.recommend) }
                 }
                 .tabBarMinimizeBehavior(.never)
             } else { desktop }
