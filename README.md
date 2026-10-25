@@ -140,6 +140,22 @@ xcodebuild \
 
 测试脚本默认寻找本机 `CardPilot` 证书；没有该证书时，可以在 Xcode 中运行 `CardPilotTests`，或按上面的方式覆盖签名设置。测试使用独立的 DerivedData，不会覆盖正在使用的 App 账本。
 
+### 发布打包
+
+开发脚本只负责 Debug 运行。发布构建使用独立脚本和 DerivedData，不会关闭或覆盖正在运行的开发版：
+
+```sh
+./script/package_release.sh all
+```
+
+默认从 `project.yml` 读取版本号和 Build 号，输出到 `build/releases/<version>/`：
+
+- macOS：`CardPilot-<version>.dmg`（已用本机 `CardPilot` 证书签名，未公证）
+- iOS：`CardPilot-<version>.ipa`（默认不签名，供使用者用自己的证书/描述文件重签；也可设置 `IOS_SIGN_IDENTITY` 使用本机证书）
+- `INSTALL.txt` 和每个产物的 `.sha256`
+
+只打一个平台可传 `mac` 或 `ios`；版本可用 `--version`/`--build` 覆盖。iOS 产物不是 App Store/TestFlight 安装包，最低 iOS 26.0。
+
 ## 技术栈
 
 - **SwiftUI**：macOS / iPhone / iPad 共用数据与业务层，按宽度调整布局。

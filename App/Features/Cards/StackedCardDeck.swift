@@ -9,6 +9,11 @@ struct StackedCardDeck: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var frontKey: String?
     @State private var dragOffset: CGFloat = 0
+    @State private var deckWidth: CGFloat = 0
+    @State private var isHorizontalDragging = false
+    @State private var isSwitching = false
+    @State private var openedCard: BankCard?
+    @State private var switchTask: Task<Void, Never>?
     @State private var feedback = 0
 
     private var count: Int { cards.count }
@@ -35,9 +40,10 @@ struct StackedCardDeck: View {
             .frame(maxWidth: .infinity, alignment: .top)
             .padding(.top, 32)
             .padding(.bottom, 8)
-            .offset(x: reduceMotion ? 0 : dragOffset * 0.08)
+            .offset(x: dragOffset)
             .contentShape(.rect)
             .simultaneousGesture(dragGesture)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { deckWidth = $0 }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("叠放卡包，\(count) 张卡")
             .accessibilityValue(frontCard.map { "当前 \($0.name)，第 \(frontIndex + 1) 张，共 \(count) 张" } ?? "")
@@ -83,9 +89,23 @@ struct StackedCardDeck: View {
         }
         .onAppear { frontKey = frontCard?.syncKey }
         .onChange(of: cards.map(\.syncKey)) { _, _ in
+            switchTask?.cancel()
+            isSwitching = false
+            isHorizontalDragging = false
             dragOffset = 0
             if !cards.contains(where: { $0.syncKey == frontKey }) {
                 frontKey = cards.first?.syncKey
+            }
+        }
+        .onDisappear {
+            switchTask?.cancel()
+        }
+        .navigationDestination(isPresented: Binding(
+            get: { openedCard != nil },
+            set: { if !$0 { openedCard = nil } }
+        )) {
+            if let openedCard {
+                WalletCardDestination(card: openedCard, transition: transition)
             }
         }
     }
@@ -100,6 +120,11 @@ struct StackedCardDeck: View {
         return (index - frontIndex + count) % count
     }
 
+    private func open(_ card: BankCard) {
+        guard !isHorizontalDragging, !isSwitching else { return }
+        openedCard = card
+    }
+
     @ViewBuilder
     private func layer(_ index: Int) -> some View {
         let card = cards[index]
@@ -111,19 +136,19 @@ struct StackedCardDeck: View {
 
         Group {
             if depth == 0 {
-                NavigationLink {
-                    WalletCardDestination(card: card, transition: transition)
-                } label: {
-                    base
-                        .matchedTransitionSource(id: card.id, in: transition)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(card.name)，打开卡片详情")
+                base
+                    .matchedTransitionSource(id: card.id, in: transition)
+                    .onTapGesture { open(card) }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(card.name)，打开卡片详情")
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityAction(named: "打开卡片详情") { open(card) }
             } else {
                 Button { select(index) } label: {
                     base
                 }
                 .buttonStyle(.plain)
+                .allowsHitTesting(!isHorizontalDragging)
                 .accessibilityLabel("\(card.name)，移到最前")
             }
         }
@@ -131,33 +156,88 @@ struct StackedCardDeck: View {
     }
 
     private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 20)
+        DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard !reduceMotion,
-                      abs(value.translation.width) > abs(value.translation.height) else {
+                guard !reduceMotion, !isSwitching else { return }
+                let horizontal = abs(value.translation.width) > abs(value.translation.height)
+                if horizontal {
+                    isHorizontalDragging = true
+                    dragOffset = value.translation.width
+                } else if isHorizontalDragging {
+                    isHorizontalDragging = false
+                    dragOffset = 0
+                }
+            }
+            .onEnded { value in
+                let wasHorizontal = isHorizontalDragging
+                isHorizontalDragging = false
+                guard !reduceMotion, !isSwitching, wasHorizontal else {
                     dragOffset = 0
                     return
                 }
-                dragOffset = value.translation.width
-            }
-            .onEnded { value in
-                defer { dragOffset = 0 }
-                guard abs(value.translation.width) > 44,
-                      abs(value.translation.width) > abs(value.translation.height) else { return }
-                advance(by: value.translation.width < 0 ? 1 : -1)
+                let threshold = max(56, deckWidth * 0.18)
+                let projected = value.predictedEndTranslation.width
+                guard abs(value.translation.width) > threshold || abs(projected) > threshold * 2 else {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) {
+                        dragOffset = 0
+                    }
+                    return
+                }
+                commitSwipe(direction: value.translation.width < 0 ? 1 : -1)
             }
     }
 
+    private func commitSwipe(direction: Int) {
+        guard count > 1, !isSwitching else {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) { dragOffset = 0 }
+            return
+        }
+        let nextIndex = (frontIndex + direction + count) % count
+        if reduceMotion {
+            select(nextIndex)
+            dragOffset = 0
+            return
+        }
+        let width = max(deckWidth, 320)
+        let exitOffset = direction > 0 ? -width : width
+        let entryOffset = -exitOffset
+        isSwitching = true
+        switchTask?.cancel()
+        withAnimation(.easeIn(duration: 0.16)) {
+            dragOffset = exitOffset
+        }
+        switchTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled, cards.indices.contains(nextIndex) else {
+                isSwitching = false
+                dragOffset = 0
+                return
+            }
+            frontKey = cards[nextIndex].syncKey
+            dragOffset = entryOffset
+            feedback &+= 1
+            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+                dragOffset = 0
+            }
+            try? await Task.sleep(for: .milliseconds(380))
+            guard !Task.isCancelled else { return }
+            isSwitching = false
+        }
+    }
+
     private func advance(by step: Int) {
-        guard count > 1 else { return }
+        guard count > 1, !isSwitching else { return }
         let index = (frontIndex + step + count) % count
         select(index)
     }
 
     private func select(_ index: Int) {
         guard cards.indices.contains(index), index != frontIndex else { return }
+        switchTask?.cancel()
+        isSwitching = false
         withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
             frontKey = cards[index].syncKey
+            dragOffset = 0
         }
         feedback &+= 1
     }
