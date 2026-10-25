@@ -13,7 +13,7 @@ enum AppSection: String, CaseIterable, Identifiable {
     /// `rawValue` remains the descriptive label in the macOS sidebar.
     var navigationTitle: String {
         switch self {
-        case .cards: "卡片"
+        case .cards: "卡包"
         case .dashboard: "总览"
         case .offers: "优惠"
         case .transactions: "账本"

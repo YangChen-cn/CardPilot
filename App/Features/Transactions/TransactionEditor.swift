@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct TransactionEditor: View {
+    @State private var savedFeedback = 0
+
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \BankCard.createdAt) private var cards: [BankCard]
@@ -52,14 +54,15 @@ struct TransactionEditor: View {
                 Text("已有：\(transaction.merchant) · \(Money.text(transaction.amountCents, currency: transaction.currency))\n\(transaction.date.formatted(date: .abbreviated, time: .shortened))\n确认这是另一笔消费后再保存。")
             }
         }
+        .sensoryFeedback(.success, trigger: savedFeedback)
     }
 
     private func save() {
-        if draft.save(in: context, cards: cards) { dismiss() }
+        if draft.save(in: context, cards: cards) { savedFeedback &+= 1; dismiss() }
         else if draft.possibleDuplicate != nil { showingDuplicateConfirmation = true }
     }
 
     private func saveAsAnother() {
-        if draft.save(in: context, cards: cards, allowPossibleDuplicate: true) { dismiss() }
+        if draft.save(in: context, cards: cards, allowPossibleDuplicate: true) { savedFeedback &+= 1; dismiss() }
     }
 }

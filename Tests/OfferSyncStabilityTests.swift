@@ -81,6 +81,32 @@ struct OfferSyncStabilityTests {
         #expect(offers.allSatisfy { $0.personal.notes == "个人修改说明" })
     }
 
+    @Test func favoritePreferencePersistsWithoutChangingOtherPersonalState() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "BOCHK", name: "Favorites")
+        context.insert(card)
+        let offerID = "bochk.chill.online.foreign.2026h2"
+        let initial = OfferPersonalState(hidden: false, favorite: false,
+                                         enrollment: .registered, notes: "保留备注")
+        try OfferStateStore.save(initial, cardKey: card.overlayKey, offerID: offerID, in: context)
+
+        try OfferStateStore.setFavorite(true, cardKey: card.overlayKey, cardID: card.id,
+                                        offerID: offerID, legacy: nil, in: context)
+        let favorited = try OfferStateStore.load(cardKey: card.overlayKey, cardID: card.id,
+                                                 offerID: offerID, legacy: nil, in: context)
+        #expect(favorited.favorite)
+        #expect(!favorited.hidden)
+        #expect(favorited.enrollment == .registered)
+        #expect(favorited.notes == "保留备注")
+
+        try OfferStateStore.setFavorite(false, cardKey: card.overlayKey, cardID: card.id,
+                                        offerID: offerID, legacy: nil, in: context)
+        let unfavorited = try OfferStateStore.load(cardKey: card.overlayKey, cardID: card.id,
+                                                   offerID: offerID, legacy: nil, in: context)
+        #expect(!unfavorited.favorite)
+        #expect(unfavorited == initial)
+    }
+
     @Test func personalOfferStateAndWelcomeProgressTravelBetweenIndependentLibraries() throws {
         let mac = try Persistence.makeContainer(inMemory: true)
         let phone = try Persistence.makeContainer(inMemory: true)

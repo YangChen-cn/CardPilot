@@ -95,8 +95,10 @@ struct BenefitDetailView: View {
     @Environment(\.modelContext) private var context
     let info: BenefitInfo
     @State private var editingWelcome = false
+    @State private var editingRule: RewardRule?
     @State private var personal: OfferPersonalState
     @State private var personalError: String?
+    @State private var favoriteFeedback = 0
 
     init(info: BenefitInfo) {
         self.info = info
@@ -123,6 +125,22 @@ struct BenefitDetailView: View {
             .navigationTitle("权益详情")
             .inlineNavigationTitle()
             .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    if info.cardKey != nil {
+                        Button(personal.favorite ? "取消收藏" : "收藏",
+                               systemImage: personal.favorite ? "star.fill" : "star",
+                               action: toggleFavorite)
+                            .tint(personal.favorite ? .yellow : nil)
+                            .accessibilityLabel(personal.favorite ? "取消收藏" : "收藏此权益")
+                            .symbolEffect(.bounce, value: personal.favorite)
+                            .sensoryFeedback(.selection, trigger: favoriteFeedback)
+                    }
+                    if info.canEdit, info.legacyRule != nil {
+                        Menu("更多操作", systemImage: "ellipsis") {
+                            Button("编辑活动", systemImage: "pencil", action: { editingRule = info.legacyRule })
+                        }
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("完成", action: { dismiss() })
                 }
@@ -130,6 +148,7 @@ struct BenefitDetailView: View {
         }
         .readerSize()
         .sheet(isPresented: $editingWelcome) { WelcomeTrackingEditor(info: info) }
+        .sheet(item: $editingRule) { RuleEditor(rule: $0) }
         .alert("未能保存个人记录", isPresented: Binding(get: { personalError != nil }, set: { if !$0 { personalError = nil } })) {
             Button("好", role: .cancel) { personalError = nil }
         } message: { Text(personalError ?? "请重试。") }
@@ -157,9 +176,22 @@ struct BenefitDetailView: View {
     }
 
     private func savePersonal() {
-        guard let cardKey = info.cardKey, let rule = info.catalogRule else { return }
+        guard let cardKey = info.cardKey else { return }
         do {
-            try OfferStateStore.save(personal, cardKey: cardKey, offerID: rule.id, in: context)
+            try OfferStateStore.save(personal, cardKey: cardKey, offerID: info.overlayOfferID, in: context)
+        } catch {
+            personalError = PilotError.message(error, fallback: "请重试。")
+        }
+    }
+
+    private func toggleFavorite() {
+        guard let cardKey = info.cardKey else { return }
+        let favorite = !personal.favorite
+        do {
+            try OfferStateStore.setFavorite(favorite, cardKey: cardKey, cardID: info.cardID,
+                                            offerID: info.overlayOfferID, legacy: info.legacyRule, in: context)
+            personal.favorite = favorite
+            favoriteFeedback &+= 1
         } catch {
             personalError = PilotError.message(error, fallback: "请重试。")
         }

@@ -52,7 +52,7 @@ CardPilot 把这些问题放回一个安静、离线优先的本地工作区：�
 ### iPhone
 
 <p align="center">
-  <img src="docs/assets/screenshot-ios-cards.jpg" alt="CardPilot iPhone 卡片页" width="30%">
+  <img src="docs/assets/screenshot-ios-cards.jpg" alt="CardPilot iPhone 卡包" width="30%">
   <img src="docs/assets/screenshot-ios-card-detail.jpg" alt="CardPilot iPhone 卡片详情" width="30%">
   <img src="docs/assets/screenshot-ios-benefit.jpg" alt="CardPilot iPhone 权益详情" width="30%">
 </p>

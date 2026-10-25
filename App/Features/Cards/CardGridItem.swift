@@ -8,6 +8,7 @@ struct CardGridItem: View {
     let onMoveToEnd: () -> Bool
     let onLedger: () -> Void
     @State private var width: CGFloat = 0
+    @State private var isDropTarget = false
 
     var body: some View {
         NavigationLink {
@@ -19,10 +20,19 @@ struct CardGridItem: View {
         }
         .buttonStyle(WalletCardButtonStyle())
         .contentShape(.rect)
+        .overlay {
+            if isDropTarget {
+                RoundedRectangle(cornerRadius: PilotTheme.radius, style: .continuous)
+                    .strokeBorder(PilotTheme.accent.opacity(0.8), lineWidth: 2)
+                    .padding(1)
+            }
+        }
+        .scaleEffect(isDropTarget ? 1.012 : 1)
+        .animation(.snappy(duration: 0.2), value: isDropTarget)
         .dropDestination(for: String.self) { items, location in
             guard let source = items.first else { return false }
             return onDrop(source, width > 0 && location.x > width / 2)
-        }
+        } isTargeted: { isDropTarget = $0 }
         .onGeometryChange(for: CGFloat.self) { proxy in
             proxy.size.width
         } action: { width = $0 }

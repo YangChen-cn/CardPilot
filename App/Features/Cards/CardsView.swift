@@ -18,8 +18,13 @@ struct CardsView: View {
     @State private var search = ""
     @State private var showArchived = false
     @AppStorage("cards.displayMode") private var displayModeRaw = CardDisplayMode.together.rawValue
-    @AppStorage("cards.phoneCompactList") private var showsCompactList = false
+    @AppStorage("cards.phoneStyle") private var phoneStyleRaw = ""
+    @AppStorage("cards.phoneCompactList") private var legacyCompactList = false
     @State private var kindFilter: CardKind?
+    @State private var highlightedCardKey: String?
+    @State private var addedFeedback = 0
+    @State private var showingOverview = false
+    @State private var showingRecommendations = false
     @Namespace private var cardTransition
 
     private var isCompact: Bool {
@@ -33,8 +38,20 @@ struct CardsView: View {
     /// Card artwork is decorative at accessibility sizes. Switching to the
     /// compact row keeps names, metadata, and actions readable without
     /// squeezing the card face into a fixed-height slot.
+    private var phoneStyle: CardPhoneStyle {
+        if let style = CardPhoneStyle(rawValue: phoneStyleRaw) { return style }
+        return legacyCompactList ? .compact : .faces
+    }
+
+    private var phoneStyleSelection: Binding<CardPhoneStyle> {
+        Binding(get: { phoneStyle }, set: { style in
+            phoneStyleRaw = style.rawValue
+            legacyCompactList = style == .compact
+        })
+    }
+
     private var usesCompactList: Bool {
-        isCompact && (showsCompactList || typeSize.isAccessibilitySize)
+        isCompact && (phoneStyle == .compact || typeSize.isAccessibilitySize)
     }
 
     private var displayMode: CardDisplayMode {
@@ -129,6 +146,19 @@ struct CardsView: View {
         .background(PilotTheme.canvas)
         #if os(iOS)
         .sensoryFeedback(.selection, trigger: kindFilter)
+        .sensoryFeedback(.selection, trigger: orderedCards.map(\.syncKey))
+        .sensoryFeedback(.success, trigger: addedFeedback)
+        .onChange(of: cards.map(\.syncKey)) { oldKeys, newKeys in
+            guard let added = newKeys.first(where: { !oldKeys.contains($0) }) else { return }
+            highlightedCardKey = added
+            addedFeedback &+= 1
+        }
+        .task(id: highlightedCardKey) {
+            guard highlightedCardKey != nil else { return }
+            try? await Task.sleep(for: .seconds(1.2))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: 0.25)) { highlightedCardKey = nil }
+        }
         .toolbar {
             if isCompact && !cards.isEmpty {
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -147,6 +177,8 @@ struct CardsView: View {
         #if os(macOS)
         .sheet(item: $ledgerCard) { CardLedgerSheet(card: $0) }
         #endif
+        .navigationDestination(isPresented: $showingOverview) { DashboardView() }
+        .navigationDestination(isPresented: $showingRecommendations) { RecommendView() }
     }
 
     private var desktopControls: some View {
@@ -190,9 +222,10 @@ struct CardsView: View {
 
     private var compactOptions: some View {
         Menu("卡片选项", systemImage: "ellipsis") {
-            Picker("卡片样式", selection: $showsCompactList) {
-                Text("卡面展示").tag(false)
-                Text("紧凑列表").tag(true)
+            Picker("卡片样式", selection: phoneStyleSelection) {
+                ForEach(CardPhoneStyle.allCases) { style in
+                    Label(style.label, systemImage: style.symbol).tag(style)
+                }
             }
             Picker("显示方式", selection: $displayModeRaw) {
                 ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
@@ -208,6 +241,10 @@ struct CardsView: View {
                     Text("使用中").tag(false)
                     Text("已归档").tag(true)
                 }
+            }
+            Section("更多") {
+                Button("总览", systemImage: "square.grid.2x2") { showingOverview = true }
+                Button("选卡建议", systemImage: "sparkles") { showingRecommendations = true }
             }
             if cards.count > 1 {
                 Section("卡片顺序") {
@@ -229,6 +266,8 @@ struct CardsView: View {
                         }
                     }
                     .background(PilotTheme.surface, in: .rect(cornerRadius: PilotTheme.cardCornerRadius, style: .continuous))
+                } else if phoneStyle == .deck {
+                    StackedCardDeck(cards: items, transition: cardTransition)
                 } else {
                     LazyVStack(spacing: 24) {
                         ForEach(items) { card in
@@ -245,6 +284,7 @@ struct CardsView: View {
 
     private func phoneCard(_ card: BankCard) -> some View {
         CompactWalletCardItem(card: card, transition: cardTransition, showsCompactRow: usesCompactList,
+                              isHighlighted: highlightedCardKey == card.syncKey,
                               onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
                               onMoveToStart: { move(card, toEnd: false) },
                               onMoveToEnd: { move(card, toEnd: true) })

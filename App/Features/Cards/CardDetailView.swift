@@ -46,13 +46,25 @@ struct CardDetailView: View {
     var body: some View {
         let _ = catalog.revision
         let benefits = displayedBenefits
-        let currentBenefits = benefits.filter { !$0.isHistorical }
+        let favoriteBenefits = benefits.filter { $0.personal.favorite && !$0.isHistorical }
+        let currentBenefits = benefits.filter { !$0.isHistorical && !$0.personal.favorite }
         let historicalBenefits = benefits.filter(\.isHistorical)
         let pricing = PricingStore.current(card)
         let details = PricingStore.details(card)
         ScrollView {
             VStack(alignment: .leading, spacing: phoneLayout ? 20 : 28) {
                 CardDetailHeader(card: card)
+                if !favoriteBenefits.isEmpty {
+                    VStack(alignment: .leading, spacing: 14) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "star.fill").foregroundStyle(.yellow)
+                            Text("常看权益").font(.title3.weight(.semibold))
+                        }
+                        ForEach(favoriteBenefits) { info in
+                            OfferPanel(info: info)
+                        }
+                    }
+                }
                 if !phoneLayout {
                     HStack(spacing: 12) {
                         ledgerEntry
@@ -61,12 +73,14 @@ struct CardDetailView: View {
                     Divider()
                 }
                 HStack {
-                    Text("银行卡权益").font(.title3.weight(.semibold))
+                    Text(favoriteBenefits.isEmpty ? "银行卡权益" : "其他权益").font(.title3.weight(.semibold))
                     Spacer()
                     Button("添加活动", systemImage: "plus", action: { addingRule = true }).frame(minHeight: 44)
                 }
                 if currentBenefits.isEmpty {
-                    ContentUnavailableView("暂无权益资料", systemImage: "gift", description: Text("可添加自己的活动记录，或查看银行官方产品资料。"))
+                    if benefits.isEmpty {
+                        ContentUnavailableView("暂无权益资料", systemImage: "gift", description: Text("可添加自己的活动记录，或查看银行官方产品资料。"))
+                    }
                 } else {
                     ForEach(BenefitGroup.allCases) { group in
                         let grouped = currentBenefits.filter { $0.group == group }

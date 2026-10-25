@@ -14,6 +14,7 @@ struct OffersView: View {
     @State private var hiding: BenefitInfo?
     @State private var includeEnded = false
     @State private var includeHidden = false
+    @State private var favoritesOnly = false
     @State private var search = ""
     @State private var error: String?
 
@@ -31,6 +32,7 @@ struct OffersView: View {
         let _ = catalog.revision
         return OfferStore.offers(context: context).filter { info in
             (includeHidden || !info.isHidden) && !info.isArchived
+                && (!favoritesOnly || info.personal.favorite)
                 && (includeEnded || (!info.isEnded && !info.isHistorical))
                 && (search.isEmpty || info.title.localizedStandardContains(search)
                     || info.cardName.localizedStandardContains(search)
@@ -46,18 +48,24 @@ struct OffersView: View {
                     NavigationLink { WelcomeCenterView() } label: { Label("迎新记录", systemImage: "gift").frame(minHeight: 44) }
                     Spacer()
                     if phoneLayout {
-                        Menu("权益筛选", systemImage: includeEnded || includeHidden ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") {
+                        Menu("权益筛选", systemImage: includeEnded || includeHidden || favoritesOnly ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") {
+                            Toggle("只看收藏", isOn: $favoritesOnly)
                             Toggle("包括已结束", isOn: $includeEnded)
                             Toggle("显示已隐藏", isOn: $includeHidden)
                         }
                         .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44)
                     } else {
+                        Toggle("只看收藏", isOn: $favoritesOnly).toggleStyle(.switch).fixedSize()
                         Toggle("包括已结束", isOn: $includeEnded).toggleStyle(.switch).fixedSize()
                         Toggle("显示已隐藏", isOn: $includeHidden).toggleStyle(.switch).fixedSize()
                     }
                 }
                 if visible.isEmpty {
-                    ContentUnavailableView("暂无匹配的权益", systemImage: "gift", description: Text("试试其他关键词，或为银行卡添加活动。"))
+                    ContentUnavailableView(
+                        favoritesOnly ? "暂无收藏的权益" : "暂无匹配的权益",
+                        systemImage: favoritesOnly ? "star" : "gift",
+                        description: Text(favoritesOnly ? "在权益详情中点按星标，即可在这里快速找到。" : "试试其他关键词，或为银行卡添加活动。")
+                    )
                 }
                 ForEach(BenefitGroup.allCases) { group in
                     let items = visible.filter { $0.group == group }
@@ -97,6 +105,16 @@ struct OffersView: View {
         .background(PilotTheme.canvas)
         .searchable(text: $search, prompt: "活动、卡片或优惠条件")
         .toolbar {
+            #if os(iOS)
+            if phoneLayout {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink { RecommendView() } label: {
+                        Label("选卡建议", systemImage: "sparkles")
+                    }
+                    .labelStyle(.iconOnly)
+                }
+            }
+            #endif
             ToolbarItem(placement: .primaryAction) {
                 if phoneLayout {
                     Button("添加活动", systemImage: "plus", action: { showingAdd = true }).labelStyle(.iconOnly)

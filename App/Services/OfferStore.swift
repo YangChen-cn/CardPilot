@@ -63,6 +63,13 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
         state.hidden = hidden
         try save(state, cardKey: cardKey, offerID: offerID, in: context)
     }
+
+    static func setFavorite(_ favorite: Bool, cardKey: String, cardID: UUID?, offerID: String,
+                            legacy: RewardRule?, in context: ModelContext) throws {
+        var state = try load(cardKey: cardKey, cardID: cardID, offerID: offerID, legacy: legacy, in: context)
+        state.favorite = favorite
+        try save(state, cardKey: cardKey, offerID: offerID, in: context)
+    }
 }
 
 @MainActor enum OfferTrackingStore {

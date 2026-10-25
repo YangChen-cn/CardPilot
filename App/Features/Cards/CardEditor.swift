@@ -3,6 +3,8 @@ import SwiftData
 import UniformTypeIdentifiers
 
 struct CardEditor: View {
+    @State private var savedFeedback = 0
+
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @State private var draft: CardDraft
@@ -67,6 +69,7 @@ struct CardEditor: View {
                 draft.imageData = data
             } catch { draft.error = PilotError.message(error) }
         }
+        .sensoryFeedback(.success, trigger: savedFeedback)
     }
-    private func save() { if draft.save(in: context) { onSaved?(); dismiss() } }
+    private func save() { if draft.save(in: context) { savedFeedback &+= 1; onSaved?(); dismiss() } }
 }

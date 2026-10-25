@@ -21,11 +21,9 @@ struct ContentView: View {
             #if os(iOS)
             if sizeClass == .compact {
                 TabView(selection: $tab) {
-                    Tab("卡片", systemImage: "creditcard", value: .cards) { mobile(.cards) }
-                    Tab("总览", systemImage: "square.grid.2x2", value: .dashboard) { mobile(.dashboard) }
-                    Tab("优惠", systemImage: "gift", value: .offers) { mobile(.offers) }
+                    Tab("卡包", systemImage: "creditcard", value: .cards) { mobile(.cards) }
+                    Tab("权益", systemImage: "gift", value: .offers) { mobile(.offers) }
                     Tab("账本", systemImage: "list.bullet.rectangle", value: .transactions) { mobile(.transactions) }
-                    Tab("推荐", systemImage: "sparkles", value: .recommend) { mobile(.recommend) }
                 }
                 .tabBarMinimizeBehavior(.never)
             } else { desktop }
@@ -125,7 +123,7 @@ struct ContentView: View {
                 .navigationTitle(title(section))
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
-                    if section == .dashboard {
+                    if section == .cards {
                         ToolbarItem(placement: .topBarLeading) {
                             Button("设置", systemImage: "gearshape", action: { showingSettings = true })
                                 .labelStyle(.iconOnly)

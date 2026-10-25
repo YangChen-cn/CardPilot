@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct RuleEditor: View {
+    @State private var savedFeedback = 0
+
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \BankCard.createdAt) private var cards: [BankCard]
@@ -74,9 +76,10 @@ struct RuleEditor: View {
             }
         }.editorSize()
         .onAppear { if draft.cardID == nil { draft.cardID = cards.first?.id } }
+        .sensoryFeedback(.success, trigger: savedFeedback)
     }
 
-    private func save() { if draft.save(in: context, cards: cards) { dismiss() } }
+    private func save() { if draft.save(in: context, cards: cards) { savedFeedback &+= 1; dismiss() } }
     private func acceptPending(_ rule: RewardRule) {
         do { try Persistence.save(context) { try RulePolicyStore.acceptPending(rule, context: context) }; dismiss() }
         catch { draft.error = "未能更新资料，请重试。" }

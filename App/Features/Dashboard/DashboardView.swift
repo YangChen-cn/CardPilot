@@ -104,6 +104,7 @@ struct DashboardView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { spendingRevision &+= 1 }
         }
+        .navigationTitle("总览")
     }
 
     private func refreshSpending() async {
@@ -139,37 +140,31 @@ struct DashboardView: View {
     }
 
     private var wallet: some View {
-        NavigationLink { CardsView() } label: {
-            GroupBox {
-                HStack(spacing: 14) {
-                    Image(systemName: "creditcard")
-                        .font(.title3)
-                        .foregroundStyle(PilotTheme.accent)
-                        .frame(width: 44, height: 44)
-                        .background(PilotTheme.accent.opacity(0.12), in: .rect(cornerRadius: 12))
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(orderedCards.contains(where: { !$0.isArchived }) ? "我的银行卡" : "添加第一张银行卡")
-                            .font(.headline)
-                        Text(walletSubtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 8)
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+        GroupBox {
+            HStack(spacing: 14) {
+                Image(systemName: "creditcard")
+                    .font(.title3)
+                    .foregroundStyle(PilotTheme.accent)
+                    .frame(width: 44, height: 44)
+                    .background(PilotTheme.accent.opacity(0.12), in: .rect(cornerRadius: 12))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(orderedCards.contains(where: { !$0.isArchived }) ? "我的银行卡" : "还没有银行卡")
+                        .font(.headline)
+                    Text(walletSubtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 2)
+                Spacer(minLength: 8)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 2)
         }
-        .buttonStyle(.plain)
     }
 
     private var walletSubtitle: String {
         let active = orderedCards.filter { !$0.isArchived }
-        if active.isEmpty { return "从资料库选择一张卡，开始整理权益。" }
-        return "\(active.count) 张使用中 · 管理卡面与顺序"
+        if active.isEmpty { return "在卡包中添加第一张银行卡。" }
+        return "\(active.count) 张使用中 · 在卡包中管理"
     }
 
     private var recent: some View {
