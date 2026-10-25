@@ -40,7 +40,6 @@ struct StackedCardDeck: View {
             .frame(maxWidth: .infinity, alignment: .top)
             .padding(.top, 32)
             .padding(.bottom, 8)
-            .offset(x: dragOffset)
             .contentShape(.rect)
             .simultaneousGesture(dragGesture)
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { deckWidth = $0 }
@@ -137,6 +136,7 @@ struct StackedCardDeck: View {
         Group {
             if depth == 0 {
                 base
+                    .offset(x: dragOffset)
                     .matchedTransitionSource(id: card.id, in: transition)
                     .onTapGesture { open(card) }
                     .accessibilityElement(children: .ignore)
@@ -200,26 +200,26 @@ struct StackedCardDeck: View {
         }
         let width = max(deckWidth, 320)
         let exitOffset = direction > 0 ? -width : width
-        let entryOffset = -exitOffset
         isSwitching = true
         switchTask?.cancel()
-        withAnimation(.easeIn(duration: 0.16)) {
+        // Only the front card leaves. The next card is already visible behind
+        // it and springs up to full size once the front card is out of view.
+        withAnimation(.easeIn(duration: 0.18)) {
             dragOffset = exitOffset
         }
         switchTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(150))
+            try? await Task.sleep(for: .milliseconds(180))
             guard !Task.isCancelled, cards.indices.contains(nextIndex) else {
                 isSwitching = false
                 dragOffset = 0
                 return
             }
-            frontKey = cards[nextIndex].syncKey
-            dragOffset = entryOffset
-            feedback &+= 1
-            withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) {
+            withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
+                frontKey = cards[nextIndex].syncKey
                 dragOffset = 0
             }
-            try? await Task.sleep(for: .milliseconds(380))
+            feedback &+= 1
+            try? await Task.sleep(for: .milliseconds(320))
             guard !Task.isCancelled else { return }
             isSwitching = false
         }
