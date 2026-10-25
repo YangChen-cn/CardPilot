@@ -19,10 +19,10 @@ struct ShortcutSetupView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Section("Apple Pay 自动记账") {
-                    Text("1. 在手机的快捷指令中，添加「交易」自动化并选择付款卡片。")
-                    Text("2. 添加「记录银行卡消费」动作，选择银行卡，将金额、商户和交易时间设为本次交易提供的内容。")
-                    Text("3. 先完成一次付款测试，确认记录正确后开启自动运行。")
-                    Text("Apple Pay 自动化可选择对应支付方式；有交易标识时一并传入，以防重复记账。外币可直接按原币保存，汇率选填。")
+                    Text("1. 在快捷指令 → 自动化中新建「交易」自动化，每张 Wallet 付款卡片单独设置。")
+                    Text("2. 添加 CardPilot「记录 Apple Pay 交易」动作，选择对应的 CardPilot 银行卡。")
+                    Text("3. 「钱包金额原文」绑定「交易 → 数量」，「商户」绑定「交易 → 商家」，选择立即运行。")
+                    Text("Wallet 的「数量」可能是带币种符号的文本，不能直接转换成普通数字。新动作会识别明确的 HKD/CNY/USD 标记并保留原币；仅有数字或 $ 时无法可靠判定币种，不会猜成 HKD。可为单币种自动化指定备用币种；GO 等双币卡建议保持自动并用真机消费验证。¥ 也可能代表 JPY，出国使用时请核对。此自动化只针对受支持的感应付款。")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
             }
