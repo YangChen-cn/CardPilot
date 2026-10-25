@@ -5,25 +5,35 @@ import ImageIO
 
 @Suite
 struct CardImageTests {
-    @Test func currentStudentGoldCanvasIsCroppedInTheSharedDecoder() async throws {
-        let url = try #require(Bundle.main.url(forResource: "hsbc-student-visa-gold", withExtension: "jpg", subdirectory: "Catalog/images/cards"))
+    @Test func normalizedStudentGoldArtworkUsesTheSharedCanvas() async throws {
+        let url = try #require(Bundle.main.url(forResource: "hsbc-student-visa-gold", withExtension: "png", subdirectory: "Catalog/images/cards"))
         let data = try Data(contentsOf: url)
         let asset = try #require(try await CardImageStore.shared.image(for: data))
-        // The decoder scales 1600×900 to 1200×675 before applying the viewport.
-        #expect(asset.image.width == 540)
-        #expect(asset.image.height == 340)
-        #expect(CatalogAssetStore.hash(data) == "49448f56b8136d8fef39656e5c0f5e8a4cba60f0c884bde249bca9b0c3c6c3b0")
+        #expect(asset.image.width == 1200)
+        #expect(asset.image.height == 756)
+        #expect(CatalogAssetStore.hash(data) == "4e52ff0c5b4572d3a5f18c67b074af6438f90a385a109c3de049fc04c17e61b9")
     }
 
     @Test func unknownArtworkIsNeverCroppedByTheKnownCanvasCorrection() throws {
-        let url = try #require(Bundle.main.url(forResource: "hsbc-student-visa-gold", withExtension: "jpg", subdirectory: "Catalog/images/cards"))
+        let url = try #require(Bundle.main.url(forResource: "hsbc-student-visa-gold", withExtension: "png", subdirectory: "Catalog/images/cards"))
         let data = try Data(contentsOf: url)
         let source = try #require(CGImageSourceCreateWithData(data as CFData, nil))
         let image = try #require(CGImageSourceCreateImageAtIndex(source, 0, nil))
         #expect(CardImageContentLayout.image(image, sourceDigest: "custom-artwork") === image)
         let legacy = CardImageContentLayout.image(image, sourceDigest: "0a5d027bbf93e8b0cca878d42e8f8a0c25153ebd19d39da24b2cd1b798a9ec64")
-        #expect(legacy.width == 720)
-        #expect(legacy.height == 453)
+        #expect(legacy.width == 540)
+        #expect(legacy.height == 381)
+    }
+
+    @Test @MainActor func bundledCardArtworkUsesTheSharedCanvas() throws {
+        let library = try BankLibrary.load(remoteCache: nil)
+        for product in library.products {
+            let data = try #require(product.artwork.bundledData())
+            let source = try #require(CGImageSourceCreateWithData(data as CFData, nil))
+            let image = try #require(CGImageSourceCreateImageAtIndex(source, 0, nil))
+            #expect(image.width == 1200)
+            #expect(image.height == 756)
+        }
     }
 
     @Test func officialPortraitIsPreservedAndSharedBetweenConsumers() async throws {

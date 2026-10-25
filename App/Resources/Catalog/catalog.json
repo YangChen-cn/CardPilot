@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102308,
+  "contentVersion": 2026102310,
   "publishedAt": "2026-10-25",
   "banks": [
     {
@@ -94,9 +94,9 @@
       "id": "hsbc.student.visa.gold",
       "bankID": "hsbc",
       "artwork": {
-        "path": "images/cards/hsbc-student-visa-gold.jpg",
-        "sha256": "49448f56b8136d8fef39656e5c0f5e8a4cba60f0c884bde249bca9b0c3c6c3b0",
-        "contentType": "image/jpeg"
+        "path": "images/cards/hsbc-student-visa-gold.png",
+        "sha256": "4e52ff0c5b4572d3a5f18c67b074af6438f90a385a109c3de049fc04c17e61b9",
+        "contentType": "image/png"
       },
       "baseRewardVerified": true,
       "welcomePlans": [
@@ -258,7 +258,7 @@
       "bankID": "hsbc",
       "artwork": {
         "path": "images/cards/hsbc-pulse-unionpay-diamond.png",
-        "sha256": "b8aed2d624819a45d1d33d2a169e834a0f1a707693001353e0985fc83827b4a0",
+        "sha256": "cdf2cc8636c47f4f86f93cabb36b36ed63482c3396b7de23153cb8c907fb3c9f",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -641,7 +641,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-go-diamond.png",
-        "sha256": "aa0478d7f67526f3a9760f25b5b1325b1268ab9082cc4601b3423af36a53ecfa",
+        "sha256": "e472071f3529339e5643b97e5911d6890ab9e996501de31797183647ee7dc81e",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -892,7 +892,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-go-platinum.png",
-        "sha256": "1a4b8c1ec9c2408d994da7433c9db1af6f2a2fb3ec9175952f265b545ed61d22",
+        "sha256": "1100f7aae87bedd2b21409a0610aa20bdf4df61b5da45caeb10612affaf223ce",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1143,7 +1143,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-gba-youth.png",
-        "sha256": "4fff3557a407410d38d716ae4753fc9f5af967b6ea6385e0e18e9acf98254002",
+        "sha256": "f19dd05ea0f5bd279b9d67b62693bf779eec36ccca46ec1eaef374e450a2bbbb",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1339,7 +1339,7 @@
       "bankID": "bea",
       "artwork": {
         "path": "images/cards/bea-udc-diamond.png",
-        "sha256": "e46c3fe518f942075f1807c3b5c5504579035f99bc42c9b7dd38292dca119408",
+        "sha256": "fd6360f44f6e0ad7d857b4905d2ae49a10d8e2e3d93a55bb94d9c91cfa7549da",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1572,7 +1572,7 @@
       "bankID": "bea",
       "artwork": {
         "path": "images/cards/bea-udc-diamond.png",
-        "sha256": "e46c3fe518f942075f1807c3b5c5504579035f99bc42c9b7dd38292dca119408",
+        "sha256": "fd6360f44f6e0ad7d857b4905d2ae49a10d8e2e3d93a55bb94d9c91cfa7549da",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1794,7 +1794,7 @@
       "bankID": "cncbi",
       "artwork": {
         "path": "images/cards/cncbi-gba-dual.png",
-        "sha256": "84094ac1ba50863b143143ba54ed7d2c5c65fede429fec698606f97f631e6fd9",
+        "sha256": "2099bbf2fb7caa45201678e36c6030f4a5792066ad0d024409bcc121cd7d08ff",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -1964,7 +1964,7 @@
       "bankID": "cncbi",
       "artwork": {
         "path": "images/cards/cncbi-multi-currency-debit.png",
-        "sha256": "c0b842a272687b36b2dea65d29a380cbc334e957ff44da27f5f99f8a030ec15f",
+        "sha256": "0f583f98ffb52fd649f833ca998ddac6d09688331dcdc9a7650b8851081f24be",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -2101,7 +2101,7 @@
       },
       "artwork": {
         "path": "images/cards/bocom-hk-go-goal-visa-platinum.png",
-        "sha256": "be575bf80a4001f45cbf20c843ac0cb3e12126a2ff9828adcb92378089d592ed",
+        "sha256": "9822506cec1cc506bb1717b8aea5676d89ec235fe20a62df9840dfeb4b92b3ea",
         "contentType": "image/png"
       }
     },
@@ -2232,7 +2232,7 @@
       },
       "artwork": {
         "path": "images/cards/bocom-hk-gba-unionpay-diamond.png",
-        "sha256": "c81a6d15ca999e394aadc12f8c687f4018193a7e2e2ac74ac755b4ba880192bf",
+        "sha256": "72dae0dcc2ba2d479bb1a6ea95589b83aadb638c57fb938d076e2c0d85c250c8",
         "contentType": "image/png"
       }
     }
