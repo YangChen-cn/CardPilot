@@ -248,7 +248,6 @@
 		8E089A5BE584F1442B1DEE6F /* SyncFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = E66B9A8384FDBEF18D73FBDE /* SyncFailure.swift */; };
 		8E36C43BF965E61E5D5E34FB /* WelcomeReminderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588E33981EE2015BACF56CAD /* WelcomeReminderService.swift */; };
 		8F2DF07E25C2E2C1328D59A9 /* TextDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A2C0E8E754C627B5C550EF /* TextDocument.swift */; };
-		8F77D3A137BC9E83722ECA8B /* Mac-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 39892680554216234BB9686D /* Mac-Info.plist */; };
 		8FFE028A9911CCF8157A0D12 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F22428DDDB8A1A71569111E /* DashboardView.swift */; };
 		906881EBA74A188CBD37AE06 /* CardOrderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47EA92170A6E000FC4B11C4 /* CardOrderStore.swift */; };
 		90FD724F7929D62901A3D35F /* LibraryOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C62B118723087302C3CBC30 /* LibraryOnboarding.swift */; };
@@ -299,7 +298,6 @@
 		AA265AA4A9EA1549B980B618 /* MailReconciliation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB96F13B9FD9B36D20BE539 /* MailReconciliation.swift */; };
 		AA2CEBE51B481ABDDCCBC7C4 /* PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = D00E5D8A2A82E9DA66BA5C47 /* PaymentMethod.swift */; };
 		AB819B31B479782571EFF166 /* RewardRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA633AFD9194DFD8EC13AB45 /* RewardRule.swift */; };
-		ABF68D836FF31C706C021EDE /* iOS-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02EC3225734BD139ED47CBE0 /* iOS-Info.plist */; };
 		ABF9FAC090A37CF24D08DF00 /* CardDetailOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0950487C27CE2172BF3D7C33 /* CardDetailOverview.swift */; };
 		AC17AE8A77C473928FB0A741 /* CatalogPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52F2711C04FD31F2B1E57C4 /* CatalogPackage.swift */; };
 		ADB08DD2CF6C97B59F8B8481 /* LibraryBankRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D160CC60C7262E80E919465 /* LibraryBankRow.swift */; };
@@ -464,7 +462,6 @@
 		0035015449C6407D31B4A980 /* MailImportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailImportService.swift; sourceTree = "<group>"; };
 		0223638B6C23FF26AEE3DACA /* CrossSourceTransactionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossSourceTransactionTests.swift; sourceTree = "<group>"; };
 		027EA52BDB4072CB0595F216 /* BankLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankLibraryTests.swift; sourceTree = "<group>"; };
-		02EC3225734BD139ED47CBE0 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "iOS-Info.plist"; sourceTree = "<group>"; };
 		0481520C2485BC49CA1AD7DD /* RemoteCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCatalog.swift; sourceTree = "<group>"; };
 		054C83ECD54E4D19DEEEB7A5 /* LibraryProductArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryProductArtwork.swift; sourceTree = "<group>"; };
 		05C1C9851F59DC2FAD309E5F /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
@@ -506,7 +503,6 @@
 		34A47CF01614EA8CDD615B8A /* CatalogCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogCard.swift; sourceTree = "<group>"; };
 		36900FFC6900772788050D92 /* PilotError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotError.swift; sourceTree = "<group>"; };
 		39127A9E27C995B47EFBA240 /* RecommendationWorkbench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationWorkbench.swift; sourceTree = "<group>"; };
-		39892680554216234BB9686D /* Mac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Mac-Info.plist"; sourceTree = "<group>"; };
 		3A7EC5549B1F64C9B3159C33 /* SyncFolderAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncFolderAccess.swift; sourceTree = "<group>"; };
 		3B140F4CF3CB50703622EE76 /* PricingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingStore.swift; sourceTree = "<group>"; };
 		3C5C2034160DB6ABF2A80C0F /* MailKeychainReply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailKeychainReply.swift; sourceTree = "<group>"; };
@@ -1010,7 +1006,6 @@
 				E1EEB899A8DCC8C3E5D64DC1 /* ContentView.swift */,
 				EF37D6804EE3B3289ED2D26C /* Design */,
 				EEB97A625AABBF70CC98D889 /* Features */,
-				CA11459570E123A3D59C1341 /* Generated */,
 				68D89054BF19BD6A96151CC7 /* Intents */,
 				5F58403E6753773DBB1FBA18 /* Models */,
 				E6B58AEEF6B18C60BF242DC8 /* Resources */,
@@ -1057,15 +1052,6 @@
 				23FE32C655289E60C771A530 /* WelcomeTrackingEditor.swift */,
 			);
 			path = Offers;
-			sourceTree = "<group>";
-		};
-		CA11459570E123A3D59C1341 /* Generated */ = {
-			isa = PBXGroup;
-			children = (
-				02EC3225734BD139ED47CBE0 /* iOS-Info.plist */,
-				39892680554216234BB9686D /* Mac-Info.plist */,
-			);
-			path = Generated;
 			sourceTree = "<group>";
 		};
 		DED6FCC47F9C9AACF3E4453E = {
@@ -1240,7 +1226,6 @@
 				A6A164A48FDA7B4D4827064E /* CardPilot 记一笔.shortcut in Resources */,
 				F554548294D42DFF4BCB8246 /* Catalog in Resources */,
 				73CFD86DA53A7AE5E154A5F7 /* chill-platinum.png in Resources */,
-				ABF68D836FF31C706C021EDE /* iOS-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1251,7 +1236,6 @@
 				940AB7C8A61A8C5B9C8CC4CD /* Assets.xcassets in Resources */,
 				0BDFEA89B75F0904DADA1C9B /* CardPilot 记一笔.shortcut in Resources */,
 				9E3C945A6FB11FE94534F99A /* Catalog in Resources */,
-				8F77D3A137BC9E83722ECA8B /* Mac-Info.plist in Resources */,
 				A6D590098D66449835499CD4 /* chill-platinum.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1816,7 +1800,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.0rc;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_MODULE_NAME = CardPilot;
@@ -1926,7 +1910,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.0rc;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

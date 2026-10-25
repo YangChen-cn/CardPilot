@@ -11,7 +11,7 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     PRODUCT_NAME: CardPilot
     PRODUCT_MODULE_NAME: CardPilot
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "0.1.0rc"
     CURRENT_PROJECT_VERSION: "1"
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_KEY_CFBundleDisplayName: CardPilot
@@ -23,7 +23,7 @@ targets:
     platform: macOS
     sources:
       - path: App
-        excludes: [Resources/Catalog]
+        excludes: [Resources/Catalog, Generated]
       - path: App/Resources/Catalog
         type: folder
         buildPhase: resources
@@ -50,7 +50,7 @@ targets:
     platform: iOS
     sources:
       - path: App
-        excludes: [Resources/Catalog]
+        excludes: [Resources/Catalog, Generated]
       - path: App/Resources/Catalog
         type: folder
         buildPhase: resources
