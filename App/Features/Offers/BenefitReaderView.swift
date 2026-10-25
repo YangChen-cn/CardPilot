@@ -93,6 +93,8 @@ struct BenefitNotesView: View {
 struct BenefitDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Query private var personalDocuments: [DomainRecord]
     let info: BenefitInfo
     @State private var editingWelcome = false
     @State private var editingRule: RewardRule?
@@ -103,19 +105,38 @@ struct BenefitDetailView: View {
     init(info: BenefitInfo) {
         self.info = info
         _personal = State(initialValue: info.personal)
+        var stateKeys: [String] = []
+        if let cardKey = info.cardKey {
+            stateKeys.append(OfferStateStore.key(cardKey: cardKey, offerID: info.overlayOfferID))
+        }
+        if let cardID = info.cardID {
+            stateKeys.append(OfferStateStore.legacyKey(cardID: cardID, offerID: info.overlayOfferID))
+        }
+        let watchedKeys = stateKeys
+        _personalDocuments = Query(filter: #Predicate<DomainRecord> { watchedKeys.contains($0.key) })
+    }
+
+    // The reader can present the personal rule editor. Rebuild that rule's
+    // projection after a save instead of keeping the original title and terms.
+    private var currentInfo: BenefitInfo {
+        guard info.origin == .personal, let rule = info.legacyRule else { return info }
+        var current = BenefitInfo(rule: rule)
+        current.personal = personal
+        return current
     }
 
     var body: some View {
-        let tracking = info.isWelcome ? (try? OfferTrackingStore.load(for: info, context: context)) : nil
+        let current = currentInfo
+        let tracking = current.isWelcome ? (try? OfferTrackingStore.load(for: current, context: context)) : nil
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-                    header(info)
-                    terms(info)
-                    facts(info)
+                    header(current)
+                    terms(current)
+                    facts(current)
                     if let tracking { welcome(tracking) }
                     if info.origin == .official { personalSection }
-                    official(info)
+                    official(current)
                 }
                 .padding(28)
                 .frame(maxWidth: 760, alignment: .leading)
@@ -126,13 +147,14 @@ struct BenefitDetailView: View {
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    if info.cardKey != nil {
+                    if info.cardKey != nil, !info.isHistorical {
                         Button(personal.favorite ? "取消收藏" : "收藏",
                                systemImage: personal.favorite ? "star.fill" : "star",
                                action: toggleFavorite)
                             .tint(personal.favorite ? .yellow : nil)
                             .accessibilityLabel(personal.favorite ? "取消收藏" : "收藏此权益")
                             .symbolEffect(.bounce, value: personal.favorite)
+                            .symbolEffectsRemoved(reduceMotion)
                             .sensoryFeedback(.selection, trigger: favoriteFeedback)
                     }
                     if info.canEdit, info.legacyRule != nil {
@@ -147,8 +169,10 @@ struct BenefitDetailView: View {
             }
         }
         .readerSize()
-        .sheet(isPresented: $editingWelcome) { WelcomeTrackingEditor(info: info) }
+        .sheet(isPresented: $editingWelcome) { WelcomeTrackingEditor(info: currentInfo) }
         .sheet(item: $editingRule) { RuleEditor(rule: $0) }
+        .onAppear(perform: refreshPersonal)
+        .onChange(of: personalDocuments.map(\.modifiedAt)) { _, _ in refreshPersonal() }
         .alert("未能保存个人记录", isPresented: Binding(get: { personalError != nil }, set: { if !$0 { personalError = nil } })) {
             Button("好", role: .cancel) { personalError = nil }
         } message: { Text(personalError ?? "请重试。") }
@@ -164,7 +188,7 @@ struct BenefitDetailView: View {
                         }
                     }
                     .labelsHidden()
-                    .onChange(of: personal.enrollment) { _, _ in savePersonal() }
+                    .onChange(of: personal.enrollment) { _, _ in saveEnrollment() }
                 }
                 Text("只记录你是否已登记，不会改动官方活动内容。")
                     .font(.caption).foregroundStyle(.secondary)
@@ -175,17 +199,28 @@ struct BenefitDetailView: View {
         }
     }
 
-    private func savePersonal() {
+    private func refreshPersonal() {
         guard let cardKey = info.cardKey else { return }
         do {
-            try OfferStateStore.save(personal, cardKey: cardKey, offerID: info.overlayOfferID, in: context)
+            personal = try OfferStateStore.load(cardKey: cardKey, cardID: info.cardID,
+                                               offerID: info.overlayOfferID, legacy: info.legacyRule, in: context)
+        } catch {
+            personalError = PilotError.message(error, fallback: "暂时无法读取个人记录，请重试。")
+        }
+    }
+
+    private func saveEnrollment() {
+        guard let cardKey = info.cardKey else { return }
+        do {
+            personal = try OfferStateStore.setEnrollment(personal.enrollment, cardKey: cardKey, cardID: info.cardID,
+                                                        offerID: info.overlayOfferID, legacy: info.legacyRule, in: context)
         } catch {
             personalError = PilotError.message(error, fallback: "请重试。")
         }
     }
 
     private func toggleFavorite() {
-        guard let cardKey = info.cardKey else { return }
+        guard !info.isHistorical, let cardKey = info.cardKey else { return }
         let favorite = !personal.favorite
         do {
             try OfferStateStore.setFavorite(favorite, cardKey: cardKey, cardID: info.cardID,

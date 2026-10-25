@@ -32,7 +32,7 @@ struct OffersView: View {
         let _ = catalog.revision
         return OfferStore.offers(context: context).filter { info in
             (includeHidden || !info.isHidden) && !info.isArchived
-                && (!favoritesOnly || info.personal.favorite)
+                && (!favoritesOnly || (!info.isHistorical && info.personal.favorite))
                 && (includeEnded || (!info.isEnded && !info.isHistorical))
                 && (search.isEmpty || info.title.localizedStandardContains(search)
                     || info.cardName.localizedStandardContains(search)

@@ -61,7 +61,7 @@ struct CardDetailView: View {
                             Text("常看权益").font(.title3.weight(.semibold))
                         }
                         ForEach(favoriteBenefits) { info in
-                            OfferPanel(info: info)
+                            OfferPanel(info: info, onEdit: info.canEdit ? { editingRule = info.legacyRule } : nil)
                         }
                     }
                 }
@@ -72,14 +72,16 @@ struct CardDetailView: View {
                     }.controlSize(.large)
                     Divider()
                 }
-                HStack {
-                    Text(favoriteBenefits.isEmpty ? "银行卡权益" : "其他权益").font(.title3.weight(.semibold))
-                    Spacer()
-                    Button("添加活动", systemImage: "plus", action: { addingRule = true }).frame(minHeight: 44)
+                if !currentBenefits.isEmpty || favoriteBenefits.isEmpty {
+                    HStack {
+                        Text(favoriteBenefits.isEmpty ? "银行卡权益" : "其他权益").font(.title3.weight(.semibold))
+                        Spacer()
+                        Button("添加活动", systemImage: "plus", action: { addingRule = true }).frame(minHeight: 44)
+                    }
                 }
                 if currentBenefits.isEmpty {
-                    if benefits.isEmpty {
-                        ContentUnavailableView("暂无权益资料", systemImage: "gift", description: Text("可添加自己的活动记录，或查看银行官方产品资料。"))
+                    if favoriteBenefits.isEmpty {
+                        ContentUnavailableView("暂无当前权益", systemImage: "gift", description: Text("可添加自己的活动记录，或查看银行官方产品资料。"))
                     }
                 } else {
                     ForEach(BenefitGroup.allCases) { group in
@@ -158,6 +160,7 @@ struct CardDetailView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu("卡片操作", systemImage: "ellipsis") {
+                    Button("添加活动", systemImage: "gift.badge.plus", action: { addingRule = true })
                     if phoneLayout {
                         NavigationLink { TransactionsView(card: card) } label: {
                             Label("消费账本", systemImage: "list.bullet.rectangle")

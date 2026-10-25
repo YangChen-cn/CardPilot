@@ -5,6 +5,39 @@ import Testing
 
 @Suite(.serialized) @MainActor
 struct OfferSyncStabilityTests {
+    @Test func enrollmentChangePreservesFieldsSyncedWhileTheReaderWasOpen() throws {
+        let local = try Persistence.makeContainer(inMemory: true), context = local.mainContext
+        let peer = try Persistence.makeContainer(inMemory: true)
+        let product = try #require(BankLibrary.load().product(id: "bochk.chill.platinum"))
+        let card = try LibraryOnboarding.add(product: product, in: context)
+        let offerID = try #require(product.displayCatalog.rules.first?.id)
+        let staleReader = try OfferStateStore.load(cardKey: card.overlayKey, cardID: card.id,
+                                                   offerID: offerID, legacy: nil, in: context)
+        #expect(staleReader == OfferPersonalState())
+        _ = try SyncStore.apply(SyncStore.records(context), context: peer.mainContext)
+        let remoteCard = try #require(peer.mainContext.fetch(FetchDescriptor<BankCard>()).first)
+        let remoteState = OfferPersonalState(hidden: true, favorite: true, enrollment: .notRegistered,
+                                             notes: "在另一设备补充的个人备注")
+        try OfferStateStore.save(remoteState, cardKey: remoteCard.overlayKey, offerID: offerID, in: peer.mainContext)
+        _ = try SyncStore.apply(SyncStore.records(peer.mainContext), context: context)
+
+        // A local picker changes only enrollment, never the old reader snapshot.
+        let saved = try OfferStateStore.setEnrollment(.registered, cardKey: card.overlayKey, cardID: card.id,
+                                                       offerID: offerID, legacy: nil, in: context)
+        #expect(saved.enrollment == .registered)
+        #expect(saved.hidden == remoteState.hidden)
+        #expect(saved.favorite == remoteState.favorite)
+        #expect(saved.notes == remoteState.notes)
+        #expect(try OfferStateStore.load(cardKey: card.overlayKey, cardID: card.id,
+                                         offerID: offerID, legacy: nil, in: context) == saved)
+
+        let key = OfferStateStore.key(cardKey: card.overlayKey, offerID: offerID)
+        let modifiedAt = try #require(try DocumentStore.record(key, in: context)).modifiedAt
+        _ = try OfferStateStore.setEnrollment(.registered, cardKey: card.overlayKey, cardID: card.id,
+                                              offerID: offerID, legacy: nil, in: context)
+        #expect(try DocumentStore.record(key, in: context)?.modifiedAt == modifiedAt)
+    }
+
     @Test func batchProjectionPreservesOverlayPriorityAndReadsSubsequentChanges() throws {
         let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
         let product = try #require(BankLibrary.load().product(id: "bochk.chill.platinum"))

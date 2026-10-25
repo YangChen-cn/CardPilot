@@ -70,6 +70,16 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
         state.favorite = favorite
         try save(state, cardKey: cardKey, offerID: offerID, in: context)
     }
+
+    @discardableResult
+    static func setEnrollment(_ enrollment: OfferEnrollment, cardKey: String, cardID: UUID?, offerID: String,
+                              legacy: RewardRule?, in context: ModelContext) throws -> OfferPersonalState {
+        var state = try load(cardKey: cardKey, cardID: cardID, offerID: offerID, legacy: legacy, in: context)
+        guard state.enrollment != enrollment else { return state }
+        state.enrollment = enrollment
+        try save(state, cardKey: cardKey, offerID: offerID, in: context)
+        return state
+    }
 }
 
 @MainActor enum OfferTrackingStore {
