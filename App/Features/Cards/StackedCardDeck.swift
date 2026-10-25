@@ -73,6 +73,13 @@ struct StackedCardDeck: View {
                 .frame(maxWidth: .infinity)
                 .sensoryFeedback(.selection, trigger: feedback)
             }
+
+            if let card = frontCard {
+                DeckCardSummary(card: card)
+                    .id(card.id)
+                    .padding(.top, 8)
+                    .transition(.opacity)
+            }
         }
         .onAppear { frontKey = frontCard?.syncKey }
         .onChange(of: cards.map(\.syncKey)) { _, _ in

@@ -28,6 +28,7 @@
 		0D9EA3913F3EDB74E5CCF58D /* AddCardFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3285C39FEFBFBEA220B88ABB /* AddCardFlowView.swift */; };
 		0DC051AB9F3E237CAFB8E3F5 /* WelcomeAddonRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865365471F26D4105DDE5E5A /* WelcomeAddonRecord.swift */; };
 		0EA8631F6AC099AD10F74BE3 /* SyncSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 164BAC74C19B0484E431CB30 /* SyncSnapshot.swift */; };
+		0F1FBE4DD533D0419FB8964E /* DeckCardSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1DD4BED2EE4B6DB13CE9A /* DeckCardSummary.swift */; };
 		0FEA841F6F965420CAC65C83 /* LibraryArtworkUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8C38B68ABEFEFE02CF9A8E /* LibraryArtworkUpdates.swift */; };
 		1137169D32524D88856F26B3 /* BankMailParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA4C8F938B0D5EF78029D12 /* BankMailParserTests.swift */; };
 		11535B89F7A0F1AD38357AC4 /* BillingStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB020C987D78E9C15B31C7B /* BillingStatement.swift */; };
@@ -413,6 +414,7 @@
 		EE0304A0BEC3F498F8F5ECBE /* CatalogImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EAB16206770DED617BA7DA /* CatalogImporter.swift */; };
 		EEA0DE8F1713420251ECED06 /* SyncIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B441BF0AA49C999E1A4A0527 /* SyncIdentity.swift */; };
 		F0020803754591511593B1F9 /* RuleExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD494C20059884193B08623 /* RuleExtras.swift */; };
+		F0164A9BBA915C48E201C158 /* DeckCardSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1DD4BED2EE4B6DB13CE9A /* DeckCardSummary.swift */; };
 		F02C202531775F1B355C012D /* BankMailMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DA25D25983C60920E00015F /* BankMailMessage.swift */; };
 		F174C130F434DDBD1EEE326E /* MailImportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0035015449C6407D31B4A980 /* MailImportService.swift */; };
 		F1A2D8218C3C515844C4970B /* CardSpendTotal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21F517A4860C2A1C82F2875 /* CardSpendTotal.swift */; };
@@ -639,6 +641,7 @@
 		B6C69358913E0D1E911AECA4 /* HKCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKCalendar.swift; sourceTree = "<group>"; };
 		B70B8ECAD2C3F5D96F8FD90D /* SpendCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendCategory.swift; sourceTree = "<group>"; };
 		B89BCB7370A6AD281D55309B /* WalletCardButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCardButtonStyle.swift; sourceTree = "<group>"; };
+		B9A1DD4BED2EE4B6DB13CE9A /* DeckCardSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckCardSummary.swift; sourceTree = "<group>"; };
 		BB8A3664243456AC9D8F899F /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
 		BD378C1494D435EAAD7867A5 /* QuickEntryPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickEntryPreferencesTests.swift; sourceTree = "<group>"; };
 		BE0CACB7AF5B6FD9750B4100 /* RecommendationDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationDraft.swift; sourceTree = "<group>"; };
@@ -954,6 +957,7 @@
 				F3C5D7056AF967FE20950603 /* CardsView.swift */,
 				E492A08CFADA50BA08ECB78B /* CompactWalletCardItem.swift */,
 				B4B78B64B8A79BE375EB5943 /* CompactWalletCardRow.swift */,
+				B9A1DD4BED2EE4B6DB13CE9A /* DeckCardSummary.swift */,
 				EA92DC461C69D785EF5511FC /* StackedCardDeck.swift */,
 				B89BCB7370A6AD281D55309B /* WalletCardButtonStyle.swift */,
 				54C692E8A2402867DC552404 /* WalletCardDestination.swift */,
@@ -1346,6 +1350,7 @@
 				D0C20D95BC0135E3A41C501F /* DashboardSpendingData.swift in Sources */,
 				FB2691D63A3D8BC49BFDA8AA /* DashboardView.swift in Sources */,
 				76C1F147887DC7C64C444264 /* DayTotal.swift in Sources */,
+				F0164A9BBA915C48E201C158 /* DeckCardSummary.swift in Sources */,
 				00AEAF44740CDE358C2F3D31 /* DemoData.swift in Sources */,
 				35C97EBBB6B4E0844410251C /* DocumentStore.swift in Sources */,
 				523D962EC751FF67D5E6A7EA /* DocumentSyncData.swift in Sources */,
@@ -1587,6 +1592,7 @@
 				DEFC7F8C9EE5F56BF419AE23 /* DashboardSpendingData.swift in Sources */,
 				8FFE028A9911CCF8157A0D12 /* DashboardView.swift in Sources */,
 				A4C619CE77F94BACFF058398 /* DayTotal.swift in Sources */,
+				0F1FBE4DD533D0419FB8964E /* DeckCardSummary.swift in Sources */,
 				6E8A00F272C0F6A575BDDC17 /* DemoData.swift in Sources */,
 				426375C34C9E4F64D2D796C5 /* DocumentStore.swift in Sources */,
 				653A23F7AB4BB72E3BA82230 /* DocumentSyncData.swift in Sources */,
