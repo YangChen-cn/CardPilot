@@ -1,4 +1,6 @@
-# CardPilot Agent Notes
+# CardPilot Public Artwork Notes
+
+> 这是公开仓库的卡面与资料库约定。原内部协作约定保存在本地未跟踪的根目录 `AGENTS.md`，不会进入公开提交。
 
 ## Card artwork
 
