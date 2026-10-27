@@ -14,10 +14,10 @@ struct BankLibraryTests {
         let library = try BankLibrary.load()
         #expect(Set(library.banks.map(\.id)) == ["hsbc", "bochk", "bea", "cncbi", "bocom"])
         #expect(library.products.count == 15); #expect(Set(library.products.map(\.id)).count == 15)
-        for bank in library.banks { try CatalogImporter.validateImage(#require(bank.logo.bundledData())) }
-        for product in library.products { try CatalogImporter.validateImage(#require(product.artwork.bundledData())) }
+        for bank in library.banks { try CatalogImporter.validateImage(#require(bank.logo?.bundledData())) }
+        for product in library.products { try CatalogImporter.validateImage(#require(product.artwork?.bundledData())) }
         let ordinary = try product("bea.udc.diamond"), student = try product("bea.udc.diamond.student")
-        #expect(ordinary.artwork.path == student.artwork.path)
+        #expect(ordinary.artwork?.path == student.artwork?.path)
         #expect(ordinary.welcomePlans.first?.id != student.welcomePlans.first?.id)
         #expect(try product("bochk.mastercard.debit").catalog.kind == "借记卡")
         #expect(try product("cncbi.multi-currency.debit").catalog.kind == "借记卡")
@@ -89,7 +89,7 @@ struct BankLibraryTests {
         context.insert(welcome)
         let edit = RuleDraft(rule: welcome); edit.notes = "My activity note"; edit.endsOn = try day("2026-11-20")
         #expect(edit.save(in: context, cards: [card]))
-        let customArtwork = try #require(self.product("bea.udc.diamond").artwork.bundledData())
+        let customArtwork = try #require(self.product("bea.udc.diamond").artwork?.bundledData())
         let custom = CardDraft(card: card); custom.name = "My student card"; try custom.importArtwork(customArtwork)
         custom.basePercent = 0.8; #expect(custom.save(in: context))
         try CatalogImporter.apply(CatalogPackage(schemaVersion: 1, cards: [hsbcProduct.displayCatalog]), context: context)
