@@ -11,17 +11,26 @@ import SwiftData
     private(set) var message: String?
     private(set) var error: String?
     private let defaults: UserDefaults
+    private let allowsSync: Bool
+    private let loadConnection: @MainActor () async throws -> MailCloudConnection?
     var automatic: Bool {
         didSet { defaults.set(automatic, forKey: "mail.cloud.automatic") }
     }
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard,
+         allowsSync: Bool = !RuntimeMode.isEphemeral,
+         loadConnection: @escaping @MainActor () async throws -> MailCloudConnection? = {
+             try MailCloudConnectionStore.load()
+         }) {
         self.defaults = defaults
+        self.allowsSync = allowsSync
+        self.loadConnection = loadConnection
         automatic = defaults.object(forKey: "mail.cloud.automatic") as? Bool ?? true
-        if !RuntimeMode.isEphemeral {
-            isConnected = (try? MailCloudConnectionStore.load()) != nil
+        if allowsSync {
             lastSyncAt = defaults.object(forKey: "mail.cloud.lastSync") as? Date
         }
+        // Never invoke the Keychain helper while static `shared` is initializing.
+        // Its process I/O can reenter the run loop and access `shared` again.
     }
 
     func connect(url: String, token: String, in context: ModelContext) async {
@@ -42,12 +51,16 @@ import SwiftData
     }
 
     func sync(in context: ModelContext, force: Bool = false) async {
-        guard !RuntimeMode.isEphemeral, !isSyncing, isConnected, force || automatic else { return }
-        if !force, let lastSyncAt, HKCalendar.calendar.isDate(lastSyncAt, inSameDayAs: .now) { return }
+        guard allowsSync, !isSyncing else { return }
+        // Set the guard before any credential I/O or suspension. Launch and
+        // scene-activation tasks may arrive together or reenter during the read.
         isSyncing = true; error = nil
         defer { isSyncing = false }
         do {
-            guard let connection = try MailCloudConnectionStore.load() else { isConnected = false; return }
+            guard let connection = try await loadConnection() else { isConnected = false; return }
+            isConnected = true
+            guard force || automatic else { return }
+            if !force, let lastSyncAt, HKCalendar.calendar.isDate(lastSyncAt, inSameDayAs: .now) { return }
             let url = try connection.validatedURL()
             let digest = SHA256.hash(data: Data(connection.url.utf8)).map { String(format: "%02x", $0) }.joined()
             let key = "mail.cloud.cursor." + digest

@@ -1,12 +1,12 @@
 # 银行卡资料库与后续开发手册
 
-更新：2026-10-23。开始前先读[权益优先架构](product-architecture.md)。CardPilot维护银行卡权益和轻量账本，不再追求银行奖励结算模拟。
+更新：2026-10-27。开始前先读[权益优先架构](product-architecture.md)。CardPilot维护银行卡权益和轻量账本，不再追求银行奖励结算模拟。
 
 ## 当前范围与入口
 
 银行卡 → 添加 → 银行 → 产品 → 官方卡面与权益预览 → 添加 → 个人尾号/账单日/额度。手动添加及自定义卡面继续保留。个人迎新在对应活动或迎新记录中编辑，不要求先选择“可计算方案”或确认银行资格。
 
-当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际和交通银行香港五家银行的十五个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
+当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际、交通银行香港、Mox、工银亚洲和建行亚洲八家银行的二十二个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
 
 | 银行 | 稳定产品ID | 产品 |
 | --- | --- | --- |
@@ -25,6 +25,13 @@
 | CNCBI | cncbi.multi-currency.debit | 多币扣账卡（Mastercard） |
 | BOCOM | bocom.go-goal.visa.platinum | Go-Goal Visa 白金信用卡 |
 | BOCOM | bocom.gba.unionpay.diamond | 大湾区银联双币钻石信用卡 |
+| Mox | mox.credit.mastercard | Mox Credit 信用卡 |
+| ICBC Asia | icbcasia.horoscope.unionpay.diamond | 宇宙星座银联钻石 |
+| ICBC Asia | icbcasia.horoscope.visa.signature | 宇宙星座 Visa Signature |
+| ICBC Asia | icbcasia.gba.unionpay.diamond | 粤港澳湾区银联钻石 |
+| CCB Asia | ccbasia.eye.visa.signature | eye Visa Signature（eye+） |
+| CCB Asia | ccbasia.travo.world.mastercard | TRAVO World Mastercard |
+| CCB Asia | ccbasia.unionpay.dual.currency | 银联双币卡 |
 
 所有产品都由同一份 Catalog V2 快照定义；GO钻石/白金、UDC普通/学生、两张扣账卡均保持独立产品ID。活动改名不换ID；真正的新活动批次才创建新ID。
 
@@ -32,12 +39,12 @@
 
 | 位置 | 职责 |
 | --- | --- |
-| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：4家银行、13个产品、Logo和官方卡面（联网后由公开快照补齐交银两款）；所有图片有SHA-256；只读，不含个人字段 |
+| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：8家银行、22个产品、Logo与卡面（Mox及建行三款为参考官方素材的AI横版示意，已明确标注）；所有图片有SHA-256；只读，不含个人字段 |
 | 公开快照 | 公开仓库 YangChen-cn/CardPilot-Catalog 的 docs/catalog.json 与 docs/images/；banks/products/artwork 全部云端定义，不含个人数据或凭据 |
 | CatalogRepository、RemoteCatalogCache | 获取、校验、ETag/Last-Modified、6小时检查、单文件原子快照和更新状态；304仅用有效快照，同版本正文变化拒绝；只读，不持有SwiftData上下文，不写个人账本 |
 | CatalogAssetStore、CatalogAssetImage | 按SHA-256独立下载/校验/磁盘缓存卡面与Logo；3个并发上限、按sha去重、原子写入、内存解码有上限；离线用缓存或内置回退，单图失败只显示占位并可在下次检查重试 |
 | BankLibrary、CardProduct | 解码 Catalog V2；银行与产品不再硬编码白名单，验证bankID引用、产品/活动/迎新和asset描述；生产环境优先最后有效缓存，测试跳过用户缓存；displayCatalog补充无ruleIDs的文字迎新 |
-| LibraryOnboarding | 只为选中的产品创建个人BankCard实例；官方卡不复制imageData，只保存catalogID；个人状态使用卡片overlayKey隔离。所有权由`imageData`/`catalogID`推导，不新增SwiftData字段 |
+| LibraryOnboarding | 只为选中的产品创建个人BankCard实例；官方卡不复制imageData，只保存catalogID；个人状态使用卡片overlayKey隔离。来源通过catalog/custom个人投影显式保存，不新增SwiftData字段 |
 | CardArtwork、LibraryArtworkUpdates | 以明确的 catalog/custom 来源选择卡面；官方卡按catalogID读取当前CatalogAsset，个人导入才写入custom；启动只保留持卡资源缓存引用，不再识别或迁移旧图片。来源与图片随卡片个人资料共同同步，不改 SwiftData Schema |
 | OfferStore、BenefitInfo | 从当前只读资料投影官方活动并合并个人overlay；展示自然语言限制、来源、日期；旧RewardRule只作为个人自建或历史迁移来源 |
 | OfferPanel、BenefitReaderView | 直接展示当前活动和自然语言限制、来源、日期；不读取交易历史 |
@@ -62,6 +69,8 @@
 - 远程快照只更新只读内容。个人持卡、尾号、账单/还款日、隐藏/收藏、登记、个人日期、门槛/奖励备注、到账、交易、手改名称/卡面和归档永不被远程覆盖，也不上传。
 
 ## 后续新增或更新资料
+
+提交前先读 [Catalog PR 提交注意事项](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md)。字段以实际客户端类型为准；`merchantKeywords` 是逗号分隔字符串，不能写数组。目录校验不能替代客户端解码验证。本轮素材出处与生图提示词见 [2026-10-27 素材记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/artwork-2026-10-27.md)。
 
 1. 用户授权扩大范围后再加银行/卡片。本轮只维护上表。先搜索ID和名称，防止重复或把不同等级/用户版本合并。
 2. 从官方产品页及条款核实名称、卡组织、权益、门槛、限制、登记、上限和日期。不能确认的条件直接标待核实；无须为了展示一项权益建立可执行交易匹配模型。保留来源和真实核实日期。

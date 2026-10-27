@@ -97,6 +97,7 @@
 		370B77C2003E30E595668BCD /* CardLedgerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59B251D092A7876E098131E4 /* CardLedgerSheet.swift */; };
 		376A83778E9D3F9DA11EFEA5 /* CardDetailHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79A5FB0DD9D61D19C21D845 /* CardDetailHeader.swift */; };
 		37A2C4D1CDE3E9C4D4028780 /* PilotError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36900FFC6900772788050D92 /* PilotError.swift */; };
+		37DA5AA4C3BE00016EDD8E66 /* MailCloudControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C879FC68DAA960C361F486 /* MailCloudControllerTests.swift */; };
 		3898D44DA69F43299800E71D /* AddCardFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3285C39FEFBFBEA220B88ABB /* AddCardFlowView.swift */; };
 		39C6C68F0FDFCF48539810EE /* CardsEmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776C40FC772FDB88C59857A6 /* CardsEmptyState.swift */; };
 		3A42A412DD326D251F679D2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1E5E88A9101B5BF10508A7A /* Assets.xcassets */; };
@@ -478,6 +479,7 @@
 		112B0595A20B14934B450AFA /* MailCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailCloudController.swift; sourceTree = "<group>"; };
 		11BAE4E4AC867F0DA3BEFCD0 /* HardeningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardeningTests.swift; sourceTree = "<group>"; };
 		12BA56799916954B46FAC78A /* TransactionDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDraft.swift; sourceTree = "<group>"; };
+		12C879FC68DAA960C361F486 /* MailCloudControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailCloudControllerTests.swift; sourceTree = "<group>"; };
 		1391C50667561E459A37285B /* CardPilotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardPilotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		14CCA3DC37C51545B24590C8 /* SpendFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendFields.swift; sourceTree = "<group>"; };
 		164BAC74C19B0484E431CB30 /* SyncSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSnapshot.swift; sourceTree = "<group>"; };
@@ -759,6 +761,7 @@
 				2A580CD4D0BA3338AFF0D341 /* FolderSyncTests.swift */,
 				CBBAF66BDA510343F8936AE5 /* GoCardVariantsTests.swift */,
 				11BAE4E4AC867F0DA3BEFCD0 /* HardeningTests.swift */,
+				12C879FC68DAA960C361F486 /* MailCloudControllerTests.swift */,
 				7C488BCF2E512B7A1D96EA42 /* MailKeychainHelperTests.swift */,
 				DC25F168CDD3951529F13445 /* OfferSyncStabilityTests.swift */,
 				6B1D7C74B3842A9975166FBB /* PersistenceAndImportTests.swift */,
@@ -1504,6 +1507,7 @@
 				30E44CD38BEE4097A2F7F58F /* FolderSyncTests.swift in Sources */,
 				8088829BD1FE1A5B363278EE /* GoCardVariantsTests.swift in Sources */,
 				86C644863096E2D3C8446D04 /* HardeningTests.swift in Sources */,
+				37DA5AA4C3BE00016EDD8E66 /* MailCloudControllerTests.swift in Sources */,
 				20F380E5CB9DE45A07EA7F5A /* MailKeychainHelperTests.swift in Sources */,
 				63D1985DDEE4708E2E89AD35 /* OfferSyncStabilityTests.swift in Sources */,
 				E9176B2A64B9D1027F1242E3 /* PersistenceAndImportTests.swift in Sources */,
