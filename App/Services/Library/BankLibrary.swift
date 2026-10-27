@@ -18,9 +18,9 @@ struct BankLibrary: Sendable {
     @MainActor private static var cached: BankLibrary?
 
     var referencedArtworkHashes: Set<String> {
-        var hashes = Set(banks.map { $0.logo.sha256 })
-        for product in products { hashes.insert(product.artwork.sha256) }
-        for product in retiredProducts { hashes.insert(product.artwork.sha256) }
+        var hashes = Set(banks.compactMap { $0.logo?.sha256 })
+        for product in products { if let hash = product.artwork?.sha256 { hashes.insert(hash) } }
+        for product in retiredProducts { if let hash = product.artwork?.sha256 { hashes.insert(hash) } }
         return hashes
     }
 
@@ -104,7 +104,7 @@ struct BankLibrary: Sendable {
         guard Set(product.welcomePlans.map(\.id)).count == product.welcomePlans.count else {
             throw PilotError.invalid("迎新方案标识重复。")
         }
-        try product.artwork.validate()
+        try product.artwork?.validate()
     }
 
 }
