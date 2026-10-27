@@ -20,6 +20,7 @@
 		08DF2987B04501D0ABC46463 /* LocalCardImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2C4E754AE1780E1DDB7ADD /* LocalCardImage.swift */; };
 		0962649941E8220794AC06D6 /* MerchantMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA74BA35DA07BABD67E4641 /* MerchantMatcher.swift */; };
 		09E256C76AD5963FF86ACDD4 /* BankMailReviewEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7E7C0A14651CE70EFD313E /* BankMailReviewEditor.swift */; };
+		09FD74EABE9ECDA9A3740CDF /* RecordWalletTransactionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08301CBA4F8EF6E011F30C29 /* RecordWalletTransactionIntent.swift */; };
 		0BA6995D5FE9E16EBA6EE638 /* CardPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D4AA340653CAF755ACBFF4 /* CardPilotApp.swift */; };
 		0BDFEA89B75F0904DADA1C9B /* CardPilot 记一笔.shortcut in Resources */ = {isa = PBXBuildFile; fileRef = 6897B4224FFCED6BDA184E8A /* CardPilot 记一笔.shortcut */; };
 		0C69E63C96A8A75F38AA3F85 /* RecommendationDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0CACB7AF5B6FD9750B4100 /* RecommendationDraft.swift */; };
@@ -78,6 +79,7 @@
 		2E993F6576CBA5413DE9717B /* CardSyncData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1C0EAF43EB13CCE2CDC0F2 /* CardSyncData.swift */; };
 		2F4078E19B6CF510F6AD19EA /* SpendFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14CCA3DC37C51545B24590C8 /* SpendFields.swift */; };
 		30E44CD38BEE4097A2F7F58F /* FolderSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A580CD4D0BA3338AFF0D341 /* FolderSyncTests.swift */; };
+		31124C0F48EC83D069D4398F /* RecordWalletTransactionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08301CBA4F8EF6E011F30C29 /* RecordWalletTransactionIntent.swift */; };
 		31559815A54A3AD8C8FF9A7E /* PersonalCardProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2AA2EB66673A485B99439 /* PersonalCardProfile.swift */; };
 		322AC4717C46C9119FA32883 /* CatalogRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41FF3BC46239F146F9A7FD0B /* CatalogRepository.swift */; };
 		324E924F9A412E81A807E784 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8A3664243456AC9D8F899F /* RecommendationEngine.swift */; };
@@ -164,6 +166,7 @@
 		5BC47ECF3BB7F7EE594CAFDB /* LibraryProductTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F5ACD704832E3E3CEB868BC /* LibraryProductTile.swift */; };
 		5BFA0920A8D64DC065C00184 /* DashboardSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4308ECF7B4579A76F1BD4D2F /* DashboardSnapshot.swift */; };
 		5D6BDC449CDC538268A57643 /* TransactionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C718D5F8CAC4159F1E2C06FB /* TransactionRow.swift */; };
+		5DBD4C2B2C07EB6B94B38F46 /* WalletAmountParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6EA8AC0BEEE3A6964CD70A /* WalletAmountParser.swift */; };
 		5DD2496A476A4286AFDFA5FB /* LocalSchemaV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = E796FF36044F95947F0F740B /* LocalSchemaV2.swift */; };
 		5E09D5045B3589C6680996A3 /* CardTerms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068A4F1D37D4D0571720FDFC /* CardTerms.swift */; };
 		5E3A2D6C4E21B1FAAC182396 /* TransactionRecordResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5935E2035C6CFCF0121D1C1 /* TransactionRecordResult.swift */; };
@@ -189,6 +192,7 @@
 		653A23F7AB4BB72E3BA82230 /* DocumentSyncData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6C0E39A406B4E06AE02BE2 /* DocumentSyncData.swift */; };
 		6653853CB1DFE797143444E5 /* MailEvidence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337240E940D12AF48F907BAB /* MailEvidence.swift */; };
 		6662B0E3BB034996F613DE00 /* BillingStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB020C987D78E9C15B31C7B /* BillingStatement.swift */; };
+		66C7875603EED784B49F2955 /* WalletAmountParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F454E6215100AA56A8CDF4F4 /* WalletAmountParsingTests.swift */; };
 		66D9404FC4B844267426B1C7 /* QuickEntryPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD378C1494D435EAAD7867A5 /* QuickEntryPreferencesTests.swift */; };
 		66F6BEC18A2164316B9ED79D /* CatalogAssetImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2631AD061BFD1EEDEAC7ED /* CatalogAssetImage.swift */; };
 		675F8E3FDD43F14572F406B2 /* TransactionReviewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B53D14D5F2928BDBF14F13 /* TransactionReviewItem.swift */; };
@@ -398,6 +402,7 @@
 		DF6A44B0D1E458C35176F218 /* WelcomeReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8016B1D4E73DB489F35C6E5 /* WelcomeReceipt.swift */; };
 		E0636573EF9CC9FDEDE826E7 /* RecordTransactionIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2976AF07F9400FE04815CCE4 /* RecordTransactionIntent.swift */; };
 		E0ECC639E44523F46E8AA2E9 /* RewardRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA633AFD9194DFD8EC13AB45 /* RewardRule.swift */; };
+		E1820E711C474604F1B6976A /* WalletAmountParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6EA8AC0BEEE3A6964CD70A /* WalletAmountParser.swift */; };
 		E2AC0601737A155E480CF714 /* CatalogPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52F2711C04FD31F2B1E57C4 /* CatalogPackage.swift */; };
 		E2CC2A20909C6DA2CA2A398B /* SMSAndOriginalCurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67173541D521C08F3A7F0E8 /* SMSAndOriginalCurrencyTests.swift */; };
 		E2DCFE61AFA4D8BECD81AA3B /* BankLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027EA52BDB4072CB0595F216 /* BankLibraryTests.swift */; };
@@ -471,6 +476,7 @@
 		0565CCA7AD7835BB279B2874 /* CardDeckInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDeckInteraction.swift; sourceTree = "<group>"; };
 		05C1C9851F59DC2FAD309E5F /* RuntimeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMode.swift; sourceTree = "<group>"; };
 		068A4F1D37D4D0571720FDFC /* CardTerms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTerms.swift; sourceTree = "<group>"; };
+		08301CBA4F8EF6E011F30C29 /* RecordWalletTransactionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordWalletTransactionIntent.swift; sourceTree = "<group>"; };
 		08BAC1612419D50053B7CEEA /* QuickEntryPreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickEntryPreferencesStore.swift; sourceTree = "<group>"; };
 		0950487C27CE2172BF3D7C33 /* CardDetailOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailOverview.swift; sourceTree = "<group>"; };
 		0C3A22B0A0F88ADFDF6F0393 /* TransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsView.swift; sourceTree = "<group>"; };
@@ -537,6 +543,7 @@
 		5B282F5D069C36BC62BF3015 /* CardImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardImageStore.swift; sourceTree = "<group>"; };
 		5BE14EEBE3488A7E83648CF2 /* OffersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffersView.swift; sourceTree = "<group>"; };
 		5C62B118723087302C3CBC30 /* LibraryOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryOnboarding.swift; sourceTree = "<group>"; };
+		5C6EA8AC0BEEE3A6964CD70A /* WalletAmountParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAmountParser.swift; sourceTree = "<group>"; };
 		5D160CC60C7262E80E919465 /* LibraryBankRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryBankRow.swift; sourceTree = "<group>"; };
 		5D8432D2F6374A17AA73C96B /* BankMailSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankMailSettingsView.swift; sourceTree = "<group>"; };
 		5E272F9169A590A2CE68B090 /* LibraryRuleSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryRuleSummary.swift; sourceTree = "<group>"; };
@@ -698,6 +705,7 @@
 		F1CD4A54DA0573F76A7A59AA /* CardOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardOrder.swift; sourceTree = "<group>"; };
 		F38FA5CE417515DDA92B3EE0 /* ReviewTransactionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewTransactionsView.swift; sourceTree = "<group>"; };
 		F3C5D7056AF967FE20950603 /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
+		F454E6215100AA56A8CDF4F4 /* WalletAmountParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAmountParsingTests.swift; sourceTree = "<group>"; };
 		F4555D2E0096B0BB3D4FCA20 /* WalletCardTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCardTile.swift; sourceTree = "<group>"; };
 		F8016B1D4E73DB489F35C6E5 /* WelcomeReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeReceipt.swift; sourceTree = "<group>"; };
 		FBE0266EBF9D629CCB41CE06 /* WelcomeTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeTracking.swift; sourceTree = "<group>"; };
@@ -772,6 +780,7 @@
 				A67173541D521C08F3A7F0E8 /* SMSAndOriginalCurrencyTests.swift */,
 				AB466BBDE33508F64FF01E5D /* SpendConditionsAndScopeTests.swift */,
 				731B19AFBB3115D15049AA74 /* TransactionRegionTests.swift */,
+				F454E6215100AA56A8CDF4F4 /* WalletAmountParsingTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -861,7 +870,9 @@
 				2CA661B199D0EA2F9C3A5241 /* CardEntityQuery.swift */,
 				E9EADBF18566AC046CA21DFA /* PilotShortcuts.swift */,
 				2976AF07F9400FE04815CCE4 /* RecordTransactionIntent.swift */,
+				08301CBA4F8EF6E011F30C29 /* RecordWalletTransactionIntent.swift */,
 				2FFB55B6324269CE2E83060B /* TransactionRegion.swift */,
+				5C6EA8AC0BEEE3A6964CD70A /* WalletAmountParser.swift */,
 			);
 			path = Intents;
 			sourceTree = "<group>";
@@ -1416,6 +1427,7 @@
 				B690EE91D03893DF44950990 /* RecommendationRow.swift in Sources */,
 				9F49094351FDE44515FAAC67 /* RecommendationWorkbench.swift in Sources */,
 				FC8230ABB8BF5EF1F0797C0D /* RecordTransactionIntent.swift in Sources */,
+				31124C0F48EC83D069D4398F /* RecordWalletTransactionIntent.swift in Sources */,
 				9B02621FA43AB4B2495F0FAF /* RegionPicker.swift in Sources */,
 				6EB0315569EB34C41B6EDB58 /* RemoteCatalog.swift in Sources */,
 				3F1EAA2C8E2CD8FAD383FF32 /* Repayment.swift in Sources */,
@@ -1470,6 +1482,7 @@
 				5D6BDC449CDC538268A57643 /* TransactionRow.swift in Sources */,
 				884F4EBB0445789D8A65DC7A /* TransactionSyncData.swift in Sources */,
 				0748F4374BAF588CC06E3647 /* TransactionsView.swift in Sources */,
+				E1820E711C474604F1B6976A /* WalletAmountParser.swift in Sources */,
 				F4FC706D927F4193BADD96A0 /* WalletCardButtonStyle.swift in Sources */,
 				4F4DAF8D047B90F4AB376B58 /* WalletCardDestination.swift in Sources */,
 				61C927CEB2FF9FEE7C2D71E6 /* WalletCardTile.swift in Sources */,
@@ -1518,6 +1531,7 @@
 				E2CC2A20909C6DA2CA2A398B /* SMSAndOriginalCurrencyTests.swift in Sources */,
 				1BBA07D1E99448BF0556327F /* SpendConditionsAndScopeTests.swift in Sources */,
 				B4D6FF59954A63D304656EE9 /* TransactionRegionTests.swift in Sources */,
+				66C7875603EED784B49F2955 /* WalletAmountParsingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1662,6 +1676,7 @@
 				52827BD9E4F412999F856925 /* RecommendationRow.swift in Sources */,
 				B807BB94D300C6541F901BEF /* RecommendationWorkbench.swift in Sources */,
 				E0636573EF9CC9FDEDE826E7 /* RecordTransactionIntent.swift in Sources */,
+				09FD74EABE9ECDA9A3740CDF /* RecordWalletTransactionIntent.swift in Sources */,
 				E907F93B6057FD5C88254994 /* RegionPicker.swift in Sources */,
 				FB533BAC7EB94C712DCC394D /* RemoteCatalog.swift in Sources */,
 				2A0C7BAB0EE5D741C7BA7305 /* Repayment.swift in Sources */,
@@ -1716,6 +1731,7 @@
 				882162AE0891639F83AB3E6A /* TransactionRow.swift in Sources */,
 				BF21F63A93590E62CC6D631A /* TransactionSyncData.swift in Sources */,
 				CD35195272FF12C55B692815 /* TransactionsView.swift in Sources */,
+				5DBD4C2B2C07EB6B94B38F46 /* WalletAmountParser.swift in Sources */,
 				B90164E1C475219D567F410F /* WalletCardButtonStyle.swift in Sources */,
 				CA656274A7519D6012078D38 /* WalletCardDestination.swift in Sources */,
 				B73A7EBC923E31F67A88CD53 /* WalletCardTile.swift in Sources */,
