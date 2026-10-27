@@ -86,7 +86,7 @@ struct RemoteCatalogBank: Codable, Sendable {
     let id: String
     let name: String
     let shortName: String
-    let logo: CatalogAsset
+    let logo: CatalogAsset?
     let searchTerms: [String]?
 
     func validate() throws {
@@ -94,7 +94,7 @@ struct RemoteCatalogBank: Codable, Sendable {
               !name.isEmpty, name.count <= 100, !shortName.isEmpty, shortName.count <= 60 else {
             throw PilotError.invalid("银行标识或名称无效。")
         }
-        try logo.validate()
+        try logo?.validate()
         try CatalogSearchTerms.validate(searchTerms ?? [])
     }
 }
@@ -102,7 +102,7 @@ struct RemoteCatalogBank: Codable, Sendable {
 struct RemoteCatalogProduct: Codable, Sendable {
     let id: String
     let bankID: String
-    let artwork: CatalogAsset
+    let artwork: CatalogAsset?
     let baseRewardVerified: Bool
     let welcomePlans: [WelcomePlan]
     let catalog: CatalogCard
@@ -115,7 +115,7 @@ struct RemoteCatalogProduct: Codable, Sendable {
               catalog.imageURL == nil, catalog.imageBase64 == nil else {
             throw PilotError.invalid("资料产品标识或银行关联不一致。")
         }
-        try artwork.validate()
+        try artwork?.validate()
         try CatalogSearchTerms.validate(searchTerms ?? [])
         _ = try CatalogImporter.decode(JSONEncoder().encode(CatalogPackage(schemaVersion: 1, cards: [catalog])))
         for rule in catalog.rules {
