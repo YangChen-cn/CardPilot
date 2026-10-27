@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102312,
-  "publishedAt": "2026-10-25",
+  "contentVersion": 2026102703,
+  "publishedAt": "2026-10-27",
   "banks": [
     {
       "id": "hsbc",
@@ -86,6 +86,57 @@
         "交行",
         "BOCOM",
         "Bank of Communications"
+      ]
+    },
+    {
+      "id": "mox",
+      "name": "Mox Bank",
+      "shortName": "Mox",
+      "logo": {
+        "path": "images/banks/mox.png",
+        "sha256": "34a27374dc43e420d84d0680b4a9096b03aa7a9f803fb4952a276e5b0cadd097",
+        "contentType": "image/png"
+      },
+      "searchTerms": [
+        "Mox Credit",
+        "Mox Bank",
+        "Mox信用卡"
+      ]
+    },
+    {
+      "id": "icbcasia",
+      "name": "ICBC (Asia) 中国工商银行（亚洲）",
+      "shortName": "工银亚洲",
+      "logo": {
+        "path": "images/banks/icbcasia.png",
+        "sha256": "48d1683ae16cf48c3e0d5a54181f9b98bf1cd22c11a24a0a26f06d369c910d76",
+        "contentType": "image/png"
+      },
+      "searchTerms": [
+        "工银亚洲",
+        "工銀亞洲",
+        "ICBC Asia",
+        "工商银行亚洲",
+        "宇宙星座",
+        "湾区信用卡"
+      ]
+    },
+    {
+      "id": "ccbasia",
+      "name": "CCB (Asia) 中国建设银行（亚洲）",
+      "shortName": "建行亚洲",
+      "logo": {
+        "path": "images/banks/ccbasia.png",
+        "sha256": "5e2c63035b7e26e429dbe1b0608cf4a94571de1e0746252d2ebf01b82b479eef",
+        "contentType": "image/png"
+      },
+      "searchTerms": [
+        "建行亚洲",
+        "建行亞洲",
+        "CCB Asia",
+        "中國建設銀行亞洲",
+        "TRAVO",
+        "eye"
       ]
     }
   ],
@@ -2235,6 +2286,626 @@
         "sha256": "72dae0dcc2ba2d479bb1a6ea95589b83aadb638c57fb938d076e2c0d85c250c8",
         "contentType": "image/png"
       }
+    },
+    {
+      "id": "mox.credit.mastercard",
+      "bankID": "mox",
+      "artwork": {
+        "path": "images/cards/mox-credit-mastercard.png",
+        "sha256": "dd145490bd7ff6a08b293148efe4d889b32e9520738cc68ed2d3a6a59d966e8a",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [
+        {
+          "id": "mox.credit.mastercard.plan.moxcash.2026",
+          "title": "MOXCASH新客｜信用卡消费HKD2,000得HKD1,000",
+          "details": "2026-10-31前以MOXCASH邀请码开户，使用码起15日内完成开户、开户后30日内申请Mox信用卡、获批后30日累计合资格签账HKD2,000；充值及指定钱包消费不合资格。宣传的HKD2,000总奖赏还包含存款/投资，非单纯信用卡迎新。",
+          "sourceURL": "https://mox.com/zh/promotions/moxcash/",
+          "ruleIDs": [
+            "mox.credit.mastercard.moxcash.welcome.2026"
+          ],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "applicationEndsOn": "2026-10-31",
+          "exclusionGroup": "mox.new-account.2026"
+        }
+      ],
+      "catalog": {
+        "id": "mox.credit.mastercard",
+        "bank": "Mox Bank",
+        "name": "Mox Credit 信用卡",
+        "network": "Mastercard",
+        "kind": "信用卡",
+        "sourceURL": "https://mox.com/zh/features/mox-credit/",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "mox.credit.mastercard.cashback.base",
+            "name": "CashBack方案｜普通客户1%无上限",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://mox.com/zh/features/mox-credit/",
+            "notes": "合资格消费、已于Mox App选择CashBack；未享Mox+时可获1%，无回赠上限；不是里数模式。",
+            "ratePercent": 1,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "mox.credit.mastercard.cashback.plus",
+            "name": "Mox+ CashBack｜2%无上限",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://mox.com/zh/features/mox-credit/",
+            "notes": "仅具Mox+资格、选择CashBack模式的合资格签账；2%为总回赠而非在1%上再加2%，无上限。资格与保有余额等规则以Mox App为准。",
+            "ratePercent": 2,
+            "enabled": false,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "mox.credit.mastercard.supermarket",
+            "name": "指定超市杂货店｜最高3%无上限",
+            "kind": "cashback",
+            "group": "merchant",
+            "sourceURL": "https://mox.com/zh/features/mox-credit/",
+            "notes": "仅合资格超市及杂货店MCC交易，须选择CashBack奖励。3%为该类别整体CashBack率，非在基础1%/2%之上再加3%；商户类别由Mastercard认定。",
+            "ratePercent": 3,
+            "enabled": false,
+            "calculation": {
+              "rateMode": "total"
+            },
+            "category": "超市"
+          },
+          {
+            "id": "mox.credit.mastercard.phone.2026",
+            "name": "2026购机｜指定商户额外3%／5%（上限HKD600）",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://mox.com/zh/promotions/2026-phone-promotion/",
+            "notes": "至2026-12-31须预先在Mox Rewards登记，适用于HKT、The Club、csl、1O1O等指定商户及符合条件的指定手机；单笔HKD6,500–11,999.99额外3%，单笔HKD12,000起额外5%，额外部分合共最多HKD600，名额先到先得；与CashBack基本2%叠加才有标题7%，并非所有客户固定7%。",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "capHKD": 600,
+            "capPeriod": "campaign",
+            "enabled": false,
+            "merchantKeywords": "HKT,The Club,csl,1O1O"
+          },
+          {
+            "id": "mox.credit.mastercard.moxcash.welcome.2026",
+            "name": "MOXCASH｜开Mox户+获批信用卡、消费HKD2,000得HKD1,000",
+            "kind": "welcome",
+            "group": "welcome",
+            "sourceURL": "https://mox.com/zh/promotions/moxcash/",
+            "notes": "邀请码MOXCASH开户推广截至2026-10-31；使用邀请码起15日内完成开户，开户后30日内成功申请信用卡，批核后30日内合资格消费累计满HKD2,000获HKD1,000。须满足开户邀请及新客条件，支付宝／微信电子支付或钱包增值排除。其余存款、投资奖励独立达标，不能算作刷卡迎新。",
+            "startsOn": null,
+            "endsOn": "2026-10-31",
+            "thresholdHKD": 2000,
+            "bonusHKD": 1000,
+            "requiresPersonalDates": true,
+            "enabled": false
+          }
+        ],
+        "baseRatePercent": 1,
+        "annualFeeNote": "官网列明免年费。",
+        "caveats": "普通客户选择CashBack赚1%无上限，具Mox+资格则可获2%无上限；需要在App选择CashBack/里数，不能把两种同时累加。3%超市CashBack依Mastercard商户类别认定。官网0%外币及海外商户签账费用有选择亚洲万里通奖赏等条件，不能视为所有CashBack交易永久0%手续费。账户开立与信用卡审批分别处理。 卡面为参考官方素材经 AI 整理的横版示意，已去除示例个人资料；不代表银行实际发行的卡面版本。"
+      },
+      "searchTerms": [
+        "Mox Credit",
+        "Mox Mastercard",
+        "Mox信用卡",
+        "无上限回赠",
+        "CashBack"
+      ]
+    },
+    {
+      "id": "icbcasia.horoscope.unionpay.diamond",
+      "bankID": "icbcasia",
+      "artwork": {
+        "path": "images/cards/icbcasia-horoscope-unionpay-diamond.png",
+        "sha256": "1c79da1c416e8b72ae469364ef0ba9140e0f7297364e12253c57b6409c566e03",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [],
+      "catalog": {
+        "id": "icbcasia.horoscope.unionpay.diamond",
+        "bank": "ICBC (Asia) 工银亚洲",
+        "name": "工银宇宙星座双币信用卡－银联钻石卡",
+        "network": "UnionPay",
+        "kind": "信用卡",
+        "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "icbcasia.horoscope.unionpay.diamond.cashback.1_5",
+            "name": "本地／海外合资格签账｜1.5%无上限现金回赠",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
+            "notes": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "ratePercent": 1.5,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "icbcasia.horoscope.unionpay.diamond.tax.2026q4",
+            "name": "2026Q4交税奖赏｜额外HKD100",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html",
+            "notes": "2026-10-01至12-31，客户须累计合资格零售消费满HKD1,800，及该张卡缴付合资格税款累计满HKD5,000，才可获HKD100；按每张合资格卡独立计算，非任何税款均回赠；并非消费HKD1,800直接获奖。",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "enabled": false
+          },
+          {
+            "id": "icbcasia.horoscope.unionpay.diamond.unionpay.mobile.2026q3",
+            "name": "2026Q3已结束｜内地／海外银联手机支付额外5%",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/promotion/unionpay-mainland-cash-rebate.html",
+            "notes": "活动2026-07-01至09-30已结束，指定ICBC银联信用卡绑定Apple Pay、ICBC Pay或UnionPay在内地/海外（非香港）消费，单笔至少RMB/HKD1,000或等值外币；每月累计至少RMB/HKD4,000，额外最高5%回赠，每客每月最多HKD200、整期最多HKD600，限总资金池、先到先得；仅历史展示。",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-09-30",
+            "ratePercent": 5,
+            "capHKD": 200,
+            "capPeriod": "monthly",
+            "minimumHKD": 1000,
+            "thresholdHKD": 4000,
+            "paymentMethod": "UnionPay",
+            "enabled": false,
+            "calculation": {
+              "rateMode": "extra"
+            }
+          }
+        ],
+        "baseRatePercent": 1.5,
+        "caveats": "官方列示本地及海外合资格签账1.5%无上限现金回赠，每月计入港币账户；港币与人民币签账合并计算，人民币按1:1计回赠基础。需排除现金、缴费、分期等非合资格项目，以正式签账奖励条款为准。年费与跨境手续费未完整核实，不视为永久豁免。 星座卡面有十二款设计；当前采用官方人马座示例卡面，申请时可按银行规定选择个人星座。"
+      },
+      "searchTerms": [
+        "ICBC Horoscope",
+        "星座卡",
+        "银联钻石",
+        "双币",
+        "1.5%"
+      ]
+    },
+    {
+      "id": "icbcasia.horoscope.visa.signature",
+      "bankID": "icbcasia",
+      "artwork": {
+        "path": "images/cards/icbcasia-horoscope-visa-signature.png",
+        "sha256": "627efe5c45032efb3b8efd09931b424f6d3cf1ecb93462d75efcaeda6fec755c",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [],
+      "catalog": {
+        "id": "icbcasia.horoscope.visa.signature",
+        "bank": "ICBC (Asia) 工银亚洲",
+        "name": "工银宇宙星座信用卡－Visa Signature卡",
+        "network": "Visa",
+        "kind": "信用卡",
+        "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "icbcasia.horoscope.visa.signature.cashback.1_5",
+            "name": "本地／海外合资格签账｜1.5%无上限现金回赠",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
+            "notes": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "ratePercent": 1.5,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "icbcasia.horoscope.visa.signature.tax.2026q4",
+            "name": "2026Q4交税奖赏｜额外HKD100",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html",
+            "notes": "2026-10-01至12-31，客户须累计合资格零售消费满HKD1,800，及该张卡缴付合资格税款累计满HKD5,000，才可获HKD100；按每张合资格卡独立计算，非任何税款均回赠；并非消费HKD1,800直接获奖。",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "enabled": false
+          }
+        ],
+        "baseRatePercent": 1.5,
+        "caveats": "官方列示本地及海外合资格签账1.5%无上限现金回赠，每月计入港币账户；港币与人民币签账合并计算，人民币按1:1计回赠基础。需排除现金、缴费、分期等非合资格项目，以正式签账奖励条款为准。年费与跨境手续费未完整核实，不视为永久豁免。 星座Visa版与银联双币版为独立产品，不应共用银联促销规则。"
+      },
+      "searchTerms": [
+        "ICBC Horoscope Visa",
+        "星座Visa",
+        "Visa Signature",
+        "1.5%"
+      ]
+    },
+    {
+      "id": "icbcasia.gba.unionpay.diamond",
+      "bankID": "icbcasia",
+      "artwork": {
+        "path": "images/cards/icbcasia-gba-unionpay-diamond.png",
+        "sha256": "4f8add9e886cc17958448c6e1bc236b36748f7e55505642bfea9ef69fa07b42c",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [],
+      "catalog": {
+        "id": "icbcasia.gba.unionpay.diamond",
+        "bank": "ICBC (Asia) 工银亚洲",
+        "name": "工银粤港澳湾区双币信用卡－银联钻石卡",
+        "network": "UnionPay",
+        "kind": "信用卡",
+        "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-greater-bay-area-credit-cards.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "icbcasia.gba.unionpay.diamond.cashback.1_5",
+            "name": "本地／海外合资格签账｜1.5%无上限现金回赠",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-greater-bay-area-credit-cards.html",
+            "notes": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "ratePercent": 1.5,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "icbcasia.gba.unionpay.diamond.tax.2026q4",
+            "name": "2026Q4交税奖赏｜额外HKD100",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html",
+            "notes": "2026-10-01至12-31，客户须累计合资格零售消费满HKD1,800，及该张卡缴付合资格税款累计满HKD5,000，才可获HKD100；按每张合资格卡独立计算，非任何税款均回赠；并非消费HKD1,800直接获奖。",
+            "startsOn": "2026-10-01",
+            "endsOn": "2026-12-31",
+            "enabled": false
+          },
+          {
+            "id": "icbcasia.gba.unionpay.diamond.unionpay.mobile.2026q3",
+            "name": "2026Q3已结束｜内地／海外银联手机支付额外5%",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.icbcasia.com/hk/tc/promotion/unionpay-mainland-cash-rebate.html",
+            "notes": "活动2026-07-01至09-30已结束，指定ICBC银联信用卡绑定Apple Pay、ICBC Pay或UnionPay在内地/海外（非香港）消费，单笔至少RMB/HKD1,000或等值外币；每月累计至少RMB/HKD4,000，额外最高5%回赠，每客每月最多HKD200、整期最多HKD600，限总资金池、先到先得；仅历史展示。",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-09-30",
+            "ratePercent": 5,
+            "capHKD": 200,
+            "capPeriod": "monthly",
+            "minimumHKD": 1000,
+            "thresholdHKD": 4000,
+            "paymentMethod": "UnionPay",
+            "enabled": false,
+            "calculation": {
+              "rateMode": "extra"
+            }
+          }
+        ],
+        "baseRatePercent": 1.5,
+        "caveats": "官方列示本地及海外合资格签账1.5%无上限现金回赠，每月计入港币账户；港币与人民币签账合并计算，人民币按1:1计回赠基础。需排除现金、缴费、分期等非合资格项目，以正式签账奖励条款为准。年费与跨境手续费未完整核实，不视为永久豁免。"
+      },
+      "searchTerms": [
+        "工银GBA",
+        "工银湾区",
+        "银联钻石",
+        "粤港澳",
+        "1.5%"
+      ]
+    },
+    {
+      "id": "ccbasia.eye.visa.signature",
+      "bankID": "ccbasia",
+      "artwork": {
+        "path": "images/cards/ccbasia-eye-visa-signature.png",
+        "sha256": "4946c3ab2e6a673991a7d94026b185088d7ed87671b2ed517032a359c2f5b62e",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [
+        {
+          "id": "ccbasia.eye.visa.signature.plan.welcome.cash",
+          "title": "新信用卡客户｜HKD600现金迎新",
+          "details": "前12个月未持有建行亚洲主卡；发卡首两个月累计合资格签账HKD6,000获HKD600现金回赠，须以具体细则及申请渠道为准；与分期HKD800方案二选一。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html",
+          "ruleIDs": [
+            "ccbasia.eye.visa.signature.welcome.cash"
+          ],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "periodType": "monthsFromIssue",
+          "periodCount": 2,
+          "exclusionGroup": "ccbasia.eye.welcome"
+        },
+        {
+          "id": "ccbasia.eye.visa.signature.plan.welcome.installment",
+          "title": "迎新替代方案｜分期HKD800",
+          "details": "须符合新信用卡客户条件；发卡首三个月成功申请合资格Chill分期，分期金额合计HKD15,000或以上且达规定期数才享HKD800，不是普通零售签账自动奖励，须与HKD600方案二选一。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html",
+          "ruleIDs": [],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "exclusionGroup": "ccbasia.eye.welcome"
+        }
+      ],
+      "catalog": {
+        "id": "ccbasia.eye.visa.signature",
+        "bank": "CCB (Asia) 建行亚洲",
+        "name": "eye Visa Signature 信用卡（eye+）",
+        "network": "Visa",
+        "kind": "信用卡",
+        "sourceURL": "https://www.asia.ccb.com/hongkong_sc/personal/credit_cards/eye_credit_card.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "ccbasia.eye.visa.signature.points.base",
+            "name": "合资格消费｜基本1X积分（约0.4%等值）",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html",
+            "notes": "按官网积分兑换比例25,000分约抵HKD100换算基本1X分，现金价值依客户实际兑换与计划规则。",
+            "ratePercent": 0.4,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "ccbasia.eye.visa.signature.online.contactless",
+            "name": "升级版｜网购最高5%／拍卡最高3%",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_sc/personal/credit_cards/eye_credit_card.html",
+            "notes": "每月合资格零售总签账满HKD3,000后，网购享7.5X积分（按25,000分抵HKD100约为3%）及2%现金；Visa payWave、Apple Pay、Google Pay合资格拍卡享7.5X积分，约3%。免登记，但不同交易类别及积分兑换仍受条款限制。Signature每月共享额外52,000积分及HKD160现金额度，不是网购和拍卡各有一份上限；不叠加旧5X/2%说明。此处为公布权益摘要，不自动判定合资格或保证到账。",
+            "enabled": false,
+            "calculation": {
+              "rateMode": "total"
+            },
+            "startsOn": "2026-10-01",
+            "endsOn": "2027-03-31"
+          },
+          {
+            "id": "ccbasia.eye.visa.signature.dining.2026q3",
+            "name": "2026Q3已结束｜本地餐饮／外卖／交通最高11%",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html",
+            "notes": "仅2026-07-01至09-30，每月阶段登记；餐饮/外卖合资格单笔满HKD500且累计满HKD5,000可得9%活动额外回赠，与2%积分等值合计最多11%，活动额外部分每阶段封顶HKD400；低于门槛或交通另有4%规则。活动已结束，不作当前推荐。",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-09-30",
+            "enabled": false
+          },
+          {
+            "id": "ccbasia.eye.visa.signature.welcome.cash",
+            "name": "迎新｜首两个月签账HKD6,000获HKD600",
+            "kind": "welcome",
+            "group": "welcome",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html",
+            "notes": "须为12个月无建行亚洲主卡新客；发卡首两个月合资格累计签账HKD6,000，获HKD600。二选一不能与分期HKD800累加。",
+            "thresholdHKD": 6000,
+            "bonusHKD": 600,
+            "requiresPersonalDates": true,
+            "enabled": false
+          }
+        ],
+        "baseRatePercent": 0.4,
+        "caveats": "基础1X积分按25,000分抵HKD100约等值0.4%，实际价值取决于兑换。2026-10-01至2027-03-31升级活动在月签账HKD3,000门槛下提供网购最高5%与拍卡最高3%；额外积分及现金按客户共享额度，详见当前官方条款，不能继续把旧5X/2%当本期活动。7–9月本地餐饮活动已结束。海外手续费未核实。 卡面为参考官方素材经AI整理的横版示意，不代表银行实际发行的卡面版本。"
+      },
+      "searchTerms": [
+        "eye+",
+        "CCB eye",
+        "eye Visa Signature",
+        "网购",
+        "拍卡",
+        "餐饮"
+      ]
+    },
+    {
+      "id": "ccbasia.travo.world.mastercard",
+      "bankID": "ccbasia",
+      "artwork": {
+        "path": "images/cards/ccbasia-travo-world-mastercard.png",
+        "sha256": "142ade81b90d00a8e42d7341a1da43f44faf4c548a6b7b4ed32d18a27bafec4a",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": false,
+      "welcomePlans": [
+        {
+          "id": "ccbasia.travo.world.mastercard.plan.welcome.cash",
+          "title": "新信用卡客户｜HKD600迎新",
+          "details": "申请前12个月无建行亚洲信用卡主卡，发卡首2个月内累计合资格签账HKD6,000，获HKD600；与申请Chill分期可获HKD800的方案二选一。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+          "ruleIDs": [
+            "ccbasia.travo.world.mastercard.welcome.cash"
+          ],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "periodType": "monthsFromIssue",
+          "periodCount": 2,
+          "exclusionGroup": "ccbasia.travo.welcome"
+        },
+        {
+          "id": "ccbasia.travo.world.mastercard.plan.welcome.installment",
+          "title": "分期迎新｜HKD800（二选一）",
+          "details": "申请前12个月无建行亚洲主卡，发卡首3个月内成功申请指定Chill分期、总分期金额HKD15,000或以上，期限至少6个月；不等于刷卡回赠，不能与HKD600方案重复。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+          "ruleIDs": [],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "exclusionGroup": "ccbasia.travo.welcome"
+        }
+      ],
+      "catalog": {
+        "id": "ccbasia.travo.world.mastercard",
+        "bank": "CCB (Asia) 建行亚洲",
+        "name": "TRAVO World Mastercard 信用卡",
+        "network": "Mastercard",
+        "kind": "信用卡",
+        "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "ccbasia.travo.world.mastercard.overseas.2026",
+            "name": "TRAVO Rewards｜海外最高4%或HKD1.5/里",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+            "notes": "2026-07-01至12-31须通过建行亚洲App登记TRAVO Rewards，海外合资格签账可选最高4%现金回赠或HKD1.5/里，具体最低签账、封顶及排除依该奖励计划条款；暂不作为自动可计算基础奖励。",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-12-31",
+            "enabled": false
+          },
+          {
+            "id": "ccbasia.travo.world.mastercard.dining.2026",
+            "name": "TRAVO Rewards｜本地餐饮最高2%或HKD3/里",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+            "notes": "2026-07-01至12-31，须先登记TRAVO Rewards；合资格本地餐饮最高2%现金回赠或HKD3/里，不能同时重复计算，门槛与上限依专属计划条款。",
+            "startsOn": "2026-07-01",
+            "endsOn": "2026-12-31",
+            "enabled": false
+          },
+          {
+            "id": "ccbasia.travo.world.mastercard.overseas.bonus.2026sep",
+            "name": "2026年9–10月｜海外叠加活动最高10%标题",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/promotions/overseas_spending/index.html",
+            "notes": "2026-09-01至10-31独立「飞常赏」推广，海外非港币合资格单笔至少HKD300，累计HKD4,000起享指定回赠，HKD8,000起更高档；登记及名额限制，阶段活动最高HKD500。与TRAVO最高4%叠加才形成宣传的最高10%，非无门槛固定10%。",
+            "startsOn": "2026-09-01",
+            "endsOn": "2026-10-31",
+            "enabled": false
+          },
+          {
+            "id": "ccbasia.travo.world.mastercard.welcome.cash",
+            "name": "迎新｜2个月签账HKD6,000获HKD600",
+            "kind": "welcome",
+            "group": "welcome",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html",
+            "notes": "限符合资格新主卡客户；与分期HKD800方案二选一。",
+            "thresholdHKD": 6000,
+            "bonusHKD": 600,
+            "requiresPersonalDates": true,
+            "enabled": false
+          }
+        ],
+        "caveats": "官方推廣2026-07-01至12-31须先登记TRAVO Rewards；海外最高4%回赠或HKD1.5/里、本地餐饮最高2%回赠或HKD3/里为二择奖励和满足限制后的最高档，不是无条件基础回赠。官网最高10%包含独立海外叠加推广，不能作为卡基础回赠；一般积分基准/外币手续费未单独核实。 卡面为参考官方素材经 AI 整理的横版示意，已去除示例个人资料；不代表银行实际发行的卡面版本。"
+      },
+      "searchTerms": [
+        "TRAVO",
+        "TRAVO World",
+        "旅游",
+        "海外",
+        "Mastercard World",
+        "航空里数"
+      ]
+    },
+    {
+      "id": "ccbasia.unionpay.dual.currency",
+      "bankID": "ccbasia",
+      "artwork": {
+        "path": "images/cards/ccbasia-unionpay-dual-currency.png",
+        "sha256": "ffc4199deb80c6aa74728acbb63634e399f143a8e4311983e482466621014745",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": true,
+      "welcomePlans": [
+        {
+          "id": "ccbasia.unionpay.dual.currency.plan.welcome.cash",
+          "title": "新客｜HKD300迎新现金回赠",
+          "details": "申请前12个月无建行亚洲主卡；发卡首2个月内累计合资格消费HKD6,000，获HKD300；与分期HKD800方案二选一。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
+          "ruleIDs": [
+            "ccbasia.unionpay.dual.currency.welcome.cash"
+          ],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "periodType": "monthsFromIssue",
+          "periodCount": 2,
+          "exclusionGroup": "ccbasia.unionpay.welcome"
+        },
+        {
+          "id": "ccbasia.unionpay.dual.currency.plan.welcome.installment",
+          "title": "指定分期计划｜HKD800（二选一）",
+          "details": "申请前12个月无建行亚洲主卡；发卡首3个月内参加至少6个月合资格Chill分期，累计分期金额HKD15,000或以上，获HKD800；与普通签账HKD300不可累加。",
+          "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
+          "ruleIDs": [],
+          "verified": true,
+          "calculable": false,
+          "kind": "main",
+          "exclusionGroup": "ccbasia.unionpay.welcome"
+        }
+      ],
+      "catalog": {
+        "id": "ccbasia.unionpay.dual.currency",
+        "bank": "CCB (Asia) 建行亚洲",
+        "name": "建行（亚洲）银联双币信用卡",
+        "network": "UnionPay",
+        "kind": "信用卡",
+        "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
+        "verifiedOn": "2026-10-27",
+        "rules": [
+          {
+            "id": "ccbasia.unionpay.dual.currency.points",
+            "name": "日常积分｜每HKD/RMB1赚1分，250分折1元",
+            "kind": "cashback",
+            "group": "daily",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
+            "notes": "合资格消费每HKD/RMB1赚1分，可选择每250分兑HKD/RMB1（约0.4%），或每15分兑1亚洲万里通里数（视卡资格）；现金回赠和里数互斥。",
+            "ratePercent": 0.4,
+            "calculation": {
+              "rateMode": "total"
+            }
+          },
+          {
+            "id": "ccbasia.unionpay.dual.currency.overseas.2026sep",
+            "name": "2026年9–10月｜海外签账最高6% + 银联额外HKD100",
+            "kind": "cashback",
+            "group": "limited",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/promotions/overseas_spending/index.html",
+            "notes": "2026-09-01至10-31须App登记且名额先到先得。合资格海外非港币交易单笔至少HKD300，整期累计HKD4,000起按档位享回赠，HKD8,000起最高6%，一般阶段回赠封顶HKD500；银联卡累计海外合资格HKD10,000另有HKD100，合计封顶HKD600；非全年基础回赠。",
+            "startsOn": "2026-09-01",
+            "endsOn": "2026-10-31",
+            "enabled": false
+          },
+          {
+            "id": "ccbasia.unionpay.dual.currency.welcome.cash",
+            "name": "迎新｜2个月签账HKD6,000获HKD300",
+            "kind": "welcome",
+            "group": "welcome",
+            "sourceURL": "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
+            "notes": "申请前12个月无建行亚洲信用卡主卡，发卡首2个月累计合资格消费满HKD6,000可获HKD300；另一方案需参加指定Chill分期才能获HKD800，两者互斥。",
+            "thresholdHKD": 6000,
+            "bonusHKD": 300,
+            "requiresPersonalDates": true,
+            "enabled": false
+          }
+        ],
+        "baseRatePercent": 0.4,
+        "foreignFeePercent": 0,
+        "caveats": "全年海外网购/外币签账主张HKD0手续费，是否涵盖特定渠道、兑换汇率差及人民币账单以银行细则为准。合资格签账每HKD/RMB1积1分，每250分可折HKD/RMB1，即0.4%等值；积分奖励需选择现金回赠或里数计划，不能把现金与里数同时累加。内地人民币账单与香港/海外港币账单分开；不能根据币种自动推断地区。 卡面为参考官方素材经 AI 整理的横版示意，已去除示例个人资料；不代表银行实际发行的卡面版本。"
+      },
+      "searchTerms": [
+        "CCB UnionPay",
+        "建行双币",
+        "银联双币",
+        "零外币费",
+        "大湾区"
+      ]
     }
   ]
 }
