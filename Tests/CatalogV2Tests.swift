@@ -89,7 +89,7 @@ struct CatalogV2Tests {
     }
 
     @Test func bundledArtworkUsesContentHashAndRejectsMismatch() throws {
-        let data = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork.bundledData())
+        let data = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork?.bundledData())
         let hash = CatalogAssetStore.hash(data)
         let matching = CatalogAsset(path: "images/cards/bochk-chill-platinum.png", sha256: hash, contentType: "image/png")
         #expect(matching.bundledData() == data)
