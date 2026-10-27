@@ -62,6 +62,7 @@
 - 更新检查发生在启动、回到前台且距上次检查超过6小时（失败后5分钟重试）、以及设置页“立即检查更新”。请求携带ETag/Last-Modified；304只记录检查时间。文档先校验schema、数量、银行/产品引用、asset路径/hash、来源、日期、分组、迎新计划和私有字段，全部通过后才原子替换缓存；失败保留最后有效缓存，首次使用内置Catalog。
 - 发布契约：活动支付方式只使用canonical标签（`UnionPay`、`Apple Pay`、`支付宝`等）。客户端把`UnionPay App`、`云闪付`、`雲閃付`等输入统一映射为`UnionPay`；公开快照必须写`UnionPay`。`scripts/validate_catalog.py`会校验单个活动和`calculation.paymentMethods`/`excludedPaymentMethods`，CI在合并前拒绝未知或旧标签。活动本身遇到未知支付方式时保留为文本，不再因一项活动让整份 Catalog 失效；结构、日期、URL或图片错误仍会使本次更新保留上一份有效缓存。
 - 文档与图片下载解耦。`CatalogAssetStore`按artifact的SHA-256查找磁盘缓存、内置回退和网络；下载采用有上限的流式读取，拒绝超大响应、非图片内容和跳出Catalog路径的同源重定向。图片校验失败不会让Catalog更新失败，也不会让产品消失。加载期间或失败时UI显示占位图；手动检查或下次联网会重试。缓存按当前/下架Catalog和持卡引用保留资源，超出容量预算时按最近访问时间回收无引用文件，不删除当前Catalog或持卡卡面仍引用的资源。
+- `logo` / `artwork` 可省略或为 `null`，分别使用银行图标或程序卡面占位，不妨碍添加与查看权益；非空对象仍须完整通过路径、类型和哈希验证。远程缺图不会删除个人自定义卡面；官方来源产品在当前快照缺图时显示占位，不伪造旧图片引用。
 - 官方活动使用显式`group`（daily/limited/merchant/welcome），日期可为空；`verifiedOn`只是资料核实日期，`updatedAt`是内容更新时间，不能拿来补活动开始、结束或个人截止日。迎新申请期和个人消费期分开。
 - 个人状态不以产品ID或活动名称模糊匹配。`BenefitInfo.cardKey` 对官方卡使用同步稳定的 `BankCard.overlayKey`（即由catalogID派生的`card.syncKey`），官方offer key是`offer:<cardKey>:<offerID>`；隐藏/收藏/登记/备注文档key是`offerState:<cardKey>:<offerID>`，迎新新key是`welcomeTracking:offer:<cardKey>:<offerID>`。旧`BankCard.id` UUID键在启动时只读复制到新key并保留旧记录。当前每个官方产品只保留一个持卡实例；未来支持同产品多实例时，需在overlayKey中加入同步实例标识，避免不同实例共享状态。
 - 旧官方RewardRule不删除、不改写：新安装不再复制官方规则；既有卡上的旧规则作为历史活动显示，旧迎新档案只读迁移到新key。旧个人自建规则（externalID为空）继续保留为个人活动。

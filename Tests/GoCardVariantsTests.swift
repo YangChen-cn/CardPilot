@@ -12,9 +12,10 @@ struct GoCardVariantsTests {
 
     @Test func variantsHaveIndependentProductsArtworkAndRewards() throws {
         let diamond = try product("bochk.go.diamond"), platinum = try product("bochk.go.platinum")
-        #expect(diamond.id != platinum.id); #expect(diamond.artwork.path != platinum.artwork.path)
-        let diamondImage = try #require(diamond.artwork.bundledData())
-        let platinumImage = try #require(platinum.artwork.bundledData())
+        let diamondArtwork = try #require(diamond.artwork), platinumArtwork = try #require(platinum.artwork)
+        #expect(diamond.id != platinum.id); #expect(diamondArtwork.path != platinumArtwork.path)
+        let diamondImage = try #require(diamondArtwork.bundledData())
+        let platinumImage = try #require(platinumArtwork.bundledData())
         #expect(diamondImage != platinumImage)
         #expect(diamond.welcomePlans.first?.id != platinum.welcomePlans.first?.id)
         #expect(diamond.welcomePlans.first?.ruleIDs != platinum.welcomePlans.first?.ruleIDs)
