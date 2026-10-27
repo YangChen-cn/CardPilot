@@ -97,4 +97,26 @@ struct CatalogV2Tests {
         #expect(wrong.bundledData() == nil)
     }
 
+
+    @Test func imageFreeCatalogProductsRemainAvailableForAdding() throws {
+        let bank = RemoteCatalogBank(id: "futurebank", name: "Future Bank", shortName: "FUTURE",
+                                     logo: nil, searchTerms: [])
+        let product = RemoteCatalogProduct(id: "future.card", bankID: "futurebank",
+                                           artwork: nil, baseRewardVerified: false,
+                                           welcomePlans: [], catalog: card(), searchTerms: [])
+        let document = RemoteCatalogDocument(schemaVersion: 2, contentVersion: 11,
+                                              publishedAt: "2026-10-27",
+                                              banks: [bank], products: [product])
+        let decoded = try RemoteCatalogDocument.decode(JSONEncoder().encode(document))
+        #expect(decoded.libraryBanks.first?.logo == nil)
+        #expect(decoded.cardProducts.first?.artwork == nil)
+        try BankLibrary.validateRemote(decoded)
+        let library = BankLibrary(banks: decoded.libraryBanks, products: decoded.cardProducts)
+        #expect(library.referencedArtworkHashes.isEmpty)
+        let container = try Persistence.makeContainer(inMemory: true)
+        let added = try LibraryOnboarding.add(product: try #require(library.products.first),
+                                              in: container.mainContext)
+        #expect(added.catalogID == "future.card")
+        #expect(added.artworkSource == .catalog)
+    }
 }
