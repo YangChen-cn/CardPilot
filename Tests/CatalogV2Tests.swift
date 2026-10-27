@@ -89,7 +89,7 @@ struct CatalogV2Tests {
     }
 
     @Test func bundledArtworkUsesContentHashAndRejectsMismatch() throws {
-        let data = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork.bundledData())
+        let data = try #require(BankLibrary.load().product(id: "bochk.chill.platinum")?.artwork?.bundledData())
         let hash = CatalogAssetStore.hash(data)
         let matching = CatalogAsset(path: "images/cards/bochk-chill-platinum.png", sha256: hash, contentType: "image/png")
         #expect(matching.bundledData() == data)
@@ -97,4 +97,45 @@ struct CatalogV2Tests {
         #expect(wrong.bundledData() == nil)
     }
 
+
+    @Test(arguments: [false, true])
+    func imageFreeCatalogProductsRemainAvailableForAdding(explicitNull: Bool) throws {
+        let bank = RemoteCatalogBank(id: "futurebank", name: "Future Bank", shortName: "FUTURE",
+                                     logo: nil, searchTerms: [])
+        let product = RemoteCatalogProduct(id: "future.card", bankID: "futurebank",
+                                           artwork: nil, baseRewardVerified: false,
+                                           welcomePlans: [], catalog: card(), searchTerms: [])
+        let document = RemoteCatalogDocument(schemaVersion: 2, contentVersion: 11,
+                                              publishedAt: "2026-10-27",
+                                              banks: [bank], products: [product])
+        var root = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(document)) as? [String: Any])
+        if explicitNull {
+            var banks = try #require(root["banks"] as? [[String: Any]])
+            var products = try #require(root["products"] as? [[String: Any]])
+            banks[0]["logo"] = NSNull(); products[0]["artwork"] = NSNull()
+            root["banks"] = banks; root["products"] = products
+        }
+        let decoded = try RemoteCatalogDocument.decode(JSONSerialization.data(withJSONObject: root))
+        #expect(decoded.libraryBanks.first?.logo == nil)
+        #expect(decoded.cardProducts.first?.artwork == nil)
+        try BankLibrary.validateRemote(decoded)
+        let library = BankLibrary(banks: decoded.libraryBanks, products: decoded.cardProducts)
+        #expect(library.referencedArtworkHashes.isEmpty)
+        let container = try Persistence.makeContainer(inMemory: true)
+        let added = try LibraryOnboarding.add(product: try #require(library.products.first),
+                                              in: container.mainContext)
+        #expect(added.catalogID == "future.card")
+        #expect(added.artworkSource == .catalog)
+    }
+
+    @Test(arguments: ["logo", "artwork"])
+    func optionalImagesStillRejectMalformedNonNullAssets(field: String) throws {
+        var root = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(document())) as? [String: Any])
+        let collection = field == "logo" ? "banks" : "products"
+        var items = try #require(root[collection] as? [[String: Any]])
+        items[0][field] = ["path": "../image.png", "sha256": hex, "contentType": "image/png"]
+        root[collection] = items
+        let data = try JSONSerialization.data(withJSONObject: root)
+        #expect(throws: (any Error).self) { try RemoteCatalogDocument.decode(data) }
+    }
 }

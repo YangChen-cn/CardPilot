@@ -93,13 +93,15 @@ def main() -> int:
     for bank in banks:
         if not isinstance(bank, dict):
             fail("bank must be an object")
-        relative, source_image = validate_asset(bank.get("logo"), source)
-        assets[str(relative)] = (relative, source_image)
+        if bank.get("logo") is not None:
+            relative, source_image = validate_asset(bank["logo"], source)
+            assets[str(relative)] = (relative, source_image)
     for product in products:
         if not isinstance(product, dict):
             fail("product must be an object")
-        relative, source_image = validate_asset(product.get("artwork"), source)
-        assets[str(relative)] = (relative, source_image)
+        if product.get("artwork") is not None:
+            relative, source_image = validate_asset(product["artwork"], source)
+            assets[str(relative)] = (relative, source_image)
 
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.parent / f".Catalog.import-{uuid.uuid4().hex}"

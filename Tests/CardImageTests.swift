@@ -17,7 +17,7 @@ struct CardImageTests {
     @Test @MainActor func bundledCardArtworkUsesTheSharedCanvas() throws {
         let library = try BankLibrary.load(remoteCache: nil)
         for product in library.products {
-            let data = try #require(product.artwork.bundledData())
+            let data = try #require(product.artwork?.bundledData())
             let source = try #require(CGImageSourceCreateWithData(data as CFData, nil))
             let image = try #require(CGImageSourceCreateImageAtIndex(source, 0, nil))
             #expect(image.width == 1200)
