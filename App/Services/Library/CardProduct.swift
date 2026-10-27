@@ -4,7 +4,7 @@ import Foundation
 struct CardProduct: Identifiable, Sendable {
     let bankID: String
     let catalog: CatalogCard
-    let artwork: CatalogAsset
+    let artwork: CatalogAsset?
     let baseRewardVerified: Bool
     let welcomePlans: [WelcomePlan]
     let searchTerms: [String]

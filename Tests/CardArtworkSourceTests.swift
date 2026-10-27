@@ -6,7 +6,7 @@ import Testing
 @Suite @MainActor
 struct CardArtworkSourceTests {
     private func artwork() throws -> Data {
-        try #require(BankLibrary.load().product(id: "bea.udc.diamond")?.artwork.bundledData())
+        try #require(BankLibrary.load().product(id: "bea.udc.diamond")?.artwork?.bundledData())
     }
 
     private func product() throws -> CardProduct {

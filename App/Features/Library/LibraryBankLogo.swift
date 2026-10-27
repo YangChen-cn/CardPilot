@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LibraryBankLogo: View {
-    let asset: CatalogAsset
+    let asset: CatalogAsset?
 
     var body: some View {
         CatalogAssetImage(asset: asset) { image in
