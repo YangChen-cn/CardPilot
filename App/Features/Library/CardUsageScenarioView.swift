@@ -6,7 +6,9 @@ struct CardUsageScenarioView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(scenario.title).font(.headline)
-            Text(scenario.periodDescription()).font(.caption).foregroundStyle(.secondary)
+            if scenario.startsOn != nil || scenario.endsOn != nil {
+                Text(scenario.periodDescription()).font(.caption).foregroundStyle(.secondary)
+            }
             VStack(alignment: .leading, spacing: 6) {
                 Text("适用场景").font(.subheadline.weight(.semibold))
                 Text(scenario.whenToUse)
