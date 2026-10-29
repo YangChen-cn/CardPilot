@@ -2,6 +2,8 @@
 
 更新：2026-10-29。基于 `fd54829`，本轮围绕常用路径的操作可靠性、空状态和辅助功能调整，保持权益优先的轻量定位。
 
+后续第二阶段（2026-10-30）：[Liquid Glass 与原生转场](liquid-glass-refinement.md)。下文保留第一阶段的实现与验证记录。
+
 ## 参考依据
 
 - [Apple HIG：Toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars)：工具栏突出常用操作，低频操作集中在菜单中。账本操作由账本页面自己管理，避免顶层与子页面争用入口。
