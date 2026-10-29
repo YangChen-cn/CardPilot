@@ -58,6 +58,10 @@ struct DeckCardSummary: View {
             .buttonStyle(.plain)
             .accessibilityHint("查看卡片的全部权益和个人资料")
 
+            // The selected card's strategy appears before per-offer highlights.
+            // Tapping this panel goes straight to the complete card guide.
+            CardUsageGuideForCard(card: card, compact: true)
+
             if benefits.isEmpty {
                 Text("暂无当前活动")
                     .font(.footnote).foregroundStyle(.secondary)
