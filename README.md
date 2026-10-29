@@ -4,43 +4,93 @@
 
 # CardPilot
 
-**把银行卡权益、迎新进度和日常消费，放回你自己的设备。**
+**集中查看银行卡权益，轻松记录日常消费。**
 
-一款为香港银行卡设计的原生 Apple App。SwiftUI + SwiftData，离线优先，不要求账号，也不会上传你的账本。
+面向香港银行卡用户的原生 Apple App，重点适配 iPhone 与 macOS。无需 CardPilot 账号，离线可用，个人资料与公开银行卡资料分开保存。
 
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20iPadOS-111827?style=flat-square)](#系统要求)
-[![Swift](https://img.shields.io/badge/Swift-6-F05138?style=flat-square&logo=swift&logoColor=white)](#技术栈)
-[![UI](https://img.shields.io/badge/UI-SwiftUI-0A84FF?style=flat-square)](#技术栈)
-[![Storage](https://img.shields.io/badge/Storage-SwiftData-34C759?style=flat-square)](#技术栈)
+[![Platform](https://img.shields.io/badge/platform-iPhone%20%7C%20macOS-111827?style=flat-square)](#系统要求)
+[![Swift](https://img.shields.io/badge/Swift-6-F05138?style=flat-square&logo=swift&logoColor=white)](#技术栈与架构)
+[![UI](https://img.shields.io/badge/UI-SwiftUI-0A84FF?style=flat-square)](#技术栈与架构)
+[![Storage](https://img.shields.io/badge/Storage-SwiftData-34C759?style=flat-square)](#技术栈与架构)
 [![License](https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square)](LICENSE)
 
-[功能](#功能) · [截图](#界面) · [开始使用](#开始使用) · [架构](#架构) · [参与贡献](CONTRIBUTING.md)
+[下载](#下载安装) · [功能](#功能) · [资料库](#银行卡资料库) · [界面](#界面) · [开发](#从源码运行) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
 ![CardPilot macOS 卡片页](docs/assets/screenshot-macos-cards.jpg)
 
-## 为什么是 CardPilot
+## 下载安装
 
-银行 App 擅长告诉你“刷了多少钱”，却很少帮你回答另外几个问题：
+**当前 iOS 预发布：0.2.0 RC（2026-10-29，Build 1）**
 
-- 这张卡现在到底有哪些权益？条件是怎样的？
-- 迎新活动走到哪一步了？奖励到账了吗？
-- 这笔消费该用哪张卡？有哪些已知限制？
-- 这些资料是官方的，还是我自己改过的？
+[下载 IPA](https://github.com/YangChen-cn/CardPilot/releases/download/v0.2.0rc/CardPilot-0.2.0rc.ipa) · [发布说明与 SHA-256 校验文件](https://github.com/YangChen-cn/CardPilot/releases/tag/v0.2.0rc) · [全部版本](https://github.com/YangChen-cn/CardPilot/releases)
 
-CardPilot 把这些问题放回一个安静、离线优先的本地工作区：官方资料只读更新，个人状态独立保存，消费记录留在自己的设备或自己的同步文件夹里。
+IPA 使用维护者的 `CardPilot` 自签名证书，并非 App Store 或 TestFlight 安装包。请通过 Sideloadly、AltStore 或 Xcode，使用自己的证书与描述文件重签安装。最低要求 iOS 26.0。
+
+macOS 可[从源码运行](#从源码运行)；本次 0.2.0 RC 发布提供 iOS IPA，没有附带新版 macOS 安装包。
 
 ## 功能
 
-| | |
+CardPilot 以**银行卡权益管理与轻量消费统计**为核心，帮助你了解每张卡的用途和限制，不模拟银行后台结算。
+
+| 功能 | 当前支持 |
 | --- | --- |
-| **权益清楚可查**<br>按日常、限时、指定商户和迎新分类浏览。展示适用条件、日期、来源、核实时间与官方条款入口。 | **迎新自己掌握**<br>记录申请、发卡、个人截止日、奖励和到账状态。到期提醒只看你确认过的日期。 |
-| **消费轻量记录**<br>手动、CSV、短信粘贴、银行邮件或 Apple Pay 快捷指令入账。保留原币和未知字段，不强行补成事实。 | **选卡建议克制**<br>按类别、地区、金额和支付方式展示可能适用的权益与限制，不模拟银行结算，也不承诺精确回赠。 |
-| **官方资料只读更新**<br>启动或回到前台时检查公开资料快照，成功后每 6 小时最多一次；失败后 5 分钟重试。网络失败时继续使用最后有效缓存或内置资料。 | **跨设备同步**<br>用自己选择的 iCloud Drive 或共享文件夹同步，无需 CloudKit、服务器或 CardPilot 账号。 |
-| **信用卡 / 扣账卡**<br>卡片按类型标记和筛选；可以选择一起显示，也可以按类型分组。 | **本地优先**<br>没有分析 SDK、没有广告、没有远端账本。个人尾号、备注和消费不会进入公开资料库。 |
+| **卡包** | 从资料库选卡，或手动添加并使用自定义卡面。iPhone 提供叠放、卡面展示、紧凑列表三种样式；默认叠放，保留已有显示偏好。macOS 使用侧栏与多列布局。 |
+| **权益查询** | 按日常、限时、指定商户和迎新浏览，查看条件、门槛、上限、登记要求、截止日期与官方条款；支持收藏常看权益。 |
+| **整卡用法推荐** | 每张卡一份整体策略：主要用在哪里、怎么付款、关键回赠上限、何时考虑换卡。总览和叠放卡包可直接打开完整指南。 |
+| **迎新记录** | 自行记录申请日、发卡日、个人截止日、奖励和备注，手动更新为未确认、进行中、已达标、已到账或已结束；为已追踪且截止日明确的迎新设置到期提醒。 |
+| **轻量账本** | 手动记账、CSV 导入、短信粘贴识别、银行邮件导入，以及 Apple Pay / Shortcuts 记录。提供基础去重，疑似重复或卡片匹配失败时交由用户核对。 |
+| **消费统计** | 账本默认查看本月，可切换月份、筛选卡片与类别、搜索历史；总览显示各卡消费、分类分布、近六个月趋势和最近交易。每张卡也有独立消费账本。 |
+| **这一笔刷哪张** | 根据类别、地区、可选金额、支付方式和商户比较可能适用的公开权益，保留待确认条件，不提供精确到账预测。 |
+| **个人资料与同步** | 记录尾号、账单日、还款日、额度及手动账单/还款；用自己选择的 iCloud Drive 或共享文件夹同步手机与 Mac，无需 CardPilot 服务器。 |
+
+迎新达标和奖励到账由用户确认，不按逐笔交易自动判断银行资格。外币消费可以只保留原币；跨币种港币合计只包含有可信换算资料的记录。
+
+### 邮件与快捷指令记账
+
+- **银行邮件**：可自行部署 Google Apps Script，每日采集 Gmail 中受支持的 HSBC、BOCHK、BEA 交易提醒。App 打开或回到前台、联网后再获取并导入，不会在 App 关闭时直接写入本机账本。详见[部署与连接说明](docs/bank-email-cloud.md)。
+- **Apple Pay / Shortcuts**：需要自行配置快捷指令或自动化，并传入交易资料；不是直接读取 Wallet 的全部历史记录。
+- **短信**：复制交易提醒后粘贴识别，不要求 App 读取系统短信库。
+
+这些方式保留已知交易事实；支付渠道、地区或汇率缺失时保持未知，不为推算回赠强迫用户逐笔补齐。
+
+## 银行卡资料库
+
+资料来自独立的 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog)，银行、产品、活动、卡面、Logo 和整卡用法均通过只读快照维护。
+
+**0.2.0 RC 内置快照：`2026102904`，8 家银行、24 款产品、24 份整卡指南。**
+
+| 银行 | 已收录产品 |
+| --- | --- |
+| **HSBC 汇丰** | 学生汇财金卡、Pulse 银联双币钻石卡、蓝狮子 Mastercard 扣账卡 |
+| **BOCHK 中银香港** | Chill 白金卡、GO 银联钻石卡、GO 银联白金卡、大湾区青年卡、万事达扣账卡、SOGO 崇光 Visa 白金卡、SOGO 崇光 Visa Signature |
+| **BEA 东亚** | HKU 学生 Visa、UDC 双币钻石卡、UDC 双币钻石学生卡 |
+| **CNCBI 信银国际** | GBA 双币卡、多币扣账卡 |
+| **BOCOM 交通银行（香港）** | Go-Goal Visa 白金卡、大湾区银联双币钻石卡 |
+| **Mox** | Mox Credit |
+| **ICBC Asia 工银亚洲** | 宇宙星座银联钻石卡、宇宙星座 Visa Signature、粤港澳湾区银联钻石卡 |
+| **CCB Asia 建行亚洲** | eye Visa Signature（eye+）、TRAVO World Mastercard、银联双币卡 |
+
+App 在启动、回到前台或手动检查时获取更新，正常检查间隔为 6 小时；失败后可重试。网络不可用时使用最后有效缓存或内置资料。卡面按 SHA-256 独立下载和缓存，单张图片失败不影响权益查询。
+
+资料更新只替换公开内容，不覆盖个人尾号、名称、卡面、迎新状态、备注或账本。已有字段内的资料更新通常不需要重新发布 App；新增协议字段仍需客户端支持。
+
+整卡指南是基于公开权益整理的使用建议，每卡仅一份，不按促销逐条生成，也不读取账本计算个人剩余额度。活动条件、期限和来源仍可在权益详情中查看。资料维护见[银行卡开发手册](docs/bank-library-development.md)、[指南填写说明](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/usage-guide.md)和[Catalog PR 注意事项](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md)。
+
+## 隐私与数据
+
+- **没有 CardPilot 用户数据库**：个人卡片、消费和记录先保存在本机 SwiftData。
+- **同步由你选择**：启用文件夹同步后，个人资料会写入你授权的私人云盘或共享文件夹，传输由对应云盘服务完成。
+- **公开资料与个人数据分离**：Catalog 不接收个人尾号、交易、邮箱连接或备注。
+- **邮件采集可选**：脚本在你自己的 Google 账户中运行，筛选后的提醒保存在自己的私人 Drive；连接密钥保存在各设备钥匙串，不随账本文件夹同步。
+- **没有广告或分析 SDK**：不需要为本地权益查询和记账注册账号。
+
+发现安全问题请按 [SECURITY.md](SECURITY.md) 报告，不要公开敏感资料。
 
 ## 界面
+
+以下截图来自较早版本，部分入口和布局与 0.2.0 RC 不同。
 
 ### macOS
 
@@ -57,38 +107,13 @@ CardPilot 把这些问题放回一个安静、离线优先的本地工作区：�
   <img src="docs/assets/screenshot-ios-benefit.jpg" alt="CardPilot iPhone 权益详情" width="30%">
 </p>
 
-## 资料库与官方卡面
-
-资料库使用公开的 **Catalog Schema V2**：银行、产品、官方卡面、Logo、来源与活动都由云端快照定义。当前提供 **5 家银行、15 款产品**：
-
-- **HSBC 汇丰**：学生 Visa 金卡、Pulse 银联双币钻石卡、Mastercard 扣账卡
-- **BOCHK 中银香港**：Chill 白金卡、GO 银联钻石卡、GO 白金卡、大湾区青年卡、万事达扣账卡
-- **BEA 东亚银行**：HKU 学生 Visa、UDC 钻石卡、UDC 钻石学生卡
-- **CNCBI 信银国际**：GBA 双币卡、多币扣账卡
-- **BOCOM 交通银行（香港）**：Go-Goal Visa 白金卡、大湾区银联双币钻石卡
-
-资料由 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog) 以只读快照发布，新增银行或产品只需更新资料库，不需要发布新版 App。官方卡面按 SHA-256 独立下载并缓存，单张图片失败不会影响权益资料；个人卡片、尾号、备注、迎新和消费始终单独保存在本机。网络不可用时，最后一份有效快照或精简的内置资料继续工作，首次启动也不需要等待网络。
-
-> 资料用于整理和比较，不构成银行官方说明或财务建议。权益、费率和活动以银行最新条款为准。
-
-## 隐私与数据
-
-- **不要求注册**：没有 CardPilot 账号，没有远端用户数据库。
-- **不上传账本**：卡片、消费、备注、迎新记录只写入本机 SwiftData。
-- **不上传个人资料到公开仓库**：官方资料库只包含产品、通用权益、卡面和来源链接。
-- **邮件记账是可选的**：需要自己部署 Google Apps Script，并把连接密钥保存在本机钥匙串。详见[银行邮件记账](docs/bank-email-cloud.md)。
-- **可随时导出/迁移**：数据保存在本地，也可以通过自己的同步文件夹带走。
-
-发现安全问题请不要公开敏感细节，按 [SECURITY.md](SECURITY.md) 的方式报告。
-
 ## 系统要求
 
-- macOS 26 或更新版本
-- iOS / iPadOS 26 或更新版本
-- Xcode 26 或更新版本（当前开发使用 Xcode 27）
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen)（修改 `project.yml` 或增删源文件后需要）
+- iPhone：iOS 26.0 或更新版本。
+- Mac：macOS 26.0 或更新版本。
+- 源码开发：当前使用 Xcode 27、Swift 6 和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)。
 
-## 开始使用
+## 从源码运行
 
 ```sh
 git clone https://github.com/YangChen-cn/CardPilot.git
@@ -97,107 +122,132 @@ xcodegen generate
 open CardPilot.xcodeproj
 ```
 
-在 Xcode 中选择 `CardPilotMac` 或 `CardPilotIOS` scheme 运行。
+选择 `CardPilotMac` 或 `CardPilotIOS` scheme。修改 `project.yml` 或增删源文件后，重新运行 `xcodegen generate`。
 
-### 命令行构建
+### 签名与 macOS 运行
 
-macOS：
+仓库默认使用维护者本机的稳定代码签名证书 `CardPilot`。其他开发者应在 Xcode 项目中配置自己的签名身份；iOS 真机另选自己的 Team 与描述文件。macOS App 与独立邮件钥匙串组件需要使用同一稳定证书，避免反复更换签名造成授权问题，详见[钥匙串说明](docs/bank-email-cloud.md#macos-钥匙串授权)。
+
+已具备本机 `CardPilot` 证书时：
+
+```sh
+./script/build_and_run.sh --verify
+```
+
+该命令停止旧开发版、增量构建并打开 macOS App。只构建、不打开界面时：
 
 ```sh
 xcodebuild \
   -project CardPilot.xcodeproj \
   -scheme CardPilotMac \
-  -configuration Debug \
+  -destination 'platform=macOS' \
   -derivedDataPath build/PublicDerivedData \
-  CODE_SIGN_IDENTITY="-" \
-  CODE_SIGNING_REQUIRED=NO \
+  CODE_SIGN_STYLE=Manual \
+  CODE_SIGN_IDENTITY=CardPilot \
   build
 ```
 
-iOS Simulator：
+使用自己的证书时，替换构建设置中的 `CardPilot`；不要在正在运行的 App bundle 上覆盖构建或重签名。
+
+### iOS 编译与模拟器
+
+仅编译，不安装或启动模拟器：
 
 ```sh
 xcodebuild \
   -project CardPilot.xcodeproj \
   -scheme CardPilotIOS \
   -destination 'generic/platform=iOS Simulator' \
-  -derivedDataPath build/PublicDerivedData \
+  -derivedDataPath build/iOSDerivedData \
   CODE_SIGNING_ALLOWED=NO \
   build
 ```
 
-### 关于签名
+需要手动查看界面时，再使用本机已有的模拟器名称或 UUID：
 
-仓库中的 `project.yml` 默认使用维护者的本机证书 `CardPilot`，因为 macOS 的可选邮件钥匙串组件依赖稳定签名身份。**普通贡献者不需要这个证书**：在 Xcode 里选择自己的 Team，或使用上面的 `CODE_SIGN_IDENTITY="-"` 构建即可。
+```sh
+./script/run_ios.sh 'iPhone 17'
+```
 
-如果不需要银行邮件记账，使用临时签名不影响权益、卡片、账本和文件夹同步；构建会跳过可选的钥匙串组件，邮件同步不可用。需要邮件记账时，请使用自己的稳定签名身份，并阅读[银行邮件记账](docs/bank-email-cloud.md)中的钥匙串说明。
+此脚本会构建、安装并打开指定模拟器版本；普通文档或小修不需要启动模拟器。
 
 ### 测试
+
+按改动范围选择直接相关的测试，例如资料库与指南：
+
+```sh
+./script/test.sh -quiet \
+  -only-testing:CardPilotTests/BankLibraryTests \
+  -only-testing:CardPilotTests/CardUsageGuideTests
+```
+
+大范围公共服务、存储迁移或同步协议变更再运行完整套件：
 
 ```sh
 ./script/test.sh -quiet
 ```
 
-测试脚本默认寻找本机 `CardPilot` 证书；没有该证书时，可以在 Xcode 中运行 `CardPilotTests`，或按上面的方式覆盖签名设置。测试使用独立的 DerivedData，不会覆盖正在使用的 App 账本。
+脚本使用固定 `CardPilot` 证书和独立 `build/TestDerivedData`；其他开发者可在 Xcode 中配置自己的签名身份后运行 `CardPilotTests`。不要让测试覆盖用户正在使用的 App。编译和测试通过不等于实际界面或真机同步已经验收。
 
 ### 发布打包
 
-开发脚本只负责 Debug 运行。发布构建使用独立脚本和 DerivedData，不会关闭或覆盖正在运行的开发版：
+使用独立的 Release DerivedData，不停止或覆盖正在运行的开发版：
 
 ```sh
-./script/package_release.sh all
+./script/package_release.sh ios --version 0.2.0rc --build 1
 ```
 
-默认从 `project.yml` 读取版本号和 Build 号，输出到 `build/releases/<version>/`：
+iOS 默认生成未签名 IPA；使用维护者现有自签名证书的方式为：
 
-- macOS：`CardPilot-<version>.dmg`（已用本机 `CardPilot` 证书签名，未公证）
-- iOS：`CardPilot-<version>.ipa`（默认不签名，供使用者用自己的证书/描述文件重签；也可设置 `IOS_SIGN_IDENTITY` 使用本机证书）
-- `INSTALL.txt` 和每个产物的 `.sha256`
+```sh
+IOS_SIGN_IDENTITY=CardPilot ./script/package_release.sh ios --version 0.2.0rc --build 1
+```
 
-只打一个平台可传 `mac` 或 `ios`；版本可用 `--version`/`--build` 覆盖。iOS 产物不是 App Store/TestFlight 安装包，最低 iOS 26.0。
+输出位于 `build/releases/<version>/`，包含 IPA、`.sha256` 和 `INSTALL.txt`。参数 `mac` 生成签名 DMG，`all` 构建两个平台；也可省略版本参数，使用 `project.yml` 当前值。iOS 包仍需有效证书和描述文件重签后侧载，不是 App Store / TestFlight 分发。
 
-## 技术栈
+## 技术栈与架构
 
-- **SwiftUI**：macOS / iPhone / iPad 共用数据与业务层，按宽度调整布局。
-- **SwiftData**：卡片、消费、活动和同步文档的本地存储；V3 schema，含旧数据兼容路径。
-- **Observation**：资料库、同步和界面状态的轻量响应式更新。
-- **文件同步**：`NSFileCoordinator` + 每台设备独立快照，支持用户自选文件夹或 iCloud Drive。
-- **只读资料库 V2**：云端定义银行、产品和卡面；原子快照 + ETag/Last-Modified + SHA-256 图片缓存；失败不覆盖最后有效版本。
+- **SwiftUI + Observation**：共享数据与业务，分别适配 iPhone 和 macOS 布局。
+- **SwiftData V3**：本地卡片、消费和个人记录，保留旧数据读取路径。
+- **只读 Catalog V2**：银行、产品、活动和用卡指南独立于个人数据；快照原子缓存，卡面按哈希缓存。
+- **文件夹同步格式 2**：通过 `NSFileCoordinator` 和每设备独立快照合并个人数据，支持用户授权的 iCloud Drive 或共享文件夹。
+- **轻量业务边界**：活动展示不依赖完整交易历史；迎新手动记录；选卡建议按已知条件比较，不维护精确返现回放。
 
 ```text
 App/
-  Features/      卡片、总览、权益、账本、推荐、设置
+  Features/      卡包、总览、权益、账本、推荐、设置
   Models/        SwiftData 模型
-  Services/      资料库、权益投影、同步、定价、邮件导入
-  Resources/     内置 Catalog 回退、图标、快捷指令
+  Services/      资料库、权益投影、同步、账户、邮件导入
+  Resources/     内置 Catalog、图标、快捷指令
+Support/         独立 macOS 邮件钥匙串组件
 Tests/           Swift Testing 单元与回归测试
-docs/            架构、资料库、同步、邮件和技术说明
+docs/            架构、资料库、同步、邮件及技术说明
 cloud/           可选的 Google Apps Script 邮件采集端
-script/          构建、测试、资料生成与辅助脚本
+script/          构建、测试、打包和资料维护脚本
 ```
 
 ## 文档
 
 - [权益优先架构](docs/product-architecture.md)
 - [银行卡资料库维护](docs/bank-library-development.md)
+- [整卡指南填写规范](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/usage-guide.md)
+- [Catalog 提交规范](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md)
 - [文件夹同步](docs/folder-sync.md)
 - [银行邮件记账](docs/bank-email-cloud.md)
 - [消费与账户](docs/transactions-and-accounts.md)
-- [HSBC 资料研究](docs/hsbc-library-research.md)
-- [BOCHK / BEA 资料研究](docs/bochk-bea-library-research.md)
-- [CNCBI 信银国际资料研究](docs/cncbi-library-research.md)
+- [轻量体验改进记录](docs/experience-polish.md)
 
 ## 参与贡献
 
-欢迎提交 issue、资料修正和 Pull Request。开始前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+欢迎提交 issue、资料修正和 Pull Request。开始前请读 [CONTRIBUTING.md](CONTRIBUTING.md)。银行资料在独立的 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog) 维护，App 只同步经验证的内置快照。
 
-- 不要提交真实卡号、尾号、交易、邮件、连接密钥或个人信息。
-- 新增/修改银行资料时，请附官方来源、核实日期和卡面来源。
-- UI 改动请附截图或录屏；资料修正请附条款或官方页面链接。
-- 提交前至少运行受影响的测试或说明未运行的原因。
+- 不提交真实卡号、尾号、交易、邮件、连接密钥、证书或个人信息。
+- 资料修正保留稳定 ID，并附官方条款、真实核实日期和素材来源；用卡指南每卡只写一份整体策略。
+- UI 由用户验收；已有截图或录屏可随 PR 提供，不为文档修改或小修反复启动模拟器。
+- 按变更范围报告实际检查结果，区分资料校验、单元测试、编译、启动和手工验收。
 
 ## 许可证
 
-本项目以 [MIT License](LICENSE) 开源。
+本项目以 [MIT License](LICENSE) 开源。CardPilot 与各银行无隶属关系；银行名称、商标、卡面和产品资料归各自权利人所有。
 
-CardPilot 与各银行无隶属关系。银行名称、商标、卡面和产品资料归各自权利人所有，仅用于识别和说明。银行权益与费率可能随时变化，请以银行官方条款为准。
+优惠、费用和合资格条件以银行最新条款为准。

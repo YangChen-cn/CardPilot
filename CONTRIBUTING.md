@@ -17,7 +17,7 @@ xcodegen generate
 open CardPilot.xcodeproj
 ```
 
-要求 Xcode 26+、macOS 26+。修改 `project.yml` 或增删源文件后需要重新运行 `xcodegen generate`。
+当前开发使用 Xcode 27、Swift 6；App 最低 macOS / iOS 26.0。修改 `project.yml` 或增删源文件后需要重新运行 `xcodegen generate`。
 
 仓库默认使用维护者的本机签名证书 `CardPilot`，因为可选的 macOS 邮件钥匙串组件依赖稳定签名。普通贡献者不需要该证书：在 Xcode 中选择自己的 Team，或在命令行覆盖 `CODE_SIGN_IDENTITY`。完整说明见 README 的“开始使用”。
 
@@ -48,7 +48,8 @@ open CardPilot.xcodeproj
 - 明确区分官方产品、活动模板和个人持卡资料。
 - 未核实的价格、日期、资格和上限保持未知，不用其他产品资料补齐。
 - 卡面必须来自可核实来源；不要使用带个人信息的截图。
-- 更新内置 JSON 与公开 `CardPilot-Catalog` 快照时，保持产品 ID、`catalogResource` 和 `imageResource` 一致。
+- 在独立 `CardPilot-Catalog` 仓库维护公开资料，按其文档校验后用 `script/import_catalog_snapshot.py` 同步 App 内置快照；复用银行、产品和活动稳定 ID，图片使用 `path` / `sha256` / `contentType` 描述。
+- 用卡指南每卡只写一份整体策略，保留来源和关键限制；填写前阅读 Catalog 的 `docs/usage-guide.md`。
 - 同步更新公开 schema 和 validator，并递增 `contentVersion`。
 
 ## Pull Request
@@ -57,7 +58,7 @@ open CardPilot.xcodeproj
 
 - 改动目的和用户可见变化；
 - 测试命令与结果；
-- UI 改动的截图或录屏；
+- UI 改动的说明，若已有手工验收截图或录屏可附上；文档修改不要求启动 App，小修不反复启动模拟器；
 - 资料改动的官方来源和核实日期；
 - 兼容性、迁移或个人数据影响说明。
 
