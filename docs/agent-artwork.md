@@ -16,3 +16,7 @@
 - Before submitting a Catalog PR, read the [Catalog PR checklist](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md). Validate the actual client field types as well as catalog syntax; `merchantKeywords` is a comma-separated string, not an array.
 - Do not weaken SwiftData migrations or replace a user's local ledger to make a release compatible.
 - Keep personal offer state, card artwork, transactions, and sync metadata out of the public catalog repository.
+
+## 真正横版构图（2026-10-29）
+
+卡面本身必须横版铺满1200×756画布。禁止将竖图缩小后居中置入透明或白色横版画布来凑尺寸，禁止拉伸、旋转文字。找不到合适官方横版时，用户已授权以官方素材为参考，通过imagegen重排为横版示意；核对银行、卡组织、等级和主要图案，不添加个人字段。产品与来源文档标明AI示意并保存提示词，独立银行Logo仍使用官方资源。发布前查看最终素材的实际构图；尺寸及哈希通过不能替代此检查。
