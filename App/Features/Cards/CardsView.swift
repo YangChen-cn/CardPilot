@@ -150,8 +150,7 @@ struct CardsView: View {
             else { withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(target, anchor: .center) } }
         }
         }
-        .searchable(text: $search, prompt: "银行或卡片名称")
-        .minimizedSearchToolbar()
+        .pilotSearch(text: $search, prompt: "银行或卡片名称")
         .background(PilotTheme.canvas)
         #if os(iOS)
         .sensoryFeedback(.selection, trigger: kindFilter)

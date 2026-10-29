@@ -149,8 +149,7 @@ struct TransactionsView: View {
             }
         }
         .navigationTitle(scopedCardName.map { $0 + "账本" } ?? "交易账本")
-        .searchable(text: $search, prompt: "搜索商户、卡片或分类")
-        .minimizedSearchToolbar()
+        .pilotSearch(text: $search, prompt: "搜索商户、卡片或分类")
         .toolbar { ledgerToolbar }
         .sheet(isPresented: $importingSMS) { SMSImportView() }
         .sheet(isPresented: $importingCSV) { CSVImportView() }

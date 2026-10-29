@@ -24,6 +24,7 @@
 		0BA6995D5FE9E16EBA6EE638 /* CardPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91D4AA340653CAF755ACBFF4 /* CardPilotApp.swift */; };
 		0BDFEA89B75F0904DADA1C9B /* CardPilot 记一笔.shortcut in Resources */ = {isa = PBXBuildFile; fileRef = 6897B4224FFCED6BDA184E8A /* CardPilot 记一笔.shortcut */; };
 		0C69E63C96A8A75F38AA3F85 /* RecommendationDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0CACB7AF5B6FD9750B4100 /* RecommendationDraft.swift */; };
+		0D6F85932CA8C6D3FD7C7A75 /* PilotSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB03974CEDDE37DEEAE7D588 /* PilotSearch.swift */; };
 		0D7107F557BCCC89620D3B57 /* CardProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11678DCE41156D6B553A033 /* CardProduct.swift */; };
 		0D81FF09520761FE98D1AF40 /* Money.swift in Sources */ = {isa = PBXBuildFile; fileRef = 989D88113EF1F3F89D5FA4D1 /* Money.swift */; };
 		0D9EA3913F3EDB74E5CCF58D /* AddCardFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3285C39FEFBFBEA220B88ABB /* AddCardFlowView.swift */; };
@@ -321,6 +322,7 @@
 		AB9255D13BC38C207C5DEA35 /* PilotFeedbackBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5B549670D89102BE3F901 /* PilotFeedbackBanner.swift */; };
 		ABF9FAC090A37CF24D08DF00 /* CardDetailOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0950487C27CE2172BF3D7C33 /* CardDetailOverview.swift */; };
 		AC17AE8A77C473928FB0A741 /* CatalogPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A52F2711C04FD31F2B1E57C4 /* CatalogPackage.swift */; };
+		AC4D8A5B8F1A88A5BD7ACBE9 /* PilotSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB03974CEDDE37DEEAE7D588 /* PilotSearch.swift */; };
 		ADB08DD2CF6C97B59F8B8481 /* LibraryBankRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D160CC60C7262E80E919465 /* LibraryBankRow.swift */; };
 		ADEE85C4F3CE51F764F9C66D /* FolderSyncSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3702882101982E21904198 /* FolderSyncSettingsSection.swift */; };
 		AEAEE78E520BB9C058F689BD /* CardUsageGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9F2B54E5A123E59D889180 /* CardUsageGuideTests.swift */; };
@@ -709,6 +711,7 @@
 		C718D5F8CAC4159F1E2C06FB /* TransactionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRow.swift; sourceTree = "<group>"; };
 		C757691064CEB4B8E7A46591 /* TransactionImportAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionImportAdapter.swift; sourceTree = "<group>"; };
 		C80F01E13B6EF372E69206D0 /* BankMailImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankMailImportTests.swift; sourceTree = "<group>"; };
+		CB03974CEDDE37DEEAE7D588 /* PilotSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotSearch.swift; sourceTree = "<group>"; };
 		CBBAF66BDA510343F8936AE5 /* GoCardVariantsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoCardVariantsTests.swift; sourceTree = "<group>"; };
 		CCEC430508C586187BFD1012 /* OfferPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferPanel.swift; sourceTree = "<group>"; };
 		CD160327E4DCABD0AD85FD3F /* CardEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardEntity.swift; sourceTree = "<group>"; };
@@ -1185,6 +1188,7 @@
 				6905C8419671FC5C9B64D2CB /* PilotDisclosureGroupStyle.swift */,
 				88F5B549670D89102BE3F901 /* PilotFeedbackBanner.swift */,
 				083A0063B158DE54A5A565E5 /* PilotNavigationTransition.swift */,
+				CB03974CEDDE37DEEAE7D588 /* PilotSearch.swift */,
 				CE66470D85329E90C391580A /* PilotTheme.swift */,
 				ED4113D3B4D920B34801315C /* ProgrammaticCardFace.swift */,
 				694C53D6E6AF64D55821E4A8 /* SectionHeading.swift */,
@@ -1475,6 +1479,7 @@
 				AB9255D13BC38C207C5DEA35 /* PilotFeedbackBanner.swift in Sources */,
 				D981F31B08B410B8E1013159 /* PilotMigrationPlan.swift in Sources */,
 				C7E0C9DE59797F30090F55A2 /* PilotNavigationTransition.swift in Sources */,
+				AC4D8A5B8F1A88A5BD7ACBE9 /* PilotSearch.swift in Sources */,
 				978B3E555B22DEE1E0393714 /* PilotShortcuts.swift in Sources */,
 				FCCCB2C464D4276BC15D5E05 /* PilotTheme.swift in Sources */,
 				2884E469FFFF4FB3C9066655 /* PolicyDocumentMerger.swift in Sources */,
@@ -1738,6 +1743,7 @@
 				37489F995967B34DE2158F25 /* PilotFeedbackBanner.swift in Sources */,
 				3D0383B10E215DEB1B6267FC /* PilotMigrationPlan.swift in Sources */,
 				8C7BD799361AA2C2AC497FB4 /* PilotNavigationTransition.swift in Sources */,
+				0D6F85932CA8C6D3FD7C7A75 /* PilotSearch.swift in Sources */,
 				126021E73008F3B5BE4E3CAE /* PilotShortcuts.swift in Sources */,
 				3BAC915E3BB5C4D79F96A794 /* PilotTheme.swift in Sources */,
 				02475119BF1A82C45767BEAA /* PolicyDocumentMerger.swift in Sources */,

@@ -54,8 +54,7 @@ struct AddCardFlowView: View {
             }
             .groupedListStyle()
             .background(PilotTheme.groupedCanvas)
-            .searchable(text: $search, prompt: "搜索银行")
-            .minimizedSearchToolbar()
+            .pilotSearch(text: $search, prompt: "搜索银行")
             .navigationTitle("添加银行卡")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("关闭", action: finish) }

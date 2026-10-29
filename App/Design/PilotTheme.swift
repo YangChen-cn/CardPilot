@@ -102,11 +102,4 @@ extension View {
         #endif
     }
 
-    @ViewBuilder func minimizedSearchToolbar() -> some View {
-        #if os(iOS)
-        searchToolbarBehavior(.minimize)
-        #else
-        self
-        #endif
-    }
 }
