@@ -31,30 +31,7 @@ struct WalletCardFace: View {
 
     var body: some View {
         CardFaceFrame {
-            GeometryReader { proxy in
-                ZStack {
-                    // Official card art is not always landscape. A muted
-                    // version of the same face keeps portrait cards from
-                    // floating in an unrelated empty panel.
-                    CardArtwork(card: card, compact: true)
-                        .scaledToFill()
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                        .clipped()
-                        .blur(radius: 20)
-                        .saturation(1.15)
-                        .opacity(0.58)
-                        .overlay {
-                            LinearGradient(
-                                colors: [.black.opacity(0.12), .clear, .black.opacity(0.12)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        }
-                    CardArtwork(card: card, compact: true)
-                        .frame(maxWidth: proxy.size.width, maxHeight: proxy.size.height)
-                        .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                }
-            }
+            CardArtwork(card: card, compact: true)
         }
     }
 }

@@ -40,31 +40,28 @@ struct TransactionEditor: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存", action: save).bold().disabled(availableCards.isEmpty)
                         .keyboardShortcut(.return, modifiers: .command)
+                        .confirmationDialog("可能是已记录的消费", isPresented: $showingDuplicateConfirmation, titleVisibility: .visible) {
+                            Button("保存为另一笔消费", action: saveAsAnother)
+                            Button("取消", role: .cancel, action: draft.cancelDuplicateConfirmation)
+                        } message: {
+                            if let transaction = draft.possibleDuplicate?.transaction {
+                                Text("已有：\(transaction.merchant) · \(Money.text(transaction.amountCents, currency: transaction.currency))\n\(transaction.date.formatted(date: .abbreviated, time: .shortened))\n确认这是另一笔消费后再保存。")
+                            }
+                        }
                 }
             }
         }
         .editorSize()
         .interactiveDismissDisabled(draft.hasUnsavedChanges)
-        .safeAreaInset(edge: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             if let error = draft.error {
-                Label(error, systemImage: "exclamationmark.circle")
-                    .font(.subheadline).foregroundStyle(.red)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding().background(.regularMaterial)
+                PilotFeedbackBanner(message: error, systemImage: "exclamationmark.circle", isError: true)
             }
         }
         .onChange(of: draft.error) { _, message in
             if let message { AccessibilityNotification.Announcement(message).post() }
         }
         .task { draft.prepare(cards: cards) }
-        .confirmationDialog("可能是已记录的消费", isPresented: $showingDuplicateConfirmation, titleVisibility: .visible) {
-            Button("保存为另一笔消费", action: saveAsAnother)
-            Button("取消", role: .cancel, action: draft.cancelDuplicateConfirmation)
-        } message: {
-            if let transaction = draft.possibleDuplicate?.transaction {
-                Text("已有：\(transaction.merchant) · \(Money.text(transaction.amountCents, currency: transaction.currency))\n\(transaction.date.formatted(date: .abbreviated, time: .shortened))\n确认这是另一笔消费后再保存。")
-            }
-        }
         .sensoryFeedback(.success, trigger: savedFeedback)
     }
 

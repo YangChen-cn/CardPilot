@@ -11,6 +11,7 @@ struct OfferPanel: View {
     @State private var managingWelcome = false
     @State private var showingReader = false
     @State private var refreshToken = 0
+    @Namespace private var readerTransition
 
     init(info: BenefitInfo, onEdit: (() -> Void)? = nil) {
         self.info = info; self.onEdit = onEdit
@@ -42,7 +43,8 @@ struct OfferPanel: View {
                     .pilotPanel()
                     .contentShape(.rect)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(WalletCardButtonStyle())
+                .matchedTransitionSource(id: info.id, in: readerTransition)
                 .accessibilityHint("查看适用条件和官方条款")
             } else {
                 VStack(alignment: .leading, spacing: 14) {
@@ -59,6 +61,7 @@ struct OfferPanel: View {
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
+                    .matchedTransitionSource(id: info.id, in: readerTransition)
                     .accessibilityLabel("阅读完整条款：\(info.title)")
                     Divider()
                     desktopFooter(tracking)
@@ -71,6 +74,7 @@ struct OfferPanel: View {
         .sheet(isPresented: $managingWelcome) { WelcomeTrackingEditor(info: info) }
         .sheet(isPresented: $showingReader) {
             BenefitDetailView(info: info)
+                .pilotZoomTransition(sourceID: info.id, in: readerTransition)
         }
         .onReceive(NotificationCenter.default.publisher(for: Persistence.didChange)) { _ in refreshToken &+= 1 }
     }

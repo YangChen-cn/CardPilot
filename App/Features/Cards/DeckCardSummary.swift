@@ -4,6 +4,7 @@ import SwiftData
 /// A quick look at the selected card, using published benefits rather than its ledger.
 struct DeckCardSummary: View {
     let card: BankCard
+    let onOpen: () -> Void
     @Environment(\.modelContext) private var context
     @Environment(CatalogRepository.self) private var catalog
     @Query(filter: #Predicate<DomainRecord> {
@@ -31,9 +32,7 @@ struct DeckCardSummary: View {
         let pricing = PricingStore.current(card)
         let details = PricingStore.details(card)
         VStack(alignment: .leading, spacing: 16) {
-            NavigationLink {
-                CardDetailView(card: card)
-            } label: {
+            Button(action: onOpen) {
                 HStack(alignment: .top, spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(card.name).font(.headline).foregroundStyle(.primary)

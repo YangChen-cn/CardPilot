@@ -28,7 +28,6 @@ struct TransactionsView: View {
     @State private var adding = false
     @State private var editing: SpendTransaction?
     @State private var deleting: SpendTransaction?
-    @State private var confirmingDelete = false
     @State private var showingCategoryTotals = false
     @State private var error: String?
     @State private var savedMessage: String?
@@ -164,20 +163,13 @@ struct TransactionsView: View {
         }
         .sheet(item: $editing) { TransactionEditor(transaction: $0) }
         .sheet(isPresented: $showingMonthPicker) { monthPicker }
-        .confirmationDialog("删除这笔交易？", isPresented: $confirmingDelete, titleVisibility: .visible) {
-            Button("删除交易", role: .destructive) { if let deleting { remove(deleting) } }
-        } message: {
-            if let deleting { Text("\(deleting.merchant) · \(Money.text(deleting.amountCents, currency: deleting.currency))\n这笔消费将从账本和消费统计中移除。") }
-        }
-        .safeAreaInset(edge: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             if let savedMessage {
-                Label(savedMessage, systemImage: "checkmark.circle.fill")
-                    .font(.subheadline).foregroundStyle(PilotTheme.accent)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16).padding(.vertical, 10)
-                    .background(.regularMaterial)
-                    .accessibilityAddTraits(.isStaticText)
+                PilotFeedbackBanner(message: savedMessage, systemImage: "checkmark.circle.fill")
             }
+        }
+        .onChange(of: savedMessage) { _, message in
+            if let message { AccessibilityNotification.Announcement(message).post() }
         }
         .task(id: feedbackRevision) {
             guard feedbackRevision > 0 else { return }
@@ -374,9 +366,10 @@ struct TransactionsView: View {
     @ToolbarContentBuilder private var ledgerToolbar: some ToolbarContent {
         #if os(iOS)
         if phoneLayout {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                ledgerOptions.labelStyle(.iconOnly)
-                if canRecord && (!visibleRecords.isEmpty || hasFilters || !search.isEmpty) {
+            ToolbarItem(placement: .topBarTrailing) { ledgerOptions.labelStyle(.iconOnly) }
+            if canRecord && (!visibleRecords.isEmpty || hasFilters || !search.isEmpty) {
+                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("记一笔", systemImage: "plus", action: { adding = true })
                         .labelStyle(.iconOnly)
                 }
@@ -389,6 +382,7 @@ struct TransactionsView: View {
             Button("记一笔", systemImage: "plus", action: { adding = true })
                 .disabled(!canRecord).keyboardShortcut("n", modifiers: .command)
         }
+        ToolbarSpacer(.fixed, placement: .primaryAction)
         ToolbarItem(placement: .primaryAction) { ledgerOptions }
         #endif
     }
@@ -465,6 +459,14 @@ struct TransactionsView: View {
             Button("删除", systemImage: "trash", role: .destructive, action: { confirmDeletion(transaction) })
             Button("编辑", systemImage: "pencil", action: { editing = transaction })
         }
+        .confirmationDialog("删除这笔交易？", isPresented: Binding(
+            get: { deleting?.id == transaction.id },
+            set: { if !$0, deleting?.id == transaction.id { deleting = nil } }
+        ), titleVisibility: .visible) {
+            Button("删除交易", role: .destructive) { remove(transaction) }
+        } message: {
+            Text("\(transaction.merchant) · \(Money.text(transaction.amountCents, currency: transaction.currency))\n这笔消费将从账本和消费统计中移除。")
+        }
     }
 
     private func reload() async {
@@ -511,7 +513,6 @@ struct TransactionsView: View {
 
     private func confirmDeletion(_ transaction: SpendTransaction) {
         deleting = transaction
-        confirmingDelete = true
     }
 
     private func clearFilters() {

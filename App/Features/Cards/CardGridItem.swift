@@ -15,8 +15,7 @@ struct CardGridItem: View {
         NavigationLink {
             WalletCardDestination(card: card, transition: transition)
         } label: {
-            WalletCardTile(card: card)
-                .matchedTransitionSource(id: card.id, in: transition)
+            WalletCardTile(card: card, transition: transition)
                 .draggable(card.syncKey)
         }
         .buttonStyle(WalletCardButtonStyle())

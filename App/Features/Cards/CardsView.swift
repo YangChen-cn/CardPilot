@@ -174,9 +174,10 @@ struct CardsView: View {
         }
         .toolbar {
             if isCompact {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    compactOptions
-                    if !cards.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) { compactOptions }
+                if !cards.isEmpty {
+                    ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                    ToolbarItem(placement: .topBarTrailing) {
                         Menu("添加银行卡", systemImage: "plus") {
                             addActions
                         }
@@ -196,17 +197,19 @@ struct CardsView: View {
 
     private var desktopControls: some View {
         VStack(alignment: .leading, spacing: PilotTheme.spacing + 8) {
-            HStack {
-                Text("\(cards.count(where: { !$0.isArchived })) 张使用中").font(.subheadline).foregroundStyle(.secondary)
-                Spacer()
-                Menu {
-                    Picker("显示方式", selection: $displayModeRaw) {
-                        ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
-                    }
-                } label: {
-                    Label("显示方式", systemImage: "square.grid.2x2")
-                }.buttonStyle(.bordered)
-                Menu("添加卡片", systemImage: "plus") { addActions }.buttonStyle(.borderedProminent)
+            GlassEffectContainer(spacing: 12) {
+                HStack(spacing: 12) {
+                    Text("\(cards.count(where: { !$0.isArchived })) 张使用中").font(.subheadline).foregroundStyle(.secondary)
+                    Spacer()
+                    Menu {
+                        Picker("显示方式", selection: $displayModeRaw) {
+                            ForEach(CardDisplayMode.allCases) { mode in Text(mode.label).tag(mode.rawValue) }
+                        }
+                    } label: {
+                        Label("显示方式", systemImage: "square.grid.2x2")
+                    }.buttonStyle(.glass)
+                    Menu("添加卡片", systemImage: "plus") { addActions }.buttonStyle(.glassProminent)
+                }
             }
             if cards.count > 1 {
                 Text("拖动卡片可调整顺序").font(.caption).foregroundStyle(.tertiary)

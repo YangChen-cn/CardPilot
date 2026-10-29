@@ -3,6 +3,7 @@ import SwiftUI
 /// The compact list changes presentation only; navigation and ordering stay in the card item.
 struct CompactWalletCardRow: View {
     let card: BankCard
+    var transition: Namespace.ID?
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
@@ -12,6 +13,7 @@ struct CompactWalletCardRow: View {
                     CardArtwork(card: card, compact: true)
                 }
                 .frame(width: 76)
+                .cardTransitionSource(id: card.id, in: transition)
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text(card.name).font(.body).bold().foregroundStyle(.primary)

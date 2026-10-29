@@ -10,18 +10,20 @@ struct CompactWalletCardItem: View {
     let onMoveToStart: () -> Bool
     let onMoveToEnd: () -> Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var height: CGFloat = 0
     @State private var isDropTarget = false
 
     var body: some View {
         NavigationLink {
-            WalletCardDestination(card: card, transition: transition)
+            if showsCompactRow && typeSize.isAccessibilitySize { CardDetailView(card: card) }
+            else { WalletCardDestination(card: card, transition: transition) }
         } label: {
             Group {
                 if showsCompactRow {
-                    CompactWalletCardRow(card: card)
+                    CompactWalletCardRow(card: card, transition: transition)
                 } else {
-                    WalletCardTile(card: card)
+                    WalletCardTile(card: card, transition: transition)
                 }
             }
                 .overlay {
@@ -42,7 +44,6 @@ struct CompactWalletCardItem: View {
                 }
                 .scaleEffect(isDropTarget && !reduceMotion ? 1.012 : 1)
                 .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: isDropTarget)
-                .matchedTransitionSource(id: card.id, in: transition)
                 .draggable(card.syncKey)
         }
         .buttonStyle(WalletCardButtonStyle())

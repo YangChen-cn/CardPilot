@@ -3,6 +3,7 @@ import SwiftData
 
 struct WalletCardTile: View {
     let card: BankCard
+    var transition: Namespace.ID?
     @Environment(\.modelContext) private var context
     @Environment(CatalogRepository.self) private var catalog
     #if os(iOS)
@@ -27,6 +28,7 @@ struct WalletCardTile: View {
         let baseText = pricing.baseRateBps > 0 ? Money.percent(pricing.baseRateBps) + " 基础权益" : nil
         VStack(alignment: .leading, spacing: isCompact ? 14 : 18) {
             WalletCardFace(card: card)
+                .cardTransitionSource(id: card.id, in: transition)
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(card.name).font(.headline).foregroundStyle(.primary)

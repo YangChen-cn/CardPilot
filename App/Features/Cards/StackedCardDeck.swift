@@ -8,6 +8,7 @@ struct StackedCardDeck: View {
     let transition: Namespace.ID
     let revealCardKey: String?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var interaction: CardDeckInteraction
     @State private var deckWidth: CGFloat = 0
     @State private var openedCard: BankCard?
@@ -59,35 +60,20 @@ struct StackedCardDeck: View {
             if count > 1 {
                 // Keep a constant-width control group even with a large wallet.
                 // Every action remains a full touch target; no tiny compressed dots.
-                HStack(spacing: 16) {
-                    Button { advance(by: -1) } label: {
-                        Label("上一张", systemImage: "chevron.left")
-                            .labelStyle(.iconOnly)
-                            .frame(minWidth: 44, minHeight: 44)
-                            .contentShape(.rect)
+                Group {
+                    if reduceTransparency {
+                        positionControl.background(PilotTheme.surface, in: .capsule)
+                            .overlay { Capsule().strokeBorder(.secondary.opacity(0.3)) }
+                    } else {
+                        positionControl.glassEffect(.regular.interactive(!reduceMotion), in: .capsule)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(PilotTheme.accent)
-                    Text("\(frontIndex + 1) / \(count)")
-                        .font(.subheadline)
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                        .accessibilityLabel("第 \(frontIndex + 1) 张，共 \(count) 张")
-                    Button { advance(by: 1) } label: {
-                        Label("下一张", systemImage: "chevron.right")
-                            .labelStyle(.iconOnly)
-                            .frame(minWidth: 44, minHeight: 44)
-                            .contentShape(.rect)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(PilotTheme.accent)
                 }
                 .frame(maxWidth: .infinity)
                 .sensoryFeedback(.selection, trigger: feedback)
             }
 
             if let card = frontCard {
-                DeckCardSummary(card: card)
+                DeckCardSummary(card: card, onOpen: { open(card) })
                     .id(card.id)
                     .padding(.top, 8)
                     .transition(.opacity)
@@ -135,6 +121,33 @@ struct StackedCardDeck: View {
         }
     }
 
+    private var positionControl: some View {
+        HStack(spacing: 12) {
+            Button { advance(by: -1) } label: {
+                Label("上一张", systemImage: "chevron.left")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(PilotTheme.accent)
+            Text("\(frontIndex + 1) / \(count)")
+                .font(.subheadline)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("第 \(frontIndex + 1) 张，共 \(count) 张")
+            Button { advance(by: 1) } label: {
+                Label("下一张", systemImage: "chevron.right")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(PilotTheme.accent)
+        }
+        .padding(.horizontal, 4)
+    }
+
     private var frontCard: BankCard? {
         cards.first { $0.syncKey == interaction.selectedKey } ?? cards.first
     }
@@ -157,7 +170,7 @@ struct StackedCardDeck: View {
             .scaleEffect(scale(at: depth))
             .offset(x: isFront && !reduceMotion ? interaction.offset : 0, y: -depth * 10)
             .opacity(!isFront && depth > 3 ? max(0, Double(4 - depth)) : 1)
-            .matchedTransitionSource(id: card.id, in: transition)
+            .cardTransitionSource(id: card.id, in: transition)
             .onTapGesture {
                 if isFront { open(card) } else { select(card.syncKey) }
             }

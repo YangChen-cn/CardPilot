@@ -7,6 +7,7 @@ struct BankProductsView: View {
     @State private var products: [CardProduct]
     @State private var search = ""
     @State private var showingProducts = false
+    @Namespace private var productTransition
 
     init(bank: LibraryBank, products: [CardProduct], onFinish: @escaping () -> Void) {
         self.bank = bank
@@ -29,8 +30,9 @@ struct BankProductsView: View {
                 ForEach(filtered) { product in
                     NavigationLink {
                         CardProductPreviewView(product: product, onFinish: onFinish)
+                            .pilotZoomTransition(sourceID: product.id, in: productTransition)
                     } label: {
-                        LibraryProductTile(product: product)
+                        LibraryProductTile(product: product, transition: productTransition)
                     }.buttonStyle(WalletCardButtonStyle())
                 }
                 if filtered.isEmpty { ContentUnavailableView.search }

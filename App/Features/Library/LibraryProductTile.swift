@@ -2,12 +2,14 @@ import SwiftUI
 
 struct LibraryProductTile: View {
     let product: CardProduct
+    var transition: Namespace.ID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             LibraryProductArtwork(product: product)
+                .aspectRatio(PilotTheme.cardAspectRatio, contentMode: .fit)
                 .frame(maxWidth: .infinity)
-                .frame(height: 220, alignment: .bottom)
+                .cardTransitionSource(id: product.id, in: transition)
                 .accessibilityHidden(true)
             HStack(alignment: .firstTextBaseline) {
                 Text(product.catalog.name).font(.headline)

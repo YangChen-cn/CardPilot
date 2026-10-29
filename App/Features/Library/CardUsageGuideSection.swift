@@ -10,6 +10,7 @@ struct CardUsageGuideSection: View {
     var showsProductName = false
     @Environment(\.dynamicTypeSize) private var typeSize
     @State private var showingGuide = false
+    @Namespace private var guideTransition
 
     var body: some View {
         Button { showingGuide = true } label: {
@@ -40,11 +41,13 @@ struct CardUsageGuideSection: View {
             .contentShape(.rect)
             .pilotPanel()
         }
-        .buttonStyle(.plain)
+        .buttonStyle(WalletCardButtonStyle())
+        .matchedTransitionSource(id: "guide", in: guideTransition)
         .accessibilityLabel(productName + "的推荐用法：" + guide.summary)
         .accessibilityHint("直接打开这张卡的完整用卡指南")
         .sheet(isPresented: $showingGuide) {
             CardUsageGuideView(guide: guide, productName: productName)
+                .pilotZoomTransition(sourceID: "guide", in: guideTransition)
         }
     }
 }

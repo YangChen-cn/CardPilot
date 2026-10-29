@@ -18,7 +18,8 @@ struct CardProductPreviewView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 LibraryProductArtwork(product: product)
-                    .frame(maxWidth: 440).frame(height: 270).frame(maxWidth: .infinity)
+                    .aspectRatio(PilotTheme.cardAspectRatio, contentMode: .fit)
+                    .frame(maxWidth: 440).frame(maxWidth: .infinity)
                 VStack(alignment: .leading, spacing: 10) {
                     Text(product.catalog.name).font(.title2).bold()
                     Text(product.catalog.bank + " · " + CardKind.normalized(product.catalog.kind ?? "").label + " · " + product.catalog.network).font(.subheadline).foregroundStyle(.secondary)
@@ -77,16 +78,15 @@ struct CardProductPreviewView: View {
         .background(PilotTheme.canvas)
         .navigationTitle("卡片资料")
         .inlineNavigationTitle()
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             Button(action: add) {
                 Label(adding ? "正在添加…" : (existingCard == nil ? "添加到卡包" : "设置我的卡片"), systemImage: existingCard == nil ? "plus" : "slider.horizontal.3")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent).controlSize(.large).disabled(adding)
+            .buttonStyle(.glassProminent).controlSize(.large).disabled(adding)
             .padding(PilotTheme.pagePadding).frame(maxWidth: 760).frame(maxWidth: .infinity)
-            .background(.bar)
-            .overlay(alignment: .top) { Divider() }
         }
+        .scrollEdgeEffectStyle(.soft, for: .bottom)
         .navigationDestination(isPresented: $showingSetup) {
             if let savedCard { PersonalCardSetupView(card: savedCard, product: product, onFinish: onFinish) }
         }
