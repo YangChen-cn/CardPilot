@@ -396,7 +396,7 @@ struct TransactionsView: View {
         }
     }
 
-    @ViewBuilder private var ledgerContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+    @ViewBuilder private func ledgerContainer<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         #if os(macOS)
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 20) { content() }
@@ -472,7 +472,7 @@ struct TransactionsView: View {
             error = nil
         } catch is CancellationError { }
         catch {
-            if requested == query, requestedRevision == revision, loadingID == token { error = "交易暂时无法读取，请重试。" }
+            if requested == query, requestedRevision == revision, loadingID == token { self.error = "交易暂时无法读取，请重试。" }
         }
     }
 
@@ -491,7 +491,7 @@ struct TransactionsView: View {
             page.scannedCount += result.scannedCount
         } catch is CancellationError { }
         catch {
-            if requested == query, requestedRevision == revision, loadingID == token { error = "更多交易暂时无法读取，请重试。" }
+            if requested == query, requestedRevision == revision, loadingID == token { self.error = "更多交易暂时无法读取，请重试。" }
         }
     }
 
