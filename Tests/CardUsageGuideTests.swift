@@ -4,6 +4,13 @@ import Testing
 
 @Suite @MainActor
 struct CardUsageGuideTests {
+    @Test func bundledProductsExposeOneHolisticGuideEach() throws {
+        let document = try BankLibrary.loadBundledSnapshot().document
+        let guides = document.cardProducts.compactMap(\.usageGuide)
+        #expect(!guides.isEmpty)
+        #expect(guides.allSatisfy { $0.scenarios.count == 1 })
+    }
+
     private func scenario() -> [String: Any] {
         ["id": "example.mobile", "title": "示例场景", "whenToUse": "示例消费条件",
          "howToUse": "按官方条款选择支付方式", "capNote": "上限须按官方条款核实",
