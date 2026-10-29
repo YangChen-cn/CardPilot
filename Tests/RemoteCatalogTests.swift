@@ -91,7 +91,7 @@ struct RemoteCatalogTests {
             return (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
                                     headerFields: ["ETag": "\"catalog-v1\"", "Content-Type": "application/json"])!, payload)
         }
-        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache)
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache, bundledSnapshot: nil)
         await repository.check(force: true)
 
         #expect(repository.phase == .updated(1))
@@ -125,7 +125,7 @@ struct RemoteCatalogTests {
             return (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
                                     headerFields: ["ETag": "\"catalog-v1\""])!, payload)
         }
-        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache)
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache, bundledSnapshot: nil)
         await repository.check(force: true)
         let modified = card.modifiedAt
         await repository.check(force: true)
@@ -149,7 +149,7 @@ struct RemoteCatalogTests {
             (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!,
              Data("{\"schemaVersion\":1".utf8))
         }
-        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache)
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache, bundledSnapshot: nil)
         await repository.check(force: true)
 
         #expect(repository.lastAppliedAt == nil)
@@ -167,13 +167,13 @@ struct RemoteCatalogTests {
     }
 
     @Test func unavailableNetworkLeavesCacheAndBundledPreviewAvailable() async throws {
-        let cache = temporaryCache(), doc = try document(version: 7, rate: 6)
+        let cache = temporaryCache(), doc = try document(version: 2026102903, rate: 6)
         let saved = try data(doc)
-        try cache.save(document: doc, data: saved, metadata: CatalogCacheMetadata(contentVersion: 7, publishedAt: "2026-10-23"))
+        try cache.save(document: doc, data: saved, metadata: CatalogCacheMetadata(contentVersion: 2026102903, publishedAt: "2026-10-23"))
         BankLibrary.invalidate()
         let library = try BankLibrary.load(remoteCache: cache)
         #expect(library.products.count == 1)
-        #expect(library.retiredProducts.count == 15)
+        #expect(library.retiredProducts.count == 24)
         let remote = try #require(library.products.first { $0.id == "remote.test" })
         #expect(remote.catalog.rules.first { $0.id == "daily" }?.ratePercent == 6)
 
@@ -303,7 +303,7 @@ struct RemoteCatalogTests {
             (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!,
              try! self.data(changed))
         }
-        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache)
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache, bundledSnapshot: nil)
         await repository.check(force: true)
         if case .invalidData(let message) = repository.phase {
             #expect(message.contains("版本号未更新"))
@@ -315,7 +315,7 @@ struct RemoteCatalogTests {
     @Test func networkFailureDoesNotMakeFailTimeLookSuccessful() async throws {
         let cache = temporaryCache()
         StubCatalogURLProtocol.handler = { _ in throw URLError(.notConnectedToInternet) }
-        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache)
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache, bundledSnapshot: nil)
         await repository.check(force: true)
         if case .networkUnavailable = repository.phase {} else { Issue.record("expected network phase") }
         #expect(repository.lastFailureAt != nil)
@@ -349,8 +349,8 @@ struct RemoteCatalogTests {
     }
 
     @Test func delistedProductStaysAvailableForHeldCardButNotForAdding() throws {
-        let cache = temporaryCache(), doc = try document(version: 4)
-        try cache.save(document: doc, data: try data(doc), metadata: CatalogCacheMetadata(contentVersion: 4, publishedAt: "2026-10-23"))
+        let cache = temporaryCache(), doc = try document(version: 2026102904)
+        try cache.save(document: doc, data: try data(doc), metadata: CatalogCacheMetadata(contentVersion: 2026102904, publishedAt: "2026-10-23"))
         BankLibrary.invalidate()
         let library = try BankLibrary.load(remoteCache: cache)
         #expect(library.products.map(\.id) == ["remote.test"])
@@ -362,6 +362,131 @@ struct RemoteCatalogTests {
         #expect(!offers.isEmpty)
         #expect(offers.allSatisfy { $0.isHistorical })
         BankLibrary.invalidate()
+    }
+
+    @Test func olderCacheCannotHideNewBundledCardsAndIsNotUsedForConditionalRequests() async throws {
+        let bundled = try BankLibrary.loadBundledSnapshot()
+        let cache = temporaryCache(), old = try document(version: bundled.document.contentVersion - 1)
+        let oldData = try data(old)
+        try cache.save(document: old, data: oldData,
+                       metadata: CatalogCacheMetadata(etag: "\"stale\"", contentVersion: old.contentVersion))
+        BankLibrary.invalidate()
+        defer { BankLibrary.invalidate() }
+        let library = try BankLibrary.load(remoteCache: cache)
+        #expect(library.products.contains { $0.id == "bochk.sogo.visa.signature" })
+        #expect(cache.loadSnapshot()?.data == oldData)
+
+        StubCatalogURLProtocol.handler = { request in
+            #expect(request.value(forHTTPHeaderField: "If-None-Match") == nil)
+            #expect(request.value(forHTTPHeaderField: "If-Modified-Since") == nil)
+            return (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
+                                    headerFields: ["ETag": "\"current\""])!, bundled.data)
+        }
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache,
+                                           bundledSnapshot: bundled)
+        #expect(repository.isUsingBundled)
+        #expect(repository.contentVersion == bundled.document.contentVersion)
+        await repository.check(force: true)
+        #expect(repository.phase == .upToDate)
+        #expect(!repository.isUsingBundled)
+        #expect(cache.loadSnapshot()?.bodyHash == bundled.bodyHash)
+    }
+
+    @Test func newerCacheKeepsItsConditionalRequestAndOfflineStatus() async throws {
+        let bundled = try BankLibrary.loadBundledSnapshot()
+        let cache = temporaryCache(), newer = try document(version: bundled.document.contentVersion + 1)
+        try cache.save(document: newer, data: try data(newer),
+                       metadata: CatalogCacheMetadata(etag: "\"newer\"", contentVersion: newer.contentVersion))
+        StubCatalogURLProtocol.handler = { request in
+            #expect(request.value(forHTTPHeaderField: "If-None-Match") == "\"newer\"")
+            return (HTTPURLResponse(url: request.url!, statusCode: 304, httpVersion: "HTTP/1.1", headerFields: nil)!, Data())
+        }
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache,
+                                           bundledSnapshot: bundled)
+        #expect(!repository.isUsingBundled)
+        #expect(repository.contentVersion == newer.contentVersion)
+        await repository.check(force: true)
+        #expect(repository.phase == .upToDate)
+        #expect(repository.contentVersion == newer.contentVersion)
+        #expect(cache.loadSnapshot()?.document.contentVersion == newer.contentVersion)
+    }
+
+    @Test func staleOrDamagedCacheCannotMakeOfflineStatusPretendToUseIt() async throws {
+        let bundled = try BankLibrary.loadBundledSnapshot()
+        let cache = temporaryCache(), old = try document(version: bundled.document.contentVersion - 1)
+        let oldData = try data(old)
+        try cache.save(document: old, data: oldData,
+                       metadata: CatalogCacheMetadata(etag: "\"stale\"", contentVersion: old.contentVersion))
+        StubCatalogURLProtocol.handler = { _ in throw URLError(.notConnectedToInternet) }
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache,
+                                           bundledSnapshot: bundled)
+        await repository.check(force: true)
+        if case .networkUnavailable = repository.phase {} else { Issue.record("expected offline status") }
+        #expect(repository.isUsingBundled)
+        #expect(repository.contentVersion == bundled.document.contentVersion)
+        #expect(repository.cacheSourceText == "App 内置资料")
+        #expect(cache.loadSnapshot()?.data == oldData)
+
+        let damaged = Data("damaged".utf8)
+        try damaged.write(to: cache.directory.appendingPathComponent("snapshot.json"))
+        let corruptRepository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache,
+                                                  bundledSnapshot: bundled)
+        #expect(corruptRepository.isUsingBundled)
+        #expect(corruptRepository.contentVersion == bundled.document.contentVersion)
+        await corruptRepository.check(force: true)
+        #expect(corruptRepository.isUsingBundled)
+        #expect(try Data(contentsOf: cache.directory.appendingPathComponent("snapshot.json")) == damaged)
+    }
+
+    @Test func equalVersionDifferentBytesAndOlderServerNeverReplaceBundledOrCache() async throws {
+        let bundled = try BankLibrary.loadBundledSnapshot()
+        let cache = temporaryCache(), conflicting = try document(version: bundled.document.contentVersion)
+        let conflictingData = try data(conflicting)
+        try cache.save(document: conflicting, data: conflictingData,
+                       metadata: CatalogCacheMetadata(etag: "\"conflict\"", contentVersion: conflicting.contentVersion))
+        BankLibrary.invalidate()
+        defer { BankLibrary.invalidate() }
+        #expect(try BankLibrary.load(remoteCache: cache).products.contains { $0.id == "bochk.sogo.visa.signature" })
+        let repository = CatalogRepository(endpoint: endpoint, session: session(), cache: cache,
+                                           bundledSnapshot: bundled)
+        #expect(repository.isUsingBundled)
+        StubCatalogURLProtocol.handler = { request in
+            (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!, conflictingData)
+        }
+        await repository.check(force: true)
+        if case .invalidData = repository.phase {} else { Issue.record("same version with different bytes must fail") }
+        #expect(repository.isUsingBundled)
+        #expect(cache.loadSnapshot()?.data == conflictingData)
+        let olderData = try data(document(version: bundled.document.contentVersion - 1))
+        StubCatalogURLProtocol.handler = { request in
+            (HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!, olderData)
+        }
+        await repository.check(force: true)
+        if case .invalidData = repository.phase {} else { Issue.record("older server must fail") }
+        #expect(repository.contentVersion == bundled.document.contentVersion)
+        #expect(cache.loadSnapshot()?.data == conflictingData)
+    }
+
+    @Test func archivedCardsExposeOnlyPersonalWelcomeRecordsInExplicitHistory() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let product = try #require(BankLibrary.load().product(id: "bochk.sogo.visa.signature"))
+        let card = BankCard(bank: "BOCHK", name: "Archived card")
+        card.catalogID = product.id; context.insert(card)
+        let original = OfferStore.offers(for: card, context: context).filter(\.isWelcome)
+        #expect(original.count > 1)
+        let recorded = try #require(original.first)
+        var tracking = try OfferTrackingStore.load(for: recorded, context: context)
+        tracking.status = .received; tracking.notes = "Kept history"
+        try OfferTrackingStore.save(tracking, for: recorded, context: context)
+        card.isArchived = true
+        #expect(OfferStore.offers(for: card, context: context).isEmpty)
+        #expect(!OfferStore.offers(context: context).contains { $0.cardID == card.id })
+        let history = OfferStore.offers(context: context, includeArchivedCards: true).filter { $0.cardID == card.id }
+        #expect(history.count == 1)
+        let actual = try #require(history.first)
+        #expect(actual.overlayOfferID == recorded.overlayOfferID)
+        #expect(try OfferTrackingStore.load(for: actual, context: context).notes == "Kept history")
+        #expect(try OfferTrackingStore.load(for: actual, context: context).status == .received)
     }
 
 }

@@ -2,9 +2,17 @@ import SwiftUI
 
 struct BankProductsView: View {
     let bank: LibraryBank
-    let products: [CardProduct]
     let onFinish: () -> Void
+    @Environment(CatalogRepository.self) private var catalog
+    @State private var products: [CardProduct]
     @State private var search = ""
+    @State private var showingProducts = false
+
+    init(bank: LibraryBank, products: [CardProduct], onFinish: @escaping () -> Void) {
+        self.bank = bank
+        self.onFinish = onFinish
+        _products = State(initialValue: products)
+    }
 
     private var filtered: [CardProduct] {
         products.filter {
@@ -33,5 +41,15 @@ struct BankProductsView: View {
         .background(PilotTheme.canvas)
         .navigationTitle(bank.name)
         .searchable(text: $search, prompt: "搜索卡片")
+        .onAppear { showingProducts = true; refreshProducts() }
+        .onDisappear { showingProducts = false }
+        .onChange(of: catalog.revision) { _, _ in
+            if showingProducts { refreshProducts() }
+        }
+    }
+
+    private func refreshProducts() {
+        guard let library = try? BankLibrary.load() else { return }
+        products = library.products(for: bank.id)
     }
 }

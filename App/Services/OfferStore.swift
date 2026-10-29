@@ -118,6 +118,29 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
                                receivedOn: nil, deadlineConfirmed: false)
     }
 
+    /// Unlike `load`, this does not manufacture a default unconfirmed record.
+    /// It is used only when showing the user's history for archived cards.
+    static func hasPersonalRecord(for info: BenefitInfo, context: ModelContext) throws -> Bool {
+        guard info.isWelcome else { return false }
+        if info.origin == .personal, info.legacyRule != nil { return true }
+        if !info.personal.notes.isEmpty { return true }
+        if try DocumentStore.load(WelcomeTracking.self, key: info.trackingKey, in: context) != nil { return true }
+        if let cardID = info.cardID,
+           try DocumentStore.load(WelcomeTracking.self, key: legacyKey(cardID: cardID, offerID: info.overlayOfferID),
+                                  in: context) != nil { return true }
+        guard let cardID = info.cardID,
+              let legacy = info.legacyRule ?? legacyRule(cardID: cardID, externalID: info.overlayOfferID, context: context)
+        else { return false }
+        if legacy.isEnabled { return true }
+        if try DocumentStore.load(WelcomeTracking.self, key: WelcomeTrackingStore.key(legacy), in: context) != nil { return true }
+        if try DocumentStore.load(WelcomeReceipt.self, key: "welcome:" + legacy.syncKey, in: context) != nil { return true }
+        guard let card = legacy.card,
+              let profile = try DocumentStore.load(PersonalCardProfile.self, key: "personalCard:" + card.syncKey, in: context)
+        else { return false }
+        return profile.welcomePlanID == legacy.externalID || profile.welcomeRuleIDs.contains(legacy.externalID)
+            || (profile.addons?.contains { $0.ruleIDs.contains(legacy.externalID) || $0.planID == legacy.externalID } ?? false)
+    }
+
     static func save(_ value: WelcomeTracking, for info: BenefitInfo, context: ModelContext) throws {
         if info.origin == .personal, let rule = info.legacyRule {
             try WelcomeTrackingStore.save(value, rule: rule, context: context)
@@ -229,25 +252,33 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
 }
 
 @MainActor enum OfferStore {
-    static func offers(context: ModelContext) -> [BenefitInfo] {
+    static func offers(context: ModelContext, includeArchivedCards: Bool = false) -> [BenefitInfo] {
         let cards = ((try? context.fetch(FetchDescriptor<BankCard>(sortBy: [SortDescriptor(\.createdAt)]))) ?? [])
-            .filter { !$0.isArchived }
+            .filter { includeArchivedCards || !$0.isArchived }
         let library = try? BankLibrary.load()
         let documents = OfferProjectionDocuments(cards: cards, library: library, context: context)
-        return cards.flatMap { offers(for: $0, library: library, documents: documents) }
+        return cards.flatMap { card in
+            let projected = offers(for: card, library: library, documents: documents,
+                                   includeArchivedCards: includeArchivedCards)
+            guard card.isArchived else { return projected }
+            return projected.filter { (try? OfferTrackingStore.hasPersonalRecord(for: $0, context: context)) == true }
+        }
     }
 
-    static func offers(for card: BankCard, context: ModelContext) -> [BenefitInfo] {
-        guard !card.isArchived else { return [] }
+    static func offers(for card: BankCard, context: ModelContext, includeArchivedCards: Bool = false) -> [BenefitInfo] {
+        guard includeArchivedCards || !card.isArchived else { return [] }
         let library = try? BankLibrary.load()
         let documents = OfferProjectionDocuments(cards: [card], library: library, context: context)
-        return offers(for: card, library: library, documents: documents)
+        let projected = offers(for: card, library: library, documents: documents, includeArchivedCards: includeArchivedCards)
+        guard card.isArchived else { return projected }
+        return projected.filter { (try? OfferTrackingStore.hasPersonalRecord(for: $0, context: context)) == true }
     }
 
     /// Current official offers are pure projections of the read-only catalog.
     /// Legacy rules are used only for user-created offers, migration and history.
-    private static func offers(for card: BankCard, library: BankLibrary?, documents: OfferProjectionDocuments) -> [BenefitInfo] {
-        guard !card.isArchived else { return [] }
+    private static func offers(for card: BankCard, library: BankLibrary?, documents: OfferProjectionDocuments,
+                               includeArchivedCards: Bool) -> [BenefitInfo] {
+        guard includeArchivedCards || !card.isArchived else { return [] }
         let product = library?.product(id: card.catalogID)
         let isCurrentProduct = library?.products.contains { $0.id == card.catalogID } ?? false
         var result: [BenefitInfo] = []

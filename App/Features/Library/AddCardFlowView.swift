@@ -2,11 +2,13 @@ import SwiftUI
 
 struct AddCardFlowView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(CatalogRepository.self) private var catalog
     @State private var library: BankLibrary?
     @State private var search = ""
     @State private var error: String?
     @State private var showingManual = false
     @State private var manualSaved = false
+    @State private var showingBankList = false
 
     private var banks: [LibraryBank] {
         library?.banks.filter {
@@ -45,6 +47,11 @@ struct AddCardFlowView: View {
                     ProgressView("正在打开资料库").frame(maxWidth: .infinity).padding()
                 }
             }
+            .onAppear { showingBankList = true; load() }
+            .onDisappear { showingBankList = false }
+            .onChange(of: catalog.revision) { _, _ in
+                if showingBankList { load() }
+            }
             .groupedListStyle()
             .background(PilotTheme.groupedCanvas)
             .searchable(text: $search, prompt: "搜索银行")
@@ -55,7 +62,6 @@ struct AddCardFlowView: View {
             }
         }
         .editorSize()
-        .task { load() }
         .sheet(isPresented: $showingManual, onDismiss: manualDismissed) {
             CardEditor(onSaved: { manualSaved = true })
         }

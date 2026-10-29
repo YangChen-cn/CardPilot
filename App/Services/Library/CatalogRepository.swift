@@ -30,6 +30,7 @@ final class CatalogRepository {
     private let session: URLSession
     private let cache: RemoteCatalogCache
     private let now: () -> Date
+    private let bundledSnapshot: RemoteCatalogSnapshot?
     private(set) var snapshot: RemoteCatalogSnapshot?
 
     private(set) var phase: CatalogUpdatePhase = .idle
@@ -58,13 +59,15 @@ final class CatalogRepository {
          session: URLSession = .shared,
          cache: RemoteCatalogCache = .application,
          checkInterval: TimeInterval = 6 * 60 * 60,
-         now: @escaping () -> Date = Date.init) {
+         now: @escaping () -> Date = Date.init,
+         bundledSnapshot: RemoteCatalogSnapshot? = try? BankLibrary.loadBundledSnapshot()) {
         self.endpoint = endpoint
         self.session = session
         self.cache = cache
         self.checkInterval = checkInterval
         self.now = now
-        snapshot = cache.loadSnapshot()
+        self.bundledSnapshot = bundledSnapshot
+        snapshot = BankLibrary.preferredRemote(cache.loadSnapshot(), over: bundledSnapshot)
         let metadata = cache.loadMetadata()
         lastCheckedAt = metadata.lastCheckedAt
         lastAppliedAt = metadata.lastAppliedAt
@@ -72,8 +75,8 @@ final class CatalogRepository {
         lastFailureAt = metadata.lastFailureAt
         lastFailureMessage = metadata.lastFailureMessage
         lastFailureKind = metadata.lastFailureKind.flatMap(CatalogFailureKind.init(rawValue:))
-        contentVersion = snapshot?.document.contentVersion
-        publishedAt = snapshot?.document.publishedAt
+        contentVersion = snapshot?.document.contentVersion ?? bundledSnapshot?.document.contentVersion
+        publishedAt = snapshot?.document.publishedAt ?? bundledSnapshot?.document.publishedAt
     }
 
     var isUsingBundled: Bool { snapshot == nil }
@@ -91,7 +94,7 @@ final class CatalogRepository {
     var publishedText: String? { publishedAt }
 
     var lastUpdatedText: String {
-        if isUsingBundled { return "正在使用 App 内置资料" }
+        if isUsingBundled { return "正在使用 App 内置资料（\(versionText)）" }
         if let publishedAt { return "使用云端缓存（\(versionText)，发布于 \(publishedAt)）" }
         return "使用云端缓存（\(versionText)）"
     }
@@ -152,10 +155,11 @@ final class CatalogRepository {
             assetRetryToken &+= 1
         }
 
-        let cached = cache.loadSnapshot()
-        var metadata = cached?.metadata ?? cache.loadMetadata()
-        let cachedVersion = cached?.document.contentVersion ?? 0
-        let cachedHash = cached?.bodyHash
+        let savedCache = cache.loadSnapshot()
+        let cached = BankLibrary.preferredRemote(savedCache, over: bundledSnapshot)
+        var metadata = savedCache?.metadata ?? cache.loadMetadata()
+        let activeVersion = cached?.document.contentVersion ?? bundledSnapshot?.document.contentVersion ?? 0
+        let activeHash = cached?.bodyHash ?? bundledSnapshot?.bodyHash
         var request = URLRequest(url: endpoint)
         request.timeoutInterval = 15
         request.cachePolicy = .reloadIgnoringLocalCacheData
@@ -191,12 +195,12 @@ final class CatalogRepository {
                     try BankLibrary.validateRemote(document)
                     return document
                 }.value
-                guard document.contentVersion >= cachedVersion else {
-                    throw PilotError.invalid("云端资料版本低于本地缓存，已保留本地资料。")
+                guard document.contentVersion >= activeVersion else {
+                    throw PilotError.invalid("云端资料版本低于当前资料，已保留本地资料。")
                 }
                 let incomingHash = RemoteCatalogCache.hash(data)
-                if document.contentVersion == cachedVersion, let cached {
-                    guard cachedHash == incomingHash else {
+                if document.contentVersion == activeVersion, let activeHash {
+                    guard activeHash == incomingHash else {
                         throw PilotError.invalid("云端资料版本号未更新，但内容发生了变化，已保留本地资料。")
                     }
                     metadata.lastCheckedAt = checkedAt
@@ -208,8 +212,15 @@ final class CatalogRepository {
                     metadata.publishedAt = document.publishedAt
                     metadata.etag = http.value(forHTTPHeaderField: "ETag")
                     metadata.lastModified = http.value(forHTTPHeaderField: "Last-Modified")
-                    try cache.save(metadata: metadata)
-                    snapshot = RemoteCatalogSnapshot(document: cached.document, data: cached.data, metadata: metadata)
+                    if let cached {
+                        try cache.save(metadata: metadata)
+                        snapshot = RemoteCatalogSnapshot(document: cached.document, data: cached.data, metadata: metadata)
+                    } else {
+                        // The server returned the same bytes as the newer bundle.
+                        // Replace the stale cache only after validating both version and hash.
+                        try cache.save(document: document, data: data, metadata: metadata)
+                        snapshot = RemoteCatalogSnapshot(document: document, data: data, metadata: metadata)
+                    }
                     lastCheckedAt = checkedAt
                     lastSuccessAt = checkedAt
                     contentVersion = document.contentVersion

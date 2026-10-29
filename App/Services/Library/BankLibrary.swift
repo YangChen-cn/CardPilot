@@ -41,10 +41,12 @@ struct BankLibrary: Sendable {
     /// Tests can supply an isolated cache; production callers use `load()`.
     @MainActor static func load(remoteCache: RemoteCatalogCache?) throws -> BankLibrary {
         if let cached { return cached }
-        let bundled = try loadBundled()
+        let bundledSnapshot = try loadBundledSnapshot()
+        let bundled = BankLibrary(banks: bundledSnapshot.document.libraryBanks,
+                                  products: bundledSnapshot.document.cardProducts)
         let library: BankLibrary
-        if let cachedDocument = remoteCache?.loadDocument() {
-            library = (try? merged(bundled, with: cachedDocument.document)) ?? bundled
+        if let cachedSnapshot = preferredRemote(remoteCache?.loadSnapshot(), over: bundledSnapshot) {
+            library = (try? merged(bundled, with: cachedSnapshot.document)) ?? bundled
         } else {
             library = bundled
         }
@@ -61,7 +63,9 @@ struct BankLibrary: Sendable {
         for product in document.cardProducts { try validate(product, bankIDs: bankIDs) }
     }
 
-    @MainActor private static func loadBundled() throws -> BankLibrary {
+    /// The version and bytes of the bundled fallback are also used by the
+    /// update controller, so both paths agree about the active snapshot.
+    nonisolated static func loadBundledSnapshot() throws -> RemoteCatalogSnapshot {
         let urls = [
             Bundle.main.url(forResource: "catalog", withExtension: "json", subdirectory: "Catalog"),
             Bundle.main.url(forResource: "catalog", withExtension: "json")
@@ -71,9 +75,22 @@ struct BankLibrary: Sendable {
         }
         let document = try RemoteCatalogDocument.decode(data)
         try validateRemote(document)
-        let library = BankLibrary(banks: document.libraryBanks, products: document.cardProducts)
-        cached = library
-        return library
+        return RemoteCatalogSnapshot(document: document, data: data,
+                                     metadata: CatalogCacheMetadata(contentVersion: document.contentVersion,
+                                                                    publishedAt: document.publishedAt))
+    }
+
+    /// Equal published versions must have identical bytes. A damaged, older,
+    /// or conflicting cache is left intact but is not selected over the bundle.
+    nonisolated static func preferredRemote(_ remote: RemoteCatalogSnapshot?,
+                                           over bundled: RemoteCatalogSnapshot?) -> RemoteCatalogSnapshot? {
+        guard let remote, (try? validateRemote(remote.document)) != nil else { return nil }
+        guard let bundled else { return remote }
+        let remoteVersion = remote.document.contentVersion
+        let bundledVersion = bundled.document.contentVersion
+        guard remoteVersion >= bundledVersion else { return nil }
+        guard remoteVersion != bundledVersion || remote.bodyHash == bundled.bodyHash else { return nil }
+        return remote
     }
 
     nonisolated private static func merged(_ bundled: BankLibrary, with document: RemoteCatalogDocument) throws -> BankLibrary {
