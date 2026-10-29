@@ -86,6 +86,9 @@ struct CardsView: View {
                     .padding(.vertical, isCompact ? 44 : 64)
             } else {
                 VStack(alignment: .leading, spacing: isCompact ? 24 : PilotTheme.spacing + 8) {
+                    #if os(iOS)
+                    PilotSearchField(text: $search, prompt: "银行或卡片名称")
+                    #endif
                     if isCompact {
                         Text(showArchived ? "\(cards.count(where: \.isArchived)) 张已归档" : "\(cards.count(where: { !$0.isArchived })) 张使用中")
                             .font(.subheadline).foregroundStyle(.secondary)
@@ -150,7 +153,8 @@ struct CardsView: View {
             else { withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(target, anchor: .center) } }
         }
         }
-        .pilotSearch(text: $search, prompt: "银行或卡片名称")
+        .pilotSearchChrome(text: $search, prompt: "银行或卡片名称")
+        .scrollDismissesKeyboard(.interactively)
         .background(PilotTheme.canvas)
         #if os(iOS)
         .sensoryFeedback(.selection, trigger: kindFilter)

@@ -28,9 +28,13 @@
 
 进一步查到 [Apple Developer Forums 845737](https://developer.apple.com/forums/thread/845737)：相同的 minimized toolbar search 组合会难以关闭，DTS 工程师复现了相似异常。它与本项目现象一致，但不是 CardPilot 已完成独立最小复现的证明。
 
-当前采用原生页面搜索 `.navigationBarDrawer(displayMode: .always)`，不再使用 `.searchToolbarBehavior(.minimize)`；`PilotSearch` 仍显式绑定搜索状态，取消时清空查询。卡包、账本、添加银行页共用，macOS 不改。取消后搜索栏仍在页面，退出编辑/收起键盘；不再切回工具栏放大镜。框内的小叉只清空文字，不当作退出。
+中间版本 `f31e83f` 改用 `.navigationBarDrawer(displayMode: .always)` 避开折叠模式，但用户继续反馈：搜索栏固定在顶部，滚动时与卡面、正文叠在一起，影响可读性。此方案已被替代。
 
-状态管理依据为 Apple 的 [Managing search interface activation](https://developer.apple.com/documentation/swiftui/managing-search-interface-activation)。后续这个局部修补只增量编译受影响的 iOS 目标并重新安装打开，不重复单元/全量测试；实际是否消除回弹仍需用户复验。
+**当前实现**：iOS 使用 `PilotSearchField`（SwiftUI TextField、清除和取消按钮），作为卡包、账本、添加银行的普通内容行，随 ScrollView/List 滚走；不使用 overlay、置顶分区头或系统搜索呈现控制器。取消清空查询并释放焦点，小叉只清空文字；不通过定时或再次激活焦点来干预系统。
+
+顶部导航采用系统清晰滚动边缘和可见页面背景，避免银行卡图案透入标题与按钮区域；搜索行本身不加玻璃。辅助功能大字号时取消按钮改为纵向排列，点击区域保留44pt。macOS 继续原有工具栏搜索。
+
+参考 Apple 的 [Managing search interface activation](https://developer.apple.com/documentation/swiftui/managing-search-interface-activation) 和 [ScrollEdgeEffectStyle](https://developer.apple.com/documentation/swiftui/scrolledgeeffectstyle)。各次局部呈现修补只编译受影响目标，不重复单元/全量测试；实际取消与滚动可读性仍由用户复验。
 
 ## 官方依据
 
@@ -46,6 +50,7 @@
 - macOS 独立测试目录执行 `CardDeckInteractionTests`、`CrossSourceTransactionTests`、`LedgerQueryTests`、`EditorDraftTests`：29 项通过，含参数化共 34 次执行，0 失败、0 跳过。未新增复述布局实现的测试，未重复全量测试。
 - iOS Simulator 目标编译通过。最后补齐常规宽度权益来源后，由现有启动脚本再次增量编译交付。
 - 第一轮搜索绑定补丁的 iOS 与 macOS 编译均通过；用户复验未解决回弹后，停用折叠工具栏模式，仅编译和交付受影响的 iOS 目标。没有增加新搜索引擎、焦点抢夺或延时重试。
+- 用户再次反馈固定搜索栏遮挡内容后，改为滚动内容行，双端编译通过；随后只调整iOS按钮命中区，由现有启动脚本再次编译、安装并打开iPhone17。没有重启macOS App，未改变筛选/账本/资料库数据逻辑。
 - macOS 使用原脚本、固定 `CardPilot` 证书构建，deep/strict 签名验证、启动和进程检查通过；打开正常数据版本。
 - 本轮卡片/面板转场安排 iPhone 专项验收：现有 iPhone 17 模拟器使用 `--demo --preview-library-cards`，资料在内存，不导入或替换 Mac 账本。当前机器可用运行时为 iOS 27.0；iOS 26 实机未验收。
 - 启动供用户验收不等于 UI 验收通过；没有截图、点击巡检或 UI 自动化。
@@ -57,6 +62,6 @@
 3. 打开并关闭权益详情、推荐用法；检查拖动关闭或中途取消关闭，来源是否仍可见可点。
 4. 检查工具栏菜单分组、悬浮添加按钮、保存反馈和错误反馈；删除确认取消后应保留记录。
 5. 检查深色模式、大字号、减弱动态效果和降低透明度。实际文字对比、触摸手感、返回手势与 VoiceOver 由设备上的人工验收确认。
-6. 点页面搜索栏 → 输入 `1` → 取消 → 返回完整卡包并收起键盘；等待片刻，搜索不应重新进入编辑。再点空搜索栏应可正常输入。另测框内小叉、账本与添加银行页的取消。
+6. 点内容中的搜索行 → 输入 `1` → 取消 → 返回完整卡包并收起键盘；等待片刻，不应重新进入编辑。再点空搜索行应可正常输入。向上滚动时搜索整行应离开屏幕，不应贴在卡面/正文上。另测框内小叉、账本与添加银行页。
 
 存储、同步格式、钥匙串组件、公开 Catalog 和已发布 IPA 均未变更；第一阶段的草稿保护继续保留。

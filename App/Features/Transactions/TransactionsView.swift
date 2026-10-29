@@ -80,6 +80,9 @@ struct TransactionsView: View {
         ledgerContainer {
             Section {
                 VStack(alignment: .leading, spacing: phoneLayout ? 16 : 20) {
+                    #if os(iOS)
+                    PilotSearchField(text: $search, prompt: "搜索商户、卡片或分类")
+                    #endif
                     monthControls
                     if !pageIsCurrent && error == nil {
                         ProgressView("正在读取交易").frame(minHeight: 44)
@@ -149,7 +152,8 @@ struct TransactionsView: View {
             }
         }
         .navigationTitle(scopedCardName.map { $0 + "账本" } ?? "交易账本")
-        .pilotSearch(text: $search, prompt: "搜索商户、卡片或分类")
+        .pilotSearchChrome(text: $search, prompt: "搜索商户、卡片或分类")
+        .scrollDismissesKeyboard(.interactively)
         .toolbar { ledgerToolbar }
         .sheet(isPresented: $importingSMS) { SMSImportView() }
         .sheet(isPresented: $importingCSV) { CSVImportView() }

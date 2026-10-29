@@ -19,6 +19,13 @@ struct AddCardFlowView: View {
     var body: some View {
         NavigationStack {
             List {
+                #if os(iOS)
+                Section {
+                    PilotSearchField(text: $search, prompt: "搜索银行")
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                }
+                #endif
                 if let library {
                     Section("选择银行") {
                         ForEach(banks) { bank in
@@ -54,7 +61,8 @@ struct AddCardFlowView: View {
             }
             .groupedListStyle()
             .background(PilotTheme.groupedCanvas)
-            .pilotSearch(text: $search, prompt: "搜索银行")
+            .pilotSearchChrome(text: $search, prompt: "搜索银行")
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("添加银行卡")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("关闭", action: finish) }
