@@ -7,7 +7,7 @@ struct SpendFields: View {
 
     var body: some View {
         Section {
-            TransactionAmountField(amount: $draft.amount, currency: draft.currency)
+            TransactionAmountField(amount: $draft.amount, currency: $draft.currency, focusInitially: draft.existing == nil)
                 .padding(.vertical, 12)
         }
         Section {
@@ -23,9 +23,6 @@ struct SpendFields: View {
         }
         Section {
             PilotDisclosureGroup("更多选项", isExpanded: $showingDetails) {
-                Picker("币种", selection: $draft.currency) {
-                    ForEach(Currency.allCases) { Text($0.rawValue).tag($0.rawValue) }
-                }
                 if draft.currency != "HKD" {
                     TextField("1 \(draft.currency) 折合 HKD", value: $draft.exchangeRate, format: .number.precision(.fractionLength(0...6)))
                         #if os(iOS)

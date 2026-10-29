@@ -9,8 +9,10 @@ struct TransactionEditor: View {
     @Query(sort: \BankCard.createdAt) private var cards: [BankCard]
     @State private var draft: TransactionDraft
     @State private var showingDuplicateConfirmation = false
+    private let onSaved: ((String) -> Void)?
 
-    init(transaction: SpendTransaction? = nil, cardID: UUID? = nil) {
+    init(transaction: SpendTransaction? = nil, cardID: UUID? = nil, onSaved: ((String) -> Void)? = nil) {
+        self.onSaved = onSaved
         let draft = TransactionDraft(transaction: transaction)
         if let cardID { draft.cardID = cardID }
         _draft = State(initialValue: draft)
@@ -58,11 +60,19 @@ struct TransactionEditor: View {
     }
 
     private func save() {
-        if draft.save(in: context, cards: cards) { savedFeedback &+= 1; dismiss() }
+        if draft.save(in: context, cards: cards) { didSave() }
         else if draft.possibleDuplicate != nil { showingDuplicateConfirmation = true }
     }
 
+    private func didSave() {
+        savedFeedback &+= 1
+        if draft.existing == nil, let card = cards.first(where: { $0.id == draft.cardID }) {
+            onSaved?("已记录 " + Money.text(Money.cents(draft.amount), currency: draft.currency) + " · " + card.displayName)
+        }
+        dismiss()
+    }
+
     private func saveAsAnother() {
-        if draft.save(in: context, cards: cards, allowPossibleDuplicate: true) { savedFeedback &+= 1; dismiss() }
+        if draft.save(in: context, cards: cards, allowPossibleDuplicate: true) { didSave() }
     }
 }

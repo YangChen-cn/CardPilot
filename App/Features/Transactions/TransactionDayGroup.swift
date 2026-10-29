@@ -9,6 +9,8 @@ struct TransactionDayGroup: Identifiable {
     var title: String {
         if HKCalendar.calendar.isDateInToday(date) { return "今天" }
         if HKCalendar.calendar.isDateInYesterday(date) { return "昨天" }
-        return date.formatted(.dateTime.month().day().weekday(.abbreviated))
+        var format = Date.FormatStyle.dateTime.month().day().weekday(.abbreviated)
+        format.timeZone = HKCalendar.calendar.timeZone
+        return date.formatted(format)
     }
 }
