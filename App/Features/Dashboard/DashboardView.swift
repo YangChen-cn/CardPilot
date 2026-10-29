@@ -4,6 +4,7 @@ import SwiftData
 struct DashboardView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(CatalogRepository.self) private var catalog
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
@@ -22,6 +23,16 @@ struct DashboardView: View {
         CardOrderStore.ordered(cards, context: context)
     }
 
+    /// Only published guides for cards actually in this wallet. Keep the
+    /// saved card order and make every card reachable by horizontal scrolling.
+    private var guidedCards: [BankCard] {
+        guard let library = try? BankLibrary.load() else { return [] }
+        return orderedCards.filter {
+            !$0.isArchived && !$0.catalogID.isEmpty
+            && library.product(id: $0.catalogID)?.usageGuide != nil
+        }
+    }
+
     private var phoneLayout: Bool {
         #if os(iOS)
         sizeClass == .compact
@@ -31,10 +42,12 @@ struct DashboardView: View {
     }
 
     var body: some View {
+        let _ = catalog.revision
         let _ = documents.map(\.modifiedAt)
         ScrollView {
             VStack(alignment: .leading, spacing: phoneLayout ? PilotTheme.phoneSectionSpacing : 28) {
                 wallet
+                cardGuides
                 DashboardActivities(documents: documents)
                 if !phoneLayout { Divider() }
                 if wide {
@@ -136,6 +149,32 @@ struct DashboardView: View {
                 .buttonStyle(.bordered)
             }
             .controlSize(.large)
+        }
+    }
+
+    /// A short, immediately visible recommendation per card on Home.
+    /// Tapping any preview goes straight to its full guide; no card-detail hop.
+    @ViewBuilder private var cardGuides: some View {
+        let eligible = guidedCards
+        if !eligible.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("我的用卡指南").font(.headline)
+                    Spacer(minLength: 8)
+                    Text("\(eligible.count) 张卡")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                ScrollView(.horizontal) {
+                    HStack(alignment: .top, spacing: 12) {
+                        ForEach(eligible) { card in
+                            CardUsageGuideForCard(card: card, compact: true, showsProductName: true)
+                                .frame(width: phoneLayout ? 264 : 300, alignment: .leading)
+                        }
+                    }
+                }
+                .scrollIndicators(.hidden)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
