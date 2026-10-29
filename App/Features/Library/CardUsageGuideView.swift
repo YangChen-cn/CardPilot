@@ -14,9 +14,9 @@ struct CardUsageGuideView: View {
                         Text(guide.summary).font(.body)
                         Text("整理于 " + guide.reviewedOn).font(.caption).foregroundStyle(.secondary)
                     }
-                    ForEach(guide.scenarios) { scenario in
+                    if let strategy = guide.scenarios.first {
                         Divider()
-                        CardUsageScenarioView(scenario: scenario)
+                        CardUsageScenarioView(scenario: strategy)
                     }
                     Text("用卡参考，具体优惠见官方条款。")
                         .font(.caption).foregroundStyle(.secondary)

@@ -73,7 +73,7 @@
 
 ## 后续新增或更新资料
 
-可选推荐用法使用产品级 `usageGuide`，由 `CardUsageGuide` / `CardUsageScenario` 解码；资料库预览和持卡详情复用阅读入口，没填就不显示。它只读当前 Catalog，不写个人数据、不读账本、不参与推荐排序或返现计算。场景可写上限和换卡参考，但必须带官方来源、实际核实日及同产品活动引用。完整字段、模板、agent 编写约定和旧客户端发布边界见 Catalog 的[推荐用法接口说明](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/usage-guide.md)。指南已覆盖当前 24 款产品；唯一使用者明确无需旧版兼容，当前客户端仍须解码及缓存验证。
+可选推荐用法使用产品级 `usageGuide`，由 `CardUsageGuide` / `CardUsageScenario` 解码；资料库预览和持卡详情复用阅读入口，没填就不显示。它只读当前 Catalog，不写个人数据、不读账本、不参与推荐排序或返现计算。场景可写上限和换卡参考，但必须带官方来源、实际核实日及同产品活动引用。完整字段、模板、agent 编写约定和旧客户端发布边界见 Catalog 的[推荐用法接口说明](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/usage-guide.md)。每卡只提供一份整体策略（`scenarios`恰好一项），整合用途、刷卡顺序、关键上限和换卡时机，不按促销逐条拆分。总览和叠放卡包可直接打开；大字号使用纵向布局。指南已覆盖当前 24 款产品；唯一使用者明确无需旧版兼容，当前客户端仍须解码及缓存验证。
 
 提交前先读 [Catalog PR 提交注意事项](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md)。字段以实际客户端类型为准；`merchantKeywords` 是逗号分隔字符串，不能写数组。目录校验不能替代客户端解码验证。本轮素材出处与生图提示词见 [2026-10-27 素材记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/artwork-2026-10-27.md)。
 

@@ -4,6 +4,7 @@ import SwiftData
 struct DashboardView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(CatalogRepository.self) private var catalog
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -164,15 +165,23 @@ struct DashboardView: View {
                     Text("\(eligible.count) 张卡")
                         .font(.caption).foregroundStyle(.secondary)
                 }
-                ScrollView(.horizontal) {
-                    HStack(alignment: .top, spacing: 12) {
+                if typeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 12) {
                         ForEach(eligible) { card in
                             CardUsageGuideForCard(card: card, compact: true, showsProductName: true)
-                                .frame(width: phoneLayout ? 264 : 300, alignment: .leading)
                         }
                     }
+                } else {
+                    ScrollView(.horizontal) {
+                        LazyHStack(alignment: .top, spacing: 12) {
+                            ForEach(eligible) { card in
+                                CardUsageGuideForCard(card: card, compact: true, showsProductName: true)
+                                    .frame(width: phoneLayout ? 264 : 300, alignment: .leading)
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
                 }
-                .scrollIndicators(.hidden)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

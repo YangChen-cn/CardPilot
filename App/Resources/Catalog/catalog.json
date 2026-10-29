@@ -567,14 +567,14 @@
         "银联"
       ],
       "usageGuide": {
-        "summary": "内地及澳门人民币手机支付可赚额外奖赏钱；迎新按客户身份和申请渠道选择。",
+        "summary": "内地及澳门指定手机支付赚额外奖赏钱；按客户身份和申请渠道选迎新。",
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "经常在内地或澳门以人民币／澳门元使用指定手机支付；新申请卡时。",
-            "howToUse": "在符合条件的内地或澳门手机付款可赚额外5倍奖赏钱，约值2%，基础0.4%另计；香港港币交易不能套用这项活动。网上申请且符合新客条件时，发卡后首60日合资格签账满HK$8,000可获HK$800迎新。",
+            "howToUse": "2026年底前，在内地或澳门以人民币／澳门元作指定手机付款可赚额外5倍奖赏钱，约值2%，基础0.4%另计；香港港币交易不能套用这项活动。网上申请且符合新客条件时，发卡后首60日合资格签账满HK$8,000可获HK$800迎新。",
             "relatedOfferIDs": [
               "hsbc.pulse.cn-mo.mobile.2026h2",
               "hsbc.pulse.welcome.new.online.2026"
@@ -752,7 +752,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "网上购物、海外外币消费，或在指定Chill商户实体购物。",
-            "howToUse": "网上／海外合资格消费可享合计约4%回赠；指定Chill商户满足当月实体零售HK$1,000门槛后最高8%。8%含基础积分等值，不能与4%简单相加；是否属于指定商户须看实际活动名单和交易类别。",
+            "howToUse": "2026年底前，网上／海外合资格消费可享合计约4%回赠；指定Chill商户满足当月实体零售HK$1,000门槛后最高8%。8%含基础积分等值，不能与4%简单相加；是否属于指定商户须看实际活动名单和交易类别。",
             "relatedOfferIDs": [
               "chill.platinum.merchants.2026",
               "chill.platinum.online-overseas.2026"
@@ -1016,14 +1016,14 @@
         "银联"
       ],
       "usageGuide": {
-        "summary": "内地指定手机支付最高约8%积分等值，香港最高约4%，须先登记。",
+        "summary": "内地指定手机支付最高约8%积分等值，香港最高约4%，须完成季度登记。",
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "内地人民币手机消费、香港手机消费，或在指定GO商户付款。",
-            "howToUse": "2026年第四季先登记指定手机支付活动：内地人民币最高20X积分（约8%），香港最高10X（约4%）；两者都已含基本手机积分，不能相加。指定GO商户可看最高5%现金回赠，与季度手机积分优惠不能叠加。",
+            "howToUse": "2026年第四季完成手机支付活动登记，登记当月及之后的签账可计：内地人民币最高20X积分（约8%），香港最高10X（约4%）；两者都已含基本手机积分，不能相加。指定GO商户可看最高5%现金回赠，与季度手机积分优惠不能叠加。",
             "relatedOfferIDs": [
               "go.diamond.mobile.mainland.2026q4",
               "go.diamond.mobile.local.2026q4",
@@ -1290,14 +1290,14 @@
         "银联"
       ],
       "usageGuide": {
-        "summary": "内地指定手机支付最高约4%积分等值，香港最高约2%，须先登记。",
+        "summary": "内地指定手机支付最高约4%积分等值，香港最高约2%，须完成季度登记。",
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "内地人民币手机消费、香港手机消费，或在指定GO商户付款。",
-            "howToUse": "2026年第四季先登记指定手机支付活动：内地人民币最高10X积分（约4%），香港最高5X（约2%）；已含基本手机积分。指定GO商户可看最高5%现金回赠，不与季度手机积分活动叠加；勿套用钻石版倍率。",
+            "howToUse": "2026年第四季完成手机支付活动登记，登记当月及之后的签账可计：内地人民币最高10X积分（约4%），香港最高5X（约2%）；已含基本手机积分。指定GO商户可看最高5%现金回赠，不与季度手机积分活动叠加；勿套用钻石版倍率。",
             "relatedOfferIDs": [
               "go.platinum.mobile.mainland.2026q4",
               "go.platinum.mobile.local.2026q4",
@@ -1438,7 +1438,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "香港、澳门或内地实体零售；新办卡且符合手机迎新资格时。",
-            "howToUse": "在港澳及内地实体商户合资格付款可享5%现金回赠，网购不适用。符合新客要求时，发卡当月及后两个月使用指定手机支付另有10%迎新；迎新属于个人消费期，不能把申请期当消费截止日。",
+            "howToUse": "2026年底前，在港澳及内地实体商户合资格付款可享5%现金回赠，网购不适用。符合新客要求时，发卡当月及后两个月使用指定手机支付另有10%迎新；迎新属于个人消费期，不能把申请期当消费截止日。",
             "relatedOfferIDs": [
               "regional",
               "welcome"
@@ -1539,7 +1539,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "港大学生日常持卡；符合网上申请迎新资格时。",
-            "howToUse": "学生主卡永久免年费。若符合新客资格并由指定线上渠道申请，激活后发卡日起2个月内合资格签账满HK$2,000，可获HK$200迎新；缴费及电子钱包充值不计消费门槛。",
+            "howToUse": "学生主卡永久免年费。在2026/7/1–2027/1/13申请期内，经指定线上渠道申请且符合新客资格，激活后发卡日起2个月内合资格签账满HK$2,000，可获HK$200迎新；缴费及电子钱包充值不计消费门槛。",
             "relatedOfferIDs": [
               "hku.student.welcome.2026"
             ],
@@ -1790,7 +1790,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "人民币零售、其他外币签账、本地餐饮；按结算币种选最合适场景。",
-            "howToUse": "人民币零售可赚12X积分（约4.8%），其他外币10X（约4%），香港餐饮3X（约1.2%）；均为积分兑换等值，不是现金直接返还。不同类别不可重复加倍率；消费前注意外币手续费。",
+            "howToUse": "2026年底前，人民币零售可赚12X积分（约4.8%），其他外币10X（约4%），香港餐饮3X（约1.2%）；均为积分兑换等值，不是现金直接返还。不同类别不可重复加倍率；消费前注意外币手续费。",
             "relatedOfferIDs": [
               "cny",
               "dining",
@@ -2001,7 +2001,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "学生的人民币零售、其他外币签账或香港本地餐饮。",
-            "howToUse": "学生主卡永久免年费；人民币零售12X积分（约4.8%）、其他外币10X（约4%）、本地餐饮3X（约1.2%）。积分是兑换等值，类别倍率不能相加；刷外币前注意手续费。",
+            "howToUse": "2026年底前，学生主卡永久免年费；人民币零售12X积分（约4.8%）、其他外币10X（约4%）、本地餐饮3X（约1.2%）。积分是兑换等值，类别倍率不能相加；刷外币前注意手续费。",
             "relatedOfferIDs": [
               "cny",
               "dining",
@@ -2010,7 +2010,7 @@
             "sourceURLs": [
               "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
             ],
-            "capNote": "各类别额外积分共享每账户每月最多100,000分（约值HK$400）。"
+            "capNote": "各类别额外积分共享每账户每月最多100,000分（约值HK$400）。基础积分另计。"
           }
         ]
       }
@@ -2240,7 +2240,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "人民币购物，或商户扫描云闪付App付款码；单笔人民币大额消费。",
-            "howToUse": "人民币结算或合资格云闪付商户扫付款码交易整体最高4%（含基础0.4%）；同一笔消费只计一次4%。单笔人民币满CNY4,000另有额外6%活动，但微信、支付宝、PayMe不适用；并非所有渠道都能叠加。",
+            "howToUse": "2026年底前，人民币结算或合资格云闪付商户扫付款码交易整体最高4%（含基础0.4%）；同一笔消费只计一次4%。单笔人民币满CNY4,000另有额外6%活动，但微信、支付宝、PayMe不适用；并非所有渠道都能叠加。",
             "relatedOfferIDs": [
               "cny4",
               "cny6",
@@ -2423,7 +2423,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "大学生每月小额零售消费，或需要在指定大学缴学费。",
-            "howToUse": "2026年申请的新学生主卡，发卡当月起首12个历月每月首HK$2,000合资格消费，可获额外5.6%，连基础积分等值最高约6%。在港大等指定院校缴学费另有每HK$1赚1分推广，须满足独立渠道与发卡期限。",
+            "howToUse": "2026年成功申请的全日制大学／大专学生主卡，发卡当月起首12个历月每月首HK$2,000合资格消费，可获额外5.6%，连基础积分等值最高约6%。在港大等指定院校缴学费另有每HK$1赚1分推广，须满足独立渠道与发卡期限。",
             "relatedOfferIDs": [
               "bocom.go-goal.first-year.rebate.2026",
               "bocom.go-goal.tuition.points.2026"
@@ -2575,7 +2575,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "在内地／澳门人民币或澳门币购物，以及跨境交通、停车或充电等场景。",
-            "howToUse": "先分别登记人民币／澳门币零售5%及指定交通5%两项推广。人民币或澳门币零售每月达到HK$2,000门槛后享5%；指定跨境交通等交易按另一活动独立计算。不能把同一笔消费重复计算两次。",
+            "howToUse": "2026年底前先分别登记人民币／澳门币零售5%及指定交通5%两项推广。人民币或澳门币零售每月达到HK$2,000门槛后享5%；指定跨境交通等交易按另一活动独立计算。各项资格和范围分别核对，不预设可以叠加。",
             "relatedOfferIDs": [
               "bocom.unionpay.cny-mop.rebate.2026",
               "bocom.unionpay.gba-transport.rebate.2026"
@@ -3229,7 +3229,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "海外消费或香港本地餐饮，愿意在现金回赠与航空里数间选择。",
-            "howToUse": "先在建行亚洲网银或App登记TRAVO Rewards并选择奖励模式。海外合资格签账最高4%现金回赠或约HK$1.5/里；本地餐饮最高2%或HK$3/里。回赠与里数不能同时领取，且不同场景仍有额外门槛。",
+            "howToUse": "2026/7–12月，先在建行亚洲网银或App登记TRAVO Rewards并选择奖励模式。海外合资格签账最高4%现金回赠或约HK$1.5/里；本地餐饮最高2%或HK$3/里。回赠与里数不能同时领取，且不同场景仍有额外门槛。",
             "relatedOfferIDs": [
               "ccbasia.travo.world.mastercard.overseas.2026",
               "ccbasia.travo.world.mastercard.dining.2026"
@@ -3352,7 +3352,7 @@
               "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
               "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/promotions/overseas_spending/index.html"
             ],
-            "capNote": "海外限时推广阶段回赠最高HK$500；另有符合条件的银联额外HK$100。"
+            "capNote": "海外推广名下卡片签账合并、上限按持卡人共享，一般阶段最高HK$500；银联额外HK$100另有条件。"
           }
         ]
       }
@@ -3490,7 +3490,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "崇光指定商户购物，或星期一在Freshmart买东西。",
-            "howToUse": "在指定崇光商户以认可卡或手机支付全额付款，可享最高5%现金回赠。Freshmart星期一另外有5%即时折扣，须按商户流程出示卡片；它不是账后现金回赠，也不应与其他活动强行叠加。",
+            "howToUse": "2026年底前，在指定崇光商户以认可卡或手机支付全额付款，可享最高5%现金回赠。Freshmart星期一另外有5%即时折扣，手机付款前需出示应用内已加入的卡片；它不是账后现金回赠，也不应与其他活动强行叠加。",
             "relatedOfferIDs": [
               "bochk.sogo.visa.platinum.shopping.2026",
               "bochk.sogo.visa.platinum.freshmart.2026"
@@ -3649,7 +3649,7 @@
             "id": "guide.card-strategy",
             "title": "这张卡怎么刷",
             "whenToUse": "日常合资格手机付款、崇光购物及星期一Freshmart消费。",
-            "howToUse": "Signature指定Apple Pay、Google Pay或Samsung Pay合资格零售额外5%，每月上限HK$100；崇光指定商户购物另有5%现金回赠；Freshmart星期一是5%即时折扣。各活动限制不同，不能把百分比简单相加。",
+            "howToUse": "2026年底前，Signature指定Apple Pay、Google Pay或Samsung Pay合资格零售额外5%，每月上限HK$100；崇光指定商户购物另有5%现金回赠；Freshmart星期一是5%即时折扣。各活动限制不同，不能把百分比简单相加。",
             "relatedOfferIDs": [
               "bochk.sogo.visa.signature.mobile.2026",
               "bochk.sogo.visa.signature.shopping.2026"

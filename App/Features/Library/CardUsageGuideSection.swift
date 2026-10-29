@@ -8,6 +8,7 @@ struct CardUsageGuideSection: View {
     let productName: String
     var compact = false
     var showsProductName = false
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var showingGuide = false
 
     var body: some View {
@@ -27,12 +28,12 @@ struct CardUsageGuideSection: View {
                     Text(productName)
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.primary)
-                        .lineLimit(1)
+                        .lineLimit(typeSize.isAccessibilitySize ? nil : 2)
                 }
                 Text(guide.summary)
                     .font(compact ? .subheadline : .body)
                     .foregroundStyle(.primary)
-                    .lineLimit(compact ? 2 : 3)
+                    .lineLimit(typeSize.isAccessibilitySize ? nil : (compact ? 2 : 3))
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, minHeight: PilotTheme.minimumTouchTarget, alignment: .leading)
@@ -44,26 +45,6 @@ struct CardUsageGuideSection: View {
         .accessibilityHint("直接打开这张卡的完整用卡指南")
         .sheet(isPresented: $showingGuide) {
             CardUsageGuideView(guide: guide, productName: productName)
-        }
-    }
-}
-
-/// Resolve the current catalog's guide for a card already added to the wallet.
-/// The catalog revision dependency makes an updated remote guide visible
-/// without baking the original editorial content into personal SwiftData.
-struct CardUsageGuideForCard: View {
-    let card: BankCard
-    var compact = false
-    var showsProductName = false
-    @Environment(CatalogRepository.self) private var catalog
-
-    var body: some View {
-        let _ = catalog.revision
-        if !card.catalogID.isEmpty,
-           let product = (try? BankLibrary.load())?.product(id: card.catalogID),
-           let guide = product.usageGuide {
-            CardUsageGuideSection(guide: guide, productName: product.catalog.name,
-                                  compact: compact, showsProductName: showsProductName)
         }
     }
 }

@@ -350,8 +350,9 @@ struct RemoteCatalogTests {
     }
 
     @Test func delistedProductStaysAvailableForHeldCardButNotForAdding() throws {
-        let cache = temporaryCache(), doc = try document(version: 2026102904)
-        try cache.save(document: doc, data: try data(doc), metadata: CatalogCacheMetadata(contentVersion: 2026102904, publishedAt: "2026-10-23"))
+        let version = try BankLibrary.loadBundledSnapshot().document.contentVersion + 1
+        let cache = temporaryCache(), doc = try document(version: version)
+        try cache.save(document: doc, data: try data(doc), metadata: CatalogCacheMetadata(contentVersion: version, publishedAt: "2026-10-23"))
         BankLibrary.invalidate()
         let library = try BankLibrary.load(remoteCache: cache)
         #expect(library.products.map(\.id) == ["remote.test"])

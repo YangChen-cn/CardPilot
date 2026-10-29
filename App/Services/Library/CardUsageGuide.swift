@@ -9,9 +9,8 @@ struct CardUsageGuide: Codable, Sendable {
     func validate(offerIDs: Set<String>) throws {
         try Self.validateText(summary, maximum: 90)
         _ = try CatalogImporter.date(reviewedOn)
-        guard (1...4).contains(scenarios.count),
-              Set(scenarios.map(\.id)).count == scenarios.count else {
-            throw PilotError.invalid("推荐用法需要 1–4 个场景，且场景 ID 不得重复。")
+        guard scenarios.count == 1 else {
+            throw PilotError.invalid("每张卡只能提供一份整体推荐用法。")
         }
         for scenario in scenarios { try scenario.validate(offerIDs: offerIDs) }
     }
