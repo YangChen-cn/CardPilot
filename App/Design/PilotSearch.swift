@@ -8,8 +8,10 @@ private struct PilotSearch: ViewModifier {
     func body(content: Content) -> some View {
         #if os(iOS)
         content
-            .searchable(text: $text, isPresented: $presented, prompt: Text(prompt))
-            .searchToolbarBehavior(.minimize)
+            // Keep native page search. The minimized toolbar presentation can
+            // reactivate itself during dismissal (FB24779236), even with a binding.
+            .searchable(text: $text, isPresented: $presented,
+                        placement: .navigationBarDrawer(displayMode: .always), prompt: Text(prompt))
             .onChange(of: presented) { _, active in
                 // End the query with the search session. Rebuilding filtered
                 // content must not reactivate a cancelled search field.

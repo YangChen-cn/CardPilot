@@ -24,9 +24,13 @@
 
 ## 搜索取消验收跟进
 
-用户反馈卡包搜索点右侧取消后重新展开。原页面只绑定搜索文字；新增轻量 `PilotSearch`，在 iOS 显式绑定搜索呈现状态，退出时清空查询，筛选刷新不主动重新激活搜索。卡包、账本、添加银行页统一复用；macOS 保留原搜索行为。框内的小叉只清空文字，不当作退出操作。
+用户反馈卡包搜索点右侧取消后重新展开。第一次修补 `ab18153` 只增加 `isPresented` 绑定和退出清空查询，**用户复验确认仍会回弹，不能视为修复通过**。
 
-实现依据为 Apple 的 [Managing search interface activation](https://developer.apple.com/documentation/swiftui/managing-search-interface-activation)。此局部呈现修补只增量编译双端，未重跑全量测试；实际取消是否不再回弹仍交用户复验。
+进一步查到 [Apple Developer Forums 845737](https://developer.apple.com/forums/thread/845737)：相同的 minimized toolbar search 组合会难以关闭，DTS 工程师复现了相似异常。它与本项目现象一致，但不是 CardPilot 已完成独立最小复现的证明。
+
+当前采用原生页面搜索 `.navigationBarDrawer(displayMode: .always)`，不再使用 `.searchToolbarBehavior(.minimize)`；`PilotSearch` 仍显式绑定搜索状态，取消时清空查询。卡包、账本、添加银行页共用，macOS 不改。取消后搜索栏仍在页面，退出编辑/收起键盘；不再切回工具栏放大镜。框内的小叉只清空文字，不当作退出。
+
+状态管理依据为 Apple 的 [Managing search interface activation](https://developer.apple.com/documentation/swiftui/managing-search-interface-activation)。后续这个局部修补只增量编译受影响的 iOS 目标并重新安装打开，不重复单元/全量测试；实际是否消除回弹仍需用户复验。
 
 ## 官方依据
 
@@ -41,7 +45,7 @@
 - `git diff --check` 通过；XcodeGen 生成工程已同步新源文件。
 - macOS 独立测试目录执行 `CardDeckInteractionTests`、`CrossSourceTransactionTests`、`LedgerQueryTests`、`EditorDraftTests`：29 项通过，含参数化共 34 次执行，0 失败、0 跳过。未新增复述布局实现的测试，未重复全量测试。
 - iOS Simulator 目标编译通过。最后补齐常规宽度权益来源后，由现有启动脚本再次增量编译交付。
-- 搜索取消补丁的 iOS 与 macOS 编译均通过，并通过现有脚本重新交付；没有扩大到新搜索引擎或增加延时重试。
+- 第一轮搜索绑定补丁的 iOS 与 macOS 编译均通过；用户复验未解决回弹后，停用折叠工具栏模式，仅编译和交付受影响的 iOS 目标。没有增加新搜索引擎、焦点抢夺或延时重试。
 - macOS 使用原脚本、固定 `CardPilot` 证书构建，deep/strict 签名验证、启动和进程检查通过；打开正常数据版本。
 - 本轮卡片/面板转场安排 iPhone 专项验收：现有 iPhone 17 模拟器使用 `--demo --preview-library-cards`，资料在内存，不导入或替换 Mac 账本。当前机器可用运行时为 iOS 27.0；iOS 26 实机未验收。
 - 启动供用户验收不等于 UI 验收通过；没有截图、点击巡检或 UI 自动化。
@@ -53,6 +57,6 @@
 3. 打开并关闭权益详情、推荐用法；检查拖动关闭或中途取消关闭，来源是否仍可见可点。
 4. 检查工具栏菜单分组、悬浮添加按钮、保存反馈和错误反馈；删除确认取消后应保留记录。
 5. 检查深色模式、大字号、减弱动态效果和降低透明度。实际文字对比、触摸手感、返回手势与 VoiceOver 由设备上的人工验收确认。
-6. 搜索输入 `1` → 右侧取消 → 返回完整卡包 → 点放大镜重新打开；应不再自行弹出。另测框内小叉、账本与添加银行页的取消。
+6. 点页面搜索栏 → 输入 `1` → 取消 → 返回完整卡包并收起键盘；等待片刻，搜索不应重新进入编辑。再点空搜索栏应可正常输入。另测框内小叉、账本与添加银行页的取消。
 
 存储、同步格式、钥匙串组件、公开 Catalog 和已发布 IPA 均未变更；第一阶段的草稿保护继续保留。
