@@ -1,6 +1,6 @@
 # 银行卡资料库与后续开发手册
 
-更新：2026-10-27。开始前先读[权益优先架构](product-architecture.md)。CardPilot维护银行卡权益和轻量账本，不再追求银行奖励结算模拟。
+更新：2026-10-29。开始前先读[权益优先架构](product-architecture.md)。CardPilot维护银行卡权益和轻量账本，不再追求银行奖励结算模拟。
 
 ## 当前范围与入口
 
@@ -72,6 +72,8 @@
 - 远程快照只更新只读内容。个人持卡、尾号、账单/还款日、隐藏/收藏、登记、个人日期、门槛/奖励备注、到账、交易、手改名称/卡面和归档永不被远程覆盖，也不上传。
 
 ## 后续新增或更新资料
+
+可选推荐用法使用产品级 `usageGuide`，由 `CardUsageGuide` / `CardUsageScenario` 解码；资料库预览和持卡详情复用阅读入口，没填就不显示。它只读当前 Catalog，不写个人数据、不读账本、不参与推荐排序或返现计算。场景可写上限和换卡参考，但必须带官方来源、实际核实日及同产品活动引用。完整字段、模板、agent 编写约定和旧客户端发布边界见 Catalog 的[推荐用法接口说明](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/usage-guide.md)。本轮只提供接口，真实产品建议留空；旧 App 会拒绝这个新字段，不能在用户更新前向正式快照塞入占位对象或 null。
 
 提交前先读 [Catalog PR 提交注意事项](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/pr-submission.md)。字段以实际客户端类型为准；`merchantKeywords` 是逗号分隔字符串，不能写数组。目录校验不能替代客户端解码验证。本轮素材出处与生图提示词见 [2026-10-27 素材记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/artwork-2026-10-27.md)。
 

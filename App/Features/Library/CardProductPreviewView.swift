@@ -44,6 +44,9 @@ struct CardProductPreviewView: View {
                     .font(.subheadline)
                     .padding(.top, 4)
                 }
+                if let guide = product.usageGuide {
+                    CardUsageGuideSection(guide: guide, productName: product.catalog.name)
+                }
                 if !generalRules.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("日常优惠").font(.title3).bold()

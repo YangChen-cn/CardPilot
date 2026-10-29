@@ -60,10 +60,18 @@ struct RemoteCatalogDocument: Codable, Sendable {
             }
         }
         for (index, value) in (root["products"] as? [[String: Any]] ?? []).enumerated() {
-            try check(value, allowed: ["id", "bankID", "artwork", "baseRewardVerified", "welcomePlans", "catalog", "searchTerms"],
+            try check(value, allowed: ["id", "bankID", "artwork", "baseRewardVerified", "welcomePlans", "catalog", "searchTerms", "usageGuide"],
                       name: "产品 \(index + 1)")
             if let artwork = value["artwork"] as? [String: Any] {
                 try check(artwork, allowed: ["path", "sha256", "contentType"], name: "产品 \(index + 1) 卡面")
+            }
+            if let guide = value["usageGuide"] as? [String: Any] {
+                try check(guide, allowed: ["summary", "reviewedOn", "scenarios"], name: "推荐用法")
+                for scenario in guide["scenarios"] as? [[String: Any]] ?? [] {
+                    try check(scenario, allowed: ["id", "title", "whenToUse", "howToUse", "capNote", "stopAfter",
+                                                   "warnings", "relatedOfferIDs", "sourceURLs", "startsOn", "endsOn"],
+                              name: "用卡场景")
+                }
             }
         }
     }
@@ -77,7 +85,7 @@ struct RemoteCatalogDocument: Codable, Sendable {
         products.map { product in
             CardProduct(bankID: product.bankID, catalog: product.catalog, artwork: product.artwork,
                         baseRewardVerified: product.baseRewardVerified, welcomePlans: product.welcomePlans,
-                        searchTerms: product.searchTerms ?? [])
+                        searchTerms: product.searchTerms ?? [], usageGuide: product.usageGuide)
         }
     }
 }
@@ -107,6 +115,7 @@ struct RemoteCatalogProduct: Codable, Sendable {
     let welcomePlans: [WelcomePlan]
     let catalog: CatalogCard
     let searchTerms: [String]?
+    var usageGuide: CardUsageGuide? = nil
 
     func validate(bankIDs: Set<String>) throws {
         guard id.count <= 128, id.range(of: "^[A-Za-z0-9][A-Za-z0-9._-]*$", options: .regularExpression) != nil,
@@ -117,6 +126,7 @@ struct RemoteCatalogProduct: Codable, Sendable {
         }
         try artwork?.validate()
         try CatalogSearchTerms.validate(searchTerms ?? [])
+        try usageGuide?.validate(offerIDs: Set(catalog.rules.map(\.id) + welcomePlans.map(\.id)))
         _ = try CatalogImporter.decode(JSONEncoder().encode(CatalogPackage(schemaVersion: 1, cards: [catalog])))
         for rule in catalog.rules {
             guard let group = rule.group,

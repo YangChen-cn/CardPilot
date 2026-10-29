@@ -67,6 +67,9 @@ struct CardDetailView: View {
                     }
                     .controlSize(.large)
                 }
+                if let product = libraryProduct, let guide = product.usageGuide {
+                    CardUsageGuideSection(guide: guide, productName: product.catalog.name)
+                }
                 if !favoriteBenefits.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
                         HStack(spacing: 7) {

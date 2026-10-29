@@ -8,6 +8,7 @@ struct CardProduct: Identifiable, Sendable {
     let baseRewardVerified: Bool
     let welcomePlans: [WelcomePlan]
     let searchTerms: [String]
+    var usageGuide: CardUsageGuide? = nil
     var id: String { catalog.id }
 
     /// Names users commonly type that are not part of the formal title.

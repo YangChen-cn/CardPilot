@@ -122,6 +122,7 @@ struct BankLibrary: Sendable {
             throw PilotError.invalid("迎新方案标识重复。")
         }
         try product.artwork?.validate()
+        try product.usageGuide?.validate(offerIDs: Set(product.catalog.rules.map(\.id) + product.welcomePlans.map(\.id)))
     }
 
 }
