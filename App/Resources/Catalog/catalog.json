@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102703,
-  "publishedAt": "2026-10-27",
+  "contentVersion": 2026102901,
+  "publishedAt": "2026-10-29",
   "banks": [
     {
       "id": "hsbc",
@@ -2906,6 +2906,272 @@
         "零外币费",
         "大湾区"
       ]
+    },
+    {
+      "id": "bochk.sogo.visa.platinum",
+      "bankID": "bochk",
+      "artwork": {
+        "path": "images/cards/bochk-sogo-visa-platinum.png",
+        "sha256": "72a9e6db6af1f2be9bb0153fa4429ec080e8dacf3554ca750d10ba2a0ffe1d96",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": false,
+      "welcomePlans": [
+        {
+          "id": "bochk.sogo.visa.platinum.welcome.voucher.2026",
+          "title": "迎新二选一：HK$500崇光电子购物礼券",
+          "details": "申请期截至2026-12-31；发卡当月及之后两个月内激活及消费。须满足过去12个月中银信用卡新客要求；同期多卡领取限制及奖励二选一为银行条款，App不阻止个人记录。消费累计HK$5,000，须提供有效SOGO Rewards会员资料；达要求后一般4至6周发放。",
+          "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+          "ruleIDs": [],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "periodType": "calendarMonthsFromIssue",
+          "periodCount": 3,
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main"
+        },
+        {
+          "id": "bochk.sogo.visa.platinum.welcome.mobile.2026",
+          "title": "迎新二选一：手机签账10%，最高HK$300",
+          "details": "申请期截至2026-12-31；发卡当月及之后两个月内激活及消费。须满足过去12个月中银信用卡新客要求；同期多卡领取限制及奖励二选一为银行条款，App不阻止个人记录。适用手机支付及排除交易以条款为准，主附卡共享HK$300上限；达要求后于发卡当月起其后4个历月内入账。",
+          "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+          "ruleIDs": [],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "periodType": "calendarMonthsFromIssue",
+          "periodCount": 3,
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main"
+        }
+      ],
+      "searchTerms": [
+        "SOGO",
+        "soga",
+        "崇光",
+        "platinum",
+        "白金卡"
+      ],
+      "catalog": {
+        "id": "bochk.sogo.visa.platinum",
+        "bank": "BOCHK 中银香港",
+        "name": "SOGO 崇光 Visa 白金卡",
+        "network": "Visa",
+        "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
+        "verifiedOn": "2026-10-29",
+        "annualFeeNote": "首年免年费；后续年费及豁免条件请核对银行收费表。",
+        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为官方竖版，完整保留比例。迎新以个人实际申请方案及银行资格为准。",
+        "rules": [
+          {
+            "id": "bochk.sogo.visa.platinum.shopping.2026",
+            "name": "崇光指定商户购物5%现金回赠",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "限崇光指定商户及指定商品，以实体卡或Apple Pay、Google Pay、Samsung Pay全额付款。名单可变；回赠部分不赚签账积分，购物袋收费除外。并非所有崇光消费都适用。",
+            "enabled": false,
+            "ratePercent": 5
+          },
+          {
+            "id": "bochk.sogo.visa.platinum.freshmart.2026",
+            "name": "Freshmart星期一购物5%折扣",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "为即时折扣，并非账后现金回赠；须全额付款，手机付款需出示卡片。周年庆及其他指定推广、购物袋收费除外。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.platinum.japan.2026",
+            "name": "日本SOGO／西武指定分店购物礼遇",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "指定分店单张发票未税满JPY1,000可享5%折扣，购物前须到退税柜台领券；累计未税每满JPY100,000可获HK$800香港崇光购物礼券，购物后凭发票办理换领。须出示卡及护照，部分商品除外；以官方分店名单及换领期限为准。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.platinum.dining.2026",
+            "name": "和三昧日本料理9折",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "不与崇光5%现金回赠同时适用；加一服务费及商户指定项目不适用。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.platinum.points",
+            "name": "日常消费HK$1赚1分",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": null,
+            "endsOn": null,
+            "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
+            "enabled": false,
+            "notes": "积分可换指定奖赏；合资格范围及兑换比例以签账得FUN条款为准，未将积分自动换算为现金回赠。"
+          },
+          {
+            "id": "bochk.sogo.visa.platinum.birthday.2026",
+            "name": "崇光电子生日奖赏",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/cbc_pdf/sogoebday_TC.pdf",
+            "enabled": false,
+            "notes": "合资格主卡须预先成为SOGO Rewards会员并接受电邮／短信直销推广，按银行发出的兑换码在App换领；每位会员每年一次，礼品及换领期限以通知为准，不保证现金价值。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bochk.sogo.visa.signature",
+      "bankID": "bochk",
+      "artwork": {
+        "path": "images/cards/bochk-sogo-visa-signature.png",
+        "sha256": "feeff3c94cde0a64e9c80bb82a4eccf45e920adc85ace65bcd09137f59dd12a8",
+        "contentType": "image/png"
+      },
+      "baseRewardVerified": false,
+      "welcomePlans": [
+        {
+          "id": "bochk.sogo.visa.signature.welcome.voucher.2026",
+          "title": "迎新二选一：HK$500崇光电子购物礼券",
+          "details": "申请期截至2026-12-31；发卡当月及之后两个月内激活及消费。须满足过去12个月中银信用卡新客要求；同期多卡领取限制及奖励二选一为银行条款，App不阻止个人记录。消费累计HK$5,000，须提供有效SOGO Rewards会员资料；达要求后一般4至6周发放。",
+          "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+          "ruleIDs": [],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "periodType": "calendarMonthsFromIssue",
+          "periodCount": 3,
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main"
+        },
+        {
+          "id": "bochk.sogo.visa.signature.welcome.mobile.2026",
+          "title": "迎新二选一：手机签账10%，最高HK$300",
+          "details": "申请期截至2026-12-31；发卡当月及之后两个月内激活及消费。须满足过去12个月中银信用卡新客要求；同期多卡领取限制及奖励二选一为银行条款，App不阻止个人记录。适用手机支付及排除交易以条款为准，主附卡共享HK$300上限；达要求后于发卡当月起其后4个历月内入账。",
+          "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+          "ruleIDs": [],
+          "applicationChannels": [],
+          "verified": true,
+          "calculable": false,
+          "periodType": "calendarMonthsFromIssue",
+          "periodCount": 3,
+          "applicationEndsOn": "2026-12-31",
+          "kind": "main"
+        }
+      ],
+      "searchTerms": [
+        "SOGO",
+        "soga",
+        "崇光",
+        "signature",
+        "Signature 卡"
+      ],
+      "catalog": {
+        "id": "bochk.sogo.visa.signature",
+        "bank": "BOCHK 中银香港",
+        "name": "SOGO 崇光 Visa Signature 卡",
+        "network": "Visa",
+        "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
+        "verifiedOn": "2026-10-29",
+        "annualFeeNote": "首年免年费；后续年费及豁免条件请核对银行收费表。",
+        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为官方竖版，完整保留比例。迎新以个人实际申请方案及银行资格为准。",
+        "rules": [
+          {
+            "id": "bochk.sogo.visa.signature.mobile.2026",
+            "name": "指定手机支付额外5%现金回赠",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "仅Signature：Apple Pay、Google Pay、Samsung Pay合资格零售签账，交易后7日内入账；每月额外回赠上限HK$100，主附卡合并。缴费、八达通及钱包／储值卡充值、P2P等除外；下月入账，不代表所有手机交易合资格。",
+            "enabled": false,
+            "ratePercent": 5,
+            "capHKD": 100,
+            "capPeriod": "monthly"
+          },
+          {
+            "id": "bochk.sogo.visa.signature.shopping.2026",
+            "name": "崇光指定商户购物5%现金回赠",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "限崇光指定商户及指定商品，以实体卡或Apple Pay、Google Pay、Samsung Pay全额付款。名单可变；回赠部分不赚签账积分，购物袋收费除外。并非所有崇光消费都适用。",
+            "enabled": false,
+            "ratePercent": 5
+          },
+          {
+            "id": "bochk.sogo.visa.signature.freshmart.2026",
+            "name": "Freshmart星期一购物5%折扣",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "为即时折扣，并非账后现金回赠；须全额付款，手机付款需出示卡片。周年庆及其他指定推广、购物袋收费除外。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.signature.japan.2026",
+            "name": "日本SOGO／西武指定分店购物礼遇",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "指定分店单张发票未税满JPY1,000可享5%折扣，购物前须到退税柜台领券；累计未税每满JPY100,000可获HK$800香港崇光购物礼券，购物后凭发票办理换领。须出示卡及护照，部分商品除外；以官方分店名单及换领期限为准。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.signature.dining.2026",
+            "name": "和三昧日本料理9折",
+            "kind": "cashback",
+            "group": "merchant",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf",
+            "notes": "不与崇光5%现金回赠同时适用；加一服务费及商户指定项目不适用。",
+            "enabled": false
+          },
+          {
+            "id": "bochk.sogo.visa.signature.points",
+            "name": "日常消费HK$1赚1分",
+            "kind": "cashback",
+            "group": "daily",
+            "startsOn": null,
+            "endsOn": null,
+            "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
+            "enabled": false,
+            "notes": "积分可换指定奖赏；合资格范围及兑换比例以签账得FUN条款为准，未将积分自动换算为现金回赠。"
+          },
+          {
+            "id": "bochk.sogo.visa.signature.birthday.2026",
+            "name": "崇光电子生日奖赏",
+            "kind": "cashback",
+            "group": "limited",
+            "startsOn": null,
+            "endsOn": "2026-12-31",
+            "sourceURL": "https://www.bochk.com/dam/boccreditcard/cbc_pdf/sogoebday_TC.pdf",
+            "enabled": false,
+            "notes": "合资格主卡须预先成为SOGO Rewards会员并接受电邮／短信直销推广，按银行发出的兑换码在App换领；每位会员每年一次，礼品及换领期限以通知为准，不保证现金价值。"
+          }
+        ]
+      }
     }
   ]
 }

@@ -6,7 +6,7 @@
 
 银行卡 → 添加 → 银行 → 产品 → 官方卡面与权益预览 → 添加 → 个人尾号/账单日/额度。手动添加及自定义卡面继续保留。个人迎新在对应活动或迎新记录中编辑，不要求先选择“可计算方案”或确认银行资格。
 
-当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际、交通银行香港、Mox、工银亚洲和建行亚洲八家银行的二十二个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
+当前展示 HSBC、BOCHK、BEA、CNCBI 信银国际、交通银行香港、Mox、工银亚洲和建行亚洲八家银行的二十四个产品，包含中银万事达扣账卡、CNCBI GBA 双币卡与 CNCBI 多币扣账卡：
 
 | 银行 | 稳定产品ID | 产品 |
 | --- | --- | --- |
@@ -14,6 +14,8 @@
 | HSBC | hsbc.mastercard.debit | 蓝狮子Mastercard扣账卡 |
 | HSBC | hsbc.pulse.unionpay.diamond | Pulse银联双币钻石卡 |
 | BOCHK | bochk.chill.platinum | Chill白金卡 |
+| BOCHK | bochk.sogo.visa.platinum | SOGO 崇光 Visa 白金卡 |
+| BOCHK | bochk.sogo.visa.signature | SOGO 崇光 Visa Signature |
 | BOCHK | bochk.go.diamond | GO钻石卡 |
 | BOCHK | bochk.go.platinum | GO白金卡 |
 | BOCHK | bochk.gba.youth | 大湾区青年卡 |
@@ -39,7 +41,7 @@
 
 | 位置 | 职责 |
 | --- | --- |
-| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：8家银行、22个产品、Logo与卡面（Mox及建行三款为参考官方素材的AI横版示意，已明确标注）；所有图片有SHA-256；只读，不含个人字段 |
+| Resources/Catalog/catalog.json、Resources/Catalog/images/ | 内置 Catalog V2 离线回退：8家银行、24个产品、Logo与卡面（Mox及建行三款为参考官方素材的AI横版示意，已明确标注）；所有图片有SHA-256；只读，不含个人字段 |
 | 公开快照 | 公开仓库 YangChen-cn/CardPilot-Catalog 的 docs/catalog.json 与 docs/images/；banks/products/artwork 全部云端定义，不含个人数据或凭据 |
 | CatalogRepository、RemoteCatalogCache | 获取、校验、ETag/Last-Modified、6小时检查、单文件原子快照和更新状态；304仅用有效快照，同版本正文变化拒绝；只读，不持有SwiftData上下文，不写个人账本 |
 | CatalogAssetStore、CatalogAssetImage | 按SHA-256独立下载/校验/磁盘缓存卡面与Logo；3个并发上限、按sha去重、原子写入、内存解码有上限；离线用缓存或内置回退，单图失败只显示占位并可在下次检查重试 |
@@ -94,3 +96,5 @@ welcomePlans.kind、exclusionGroup、calculable及旧主/附方案字段仅为�
 - macOS 的稳定签名与独立钥匙串组件见[银行邮件记账](bank-email-cloud.md)。开源构建使用自己的签名身份；默认的 CardPilot 证书仅用于维护者本机。个人额度填 0 仍只清除当前卡配置，保留共享组其他成员、账单和还款。
 
 来源研究：[BOCHK/BEA](bochk-bea-library-research.md)、[HSBC](hsbc-library-research.md)、[CNCBI 信银国际](cncbi-library-research.md)。这些是事实来源记录，不构成银行实时服务。公开快照可按上述流程发布，但更新只替换只读缓存，不替代银行官方核实。
+
+SOGO 两等级权益、迎新及官方竖版卡面来源：[核实记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/bochk-sogo-research.md)。

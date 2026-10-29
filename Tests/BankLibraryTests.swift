@@ -10,10 +10,10 @@ struct BankLibraryTests {
     }
     private func day(_ value: String) throws -> Date { try CatalogImporter.date(value) }
 
-    @Test func libraryContainsEightBanksTwentyTwoUniqueProductsAndOfflineArtwork() throws {
+    @Test func libraryContainsEightBanksTwentyFourUniqueProductsAndOfflineArtwork() throws {
         let library = try BankLibrary.load()
         #expect(Set(library.banks.map(\.id)) == ["hsbc", "bochk", "bea", "cncbi", "bocom", "mox", "icbcasia", "ccbasia"])
-        #expect(library.products.count == 22); #expect(Set(library.products.map(\.id)).count == 22)
+        #expect(library.products.count == 24); #expect(Set(library.products.map(\.id)).count == 24)
         for bank in library.banks { try CatalogImporter.validateImage(#require(bank.logo?.bundledData())) }
         for product in library.products { try CatalogImporter.validateImage(#require(product.artwork?.bundledData())) }
         let ordinary = try product("bea.udc.diamond"), student = try product("bea.udc.diamond.student")
