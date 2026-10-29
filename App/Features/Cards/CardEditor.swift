@@ -27,6 +27,9 @@ struct CardEditor: View {
                     }
                     Picker("类型", selection: $draft.kind) { Text("信用卡").tag("信用卡"); Text("扣账卡").tag("借记卡") }
                     TextField("卡片尾号（后4位）", text: $draft.lastFour)
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
                     Text("用于匹配银行交易邮件，只需后4位，无需完整卡号或安全码。").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("账单与权益") {
@@ -56,18 +59,27 @@ struct CardEditor: View {
                         }
                     }
                     TextField("官方资料 URL（选填）", text: $draft.sourceURL)
+                        #if os(iOS)
+                        .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                        #endif
                     Toggle("归档卡片（隐藏卡片，保留账本与权益历史）", isOn: $draft.isArchived)
                 }
                 if let error = draft.error { Section { Text(error).foregroundStyle(.red) } }
             }
             .formStyle(.grouped)
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle(draft.existing == nil ? "添加银行卡" : "编辑银行卡")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("取消", action: { dismiss() }) }
-                ToolbarItem(placement: .confirmationAction) { Button("保存", action: save).bold() }
+                ToolbarItem(placement: .cancellationAction) {
+                    DiscardChangesButton(hasChanges: draft.hasUnsavedChanges, discard: { dismiss() })
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存", action: save).bold().keyboardShortcut(.return, modifiers: .command)
+                }
             }
         }
         .editorSize()
+        .interactiveDismissDisabled(draft.hasUnsavedChanges)
         .fileImporter(isPresented: $choosingImage, allowedContentTypes: [.image]) { result in
             do {
                 let url = try result.get()

@@ -10,6 +10,7 @@ struct OffersView: View {
     @Query private var cards: [BankCard]
     @Query private var documents: [DomainRecord]
     @State private var showingAdd = false
+    @State private var addingCard = false
     @State private var editing: BenefitInfo?
     @State private var hiding: BenefitInfo?
     @State private var includeEnded = false
@@ -71,30 +72,21 @@ struct OffersView: View {
         let visible = filtered
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                HStack(spacing: 16) {
-                    NavigationLink { WelcomeCenterView() } label: { Label("迎新记录", systemImage: "gift").frame(minHeight: 44) }
-                    Spacer()
-                    if phoneLayout {
+                if !cards.isEmpty || hasActiveFilters {
+                    HStack(spacing: 16) {
+                        NavigationLink { WelcomeCenterView() } label: {
+                            Label("迎新记录", systemImage: "gift").frame(minHeight: 44)
+                        }
+                        Spacer()
                         Menu("权益筛选", systemImage: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") {
-                            if activeCards.count > 1 {
-                                cardPicker
-                            }
+                            if activeCards.count > 1 { cardPicker }
                             Toggle("只看收藏", isOn: $favoritesOnly)
                             Toggle("包括已结束", isOn: $includeEnded)
                             Toggle("显示已隐藏", isOn: $includeHidden)
-                            if hasActiveFilters {
-                                Button("清除筛选", systemImage: "xmark.circle", action: clearFilters)
-                            }
+                            if hasActiveFilters { Button("清除筛选", systemImage: "xmark.circle", action: clearFilters) }
                         }
-                        .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44)
-                    } else {
-                        Toggle("只看收藏", isOn: $favoritesOnly).toggleStyle(.switch).fixedSize()
-                        Toggle("包括已结束", isOn: $includeEnded).toggleStyle(.switch).fixedSize()
-                        Toggle("显示已隐藏", isOn: $includeHidden).toggleStyle(.switch).fixedSize()
+                        .labelStyle(.titleAndIcon).frame(minHeight: 44)
                     }
-                }
-                if !phoneLayout && activeCards.count > 1 {
-                    cardPicker.pickerStyle(.menu).frame(maxWidth: 320, alignment: .leading)
                 }
                 if hasActiveFilters {
                     HStack(alignment: .top, spacing: 12) {
@@ -109,12 +101,22 @@ struct OffersView: View {
                 }
                 if visible.isEmpty {
                     ContentUnavailableView {
-                        Label(favoritesOnly ? "暂无收藏的权益" : "暂无匹配的权益",
-                              systemImage: favoritesOnly ? "star" : "gift")
+                        Label(activeCards.isEmpty ? "还没有使用中的银行卡" : (favoritesOnly ? "暂无收藏的权益" : (hasActiveFilters ? "暂无匹配的权益" : "暂无当前权益")),
+                              systemImage: activeCards.isEmpty ? "creditcard" : (favoritesOnly ? "star" : "gift"))
                     } description: {
-                        Text(favoritesOnly ? "在权益详情中点按星标，即可在这里快速找到。" : "试试其他关键词或筛选条件，也可以为银行卡添加活动。")
+                        Text(activeCards.isEmpty ? "添加银行卡后，即可集中查看权益；已归档卡片可在卡包中恢复。" :
+                             (favoritesOnly ? "在权益详情中点按星标，即可在这里快速找到。" :
+                              (hasActiveFilters ? "试试其他关键词或筛选条件。" : "可以添加自己的活动记录，或稍后检查资料更新。")))
                     } actions: {
-                        if hasActiveFilters { Button("清除筛选", action: clearFilters) }
+                        if activeCards.isEmpty {
+                            Button("从资料库添加", systemImage: "plus", action: { addingCard = true })
+                                .buttonStyle(.borderedProminent)
+                        } else if hasActiveFilters {
+                            Button("清除筛选", action: clearFilters)
+                        } else {
+                            Button("添加活动", systemImage: "plus", action: { showingAdd = true })
+                                .buttonStyle(.borderedProminent)
+                        }
                     }
                 }
                 ForEach(BenefitGroup.allCases) { group in
@@ -158,14 +160,17 @@ struct OffersView: View {
             if let selectedCardID, !visibleIDs.contains(selectedCardID) { self.selectedCardID = nil }
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                if phoneLayout {
-                    Button("添加活动", systemImage: "plus", action: { showingAdd = true }).labelStyle(.iconOnly)
-                } else {
-                    Button("添加活动", systemImage: "plus", action: { showingAdd = true })
+            if !activeCards.isEmpty && !visible.isEmpty {
+                ToolbarItem(placement: .primaryAction) {
+                    if phoneLayout {
+                        Button("添加活动", systemImage: "plus", action: { showingAdd = true }).labelStyle(.iconOnly)
+                    } else {
+                        Button("添加活动", systemImage: "plus", action: { showingAdd = true })
+                    }
                 }
             }
         }
+        .sheet(isPresented: $addingCard) { AddCardFlowView() }
         .sheet(isPresented: $showingAdd) { RuleEditor() }
         .sheet(item: $editing) { info in
             if let rule = info.legacyRule { RuleEditor(rule: rule) }

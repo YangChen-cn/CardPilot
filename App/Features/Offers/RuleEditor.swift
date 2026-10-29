@@ -58,6 +58,9 @@ struct RuleEditor: View {
                 Section("条款与来源") {
                     TextField("优惠内容、登记要求及其他限制", text: $draft.notes, axis: .vertical).lineLimit(4...10)
                     TextField("官方条款网址", text: $draft.sourceURL)
+                        #if os(iOS)
+                        .keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                        #endif
                 }
                 if let rule = draft.existing, (try? RulePolicyStore.state(rule).pending) != nil {
                     Section("官方资料有更新") {
@@ -69,13 +72,20 @@ struct RuleEditor: View {
                 if let error = draft.error { Section { Text(error).foregroundStyle(.red) } }
             }
             .formStyle(.grouped)
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle(draft.existing == nil ? "添加活动" : "编辑活动资料")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("取消", action: { dismiss() }) }
-                ToolbarItem(placement: .confirmationAction) { Button("保存", action: save).bold().disabled(cards.isEmpty) }
+                ToolbarItem(placement: .cancellationAction) {
+                    DiscardChangesButton(hasChanges: draft.hasUnsavedChanges, discard: { dismiss() })
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存", action: save).bold().disabled(cards.isEmpty)
+                        .keyboardShortcut(.return, modifiers: .command)
+                }
             }
         }.editorSize()
-        .onAppear { if draft.cardID == nil { draft.cardID = cards.first?.id } }
+        .interactiveDismissDisabled(draft.hasUnsavedChanges)
+        .task { draft.prepare(cards: cards) }
         .sensoryFeedback(.success, trigger: savedFeedback)
     }
 

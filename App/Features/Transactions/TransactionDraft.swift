@@ -31,14 +31,16 @@ final class TransactionDraft {
     let existing: SpendTransaction?
     @ObservationIgnored private var preferredCardKey: String?
     @ObservationIgnored private let preferenceDefaults: UserDefaults?
+    @ObservationIgnored private var initialValues: Values?
 
-    init(transaction: SpendTransaction?, preferences: QuickEntryPreferences? = nil, defaults: UserDefaults? = nil) {
+    init(transaction: SpendTransaction?, preferences: QuickEntryPreferences? = nil, defaults: UserDefaults? = nil,
+         cardID: UUID? = nil) {
         existing = transaction
         preferenceDefaults = defaults
         if let transaction {
             merchant = transaction.merchant; amount = Decimal(transaction.amountCents) / 100
             currency = transaction.currency; exchangeRate = Decimal(string: transaction.exchangeRate) ?? 0
-            cardID = transaction.card?.id; category = transaction.category; paymentMethod = PaymentMethod.canonical(transaction.paymentMethod)
+            self.cardID = transaction.card?.id; category = transaction.category; paymentMethod = PaymentMethod.canonical(transaction.paymentMethod)
             channel = transaction.channel
             isRewardEligible = transaction.isRewardEligible; date = transaction.date; notes = transaction.notes
             region = transaction.region; isOverseas = transaction.isOverseas
@@ -47,12 +49,39 @@ final class TransactionDraft {
             if SpendCategory(rawValue: preferences.category) != nil { category = preferences.category }
             if PaymentMethod.isKnown(preferences.paymentMethod) { paymentMethod = PaymentMethod.canonical(preferences.paymentMethod) }
         }
+        if transaction == nil, let cardID { self.cardID = cardID }
+        initialValues = values
     }
 
     func prepare(cards: [BankCard]) {
         guard existing == nil else { return }
         if let cardID, cards.contains(where: { $0.id == cardID && !$0.isArchived }) { return }
         cardID = cards.first(where: { !$0.isArchived && $0.syncKey == preferredCardKey })?.id ?? cards.first(where: { !$0.isArchived })?.id
+        initialValues?.cardID = cardID
+    }
+
+    var hasUnsavedChanges: Bool { initialValues != values }
+
+    private var values: Values {
+        Values(merchant: merchant, amount: amount, currency: currency, exchangeRate: exchangeRate,
+               cardID: cardID, category: category, paymentMethod: paymentMethod, channel: channel,
+               region: region, isOverseas: isOverseas, isRewardEligible: isRewardEligible, date: date, notes: notes)
+    }
+
+    private struct Values: Equatable {
+        var merchant: String
+        var amount: Decimal
+        var currency: String
+        var exchangeRate: Decimal
+        var cardID: UUID?
+        var category: String
+        var paymentMethod: String
+        var channel: String
+        var region: String
+        var isOverseas: Bool
+        var isRewardEligible: Bool
+        var date: Date
+        var notes: String
     }
 
     var validationError: String? {

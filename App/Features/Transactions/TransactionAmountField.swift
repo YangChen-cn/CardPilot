@@ -4,12 +4,16 @@ struct TransactionAmountField: View {
     @Binding var amount: Decimal
     @Binding var currency: String
     let focusInitially: Bool
-    @FocusState private var amountFocused: Bool
+    var focus: FocusState<SpendInputFocus?>.Binding
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("消费金额").font(.subheadline).foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
+            let layout = typeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+                : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 10))
+            layout {
                 Picker("币种", selection: $currency) {
                     ForEach(Currency.allCases) { Text($0.rawValue).tag($0.rawValue) }
                 }
@@ -20,7 +24,7 @@ struct TransactionAmountField: View {
                 TextField("0.00", value: $amount, format: .number.precision(.fractionLength(0...2)))
                     .font(.largeTitle.weight(.semibold)).monospacedDigit()
                     .accessibilityLabel("消费金额，\(currency)")
-                    .focused($amountFocused)
+                    .focused(focus, equals: .amount)
                     #if os(iOS)
                     .keyboardType(.decimalPad)
                     #endif
@@ -30,12 +34,10 @@ struct TransactionAmountField: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("完成") { amountFocused = false }
+                Button("完成") { focus.wrappedValue = nil }
             }
         }
-        .task {
-            if focusInitially { amountFocused = true }
-        }
         #endif
+        .task { if focusInitially { focus.wrappedValue = .amount } }
     }
 }

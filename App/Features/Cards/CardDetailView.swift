@@ -63,7 +63,8 @@ struct CardDetailView: View {
                     actions {
                         ledgerEntry.frame(minHeight: PilotTheme.minimumTouchTarget)
                         Button("记一笔", systemImage: "plus", action: { addingTransaction = true })
-                            .buttonStyle(.bordered).frame(minHeight: PilotTheme.minimumTouchTarget)
+                            .buttonStyle(.bordered).disabled(card.isArchived)
+                            .frame(minHeight: PilotTheme.minimumTouchTarget)
                     }
                     .controlSize(.large)
                 }
@@ -84,7 +85,8 @@ struct CardDetailView: View {
                 if !phoneLayout {
                     HStack(spacing: 12) {
                         ledgerEntry
-                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true }).buttonStyle(.bordered)
+                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true })
+                            .buttonStyle(.bordered).disabled(card.isArchived)
                     }.controlSize(.large)
                     Divider()
                 }

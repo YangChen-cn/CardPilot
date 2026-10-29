@@ -27,16 +27,16 @@ struct TransactionRow: View {
 
     private var description: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(transaction.merchant).font(.body.weight(.medium)).lineLimit(2)
+            Text(transaction.merchant).font(.body.weight(.medium)).lineLimit(typeSize.isAccessibilitySize ? nil : 2)
             Text("\(transaction.card?.name ?? "未关联卡片") · \(transaction.category)")
                 .font(.caption).foregroundStyle(.secondary).lineLimit(2)
         }
     }
 
     private var amounts: some View {
-        VStack(alignment: .trailing, spacing: 4) {
+        VStack(alignment: typeSize.isAccessibilitySize ? .leading : .trailing, spacing: 4) {
             Text(Money.text(transaction.amountCents, currency: transaction.currency))
-                .font(.body.weight(.semibold)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.85)
+                .font(.body.weight(.semibold)).monospacedDigit().lineLimit(typeSize.isAccessibilitySize ? nil : 1)
             if transaction.currency != "HKD" {
                 Text(transaction.hasHKDValuation ? "≈ \(Money.text(transaction.hkdCents))" : "原币入账 · 未折算港币").font(.caption).foregroundStyle(.secondary)
             }

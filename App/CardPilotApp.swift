@@ -48,5 +48,20 @@ struct CardPilotApp: App {
         #if os(macOS)
         .defaultSize(width: 1240, height: 860)
         #endif
+
+        #if os(macOS)
+        Settings {
+            if let container {
+                NavigationStack { SettingsView() }
+                    .modelContainer(container)
+                    .environment(folderSync)
+                    .environment(catalog)
+                    .environment(\.locale, Locale(identifier: "zh_Hans_HK"))
+                    .environment(\.timeZone, HKCalendar.calendar.timeZone)
+                    .tint(PilotTheme.accent)
+                    .frame(minWidth: 560, minHeight: 620)
+            }
+        }
+        #endif
     }
 }

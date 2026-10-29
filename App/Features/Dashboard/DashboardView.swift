@@ -12,6 +12,7 @@ struct DashboardView: View {
     @Query(sort: \BankCard.createdAt) private var cards: [BankCard]
     @Query private var documents: [DomainRecord]
     @State private var adding = false
+    @State private var addingCard = false
     @State private var editing: SpendTransaction?
     @State private var showTrends = false
     @State private var wide = false
@@ -100,6 +101,7 @@ struct DashboardView: View {
         .background(phoneLayout ? PilotTheme.groupedCanvas : PilotTheme.canvas)
         .onGeometryChange(for: Bool.self) { $0.size.width >= 1000 } action: { wide = $0 }
         .sheet(isPresented: $adding) { TransactionEditor() }
+        .sheet(isPresented: $addingCard) { AddCardFlowView() }
         .sheet(item: $editing) { TransactionEditor(transaction: $0) }
         .task(id: spendingRevision) { await refreshSpending() }
         .task {
@@ -141,15 +143,20 @@ struct DashboardView: View {
                 Button("消费统计暂未更新，重试", systemImage: "arrow.clockwise") { spendingRevision &+= 1 }
                     .font(.caption).buttonStyle(.plain).foregroundStyle(.secondary)
             }
-            HStack(spacing: 12) {
-                Button("记一笔", systemImage: "plus", action: { adding = true })
-                    .buttonStyle(.borderedProminent)
-                NavigationLink { OffersView() } label: {
-                    Label("查看权益", systemImage: "gift")
+            if orderedCards.contains(where: { !$0.isArchived }) {
+                let actions = typeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                    : AnyLayout(HStackLayout(spacing: 12))
+                actions {
+                    Button("记一笔", systemImage: "plus", action: { adding = true })
+                        .buttonStyle(.borderedProminent)
+                    NavigationLink { OffersView() } label: {
+                        Label("查看权益", systemImage: "gift")
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
+                .controlSize(.large)
             }
-            .controlSize(.large)
         }
     }
 
@@ -189,20 +196,26 @@ struct DashboardView: View {
 
     private var wallet: some View {
         GroupBox {
-            HStack(spacing: 14) {
-                Image(systemName: "creditcard")
-                    .font(.title3)
-                    .foregroundStyle(PilotTheme.accent)
-                    .frame(width: 44, height: 44)
-                    .background(PilotTheme.accent.opacity(0.12), in: .rect(cornerRadius: 12))
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(orderedCards.contains(where: { !$0.isArchived }) ? "我的银行卡" : "还没有银行卡")
-                        .font(.headline)
-                    Text(walletSubtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 14) {
+                    Image(systemName: "creditcard")
+                        .font(.title3)
+                        .foregroundStyle(PilotTheme.accent)
+                        .frame(width: 44, height: 44)
+                        .background(PilotTheme.accent.opacity(0.12), in: .rect(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(orderedCards.contains(where: { !$0.isArchived }) ? "我的银行卡" : "还没有银行卡")
+                            .font(.headline)
+                        Text(walletSubtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 8)
                 }
-                Spacer(minLength: 8)
+                if !orderedCards.contains(where: { !$0.isArchived }) {
+                    Button("从资料库添加", systemImage: "plus", action: { addingCard = true })
+                        .buttonStyle(.borderedProminent).controlSize(.large)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 2)
@@ -211,7 +224,7 @@ struct DashboardView: View {
 
     private var walletSubtitle: String {
         let active = orderedCards.filter { !$0.isArchived }
-        if active.isEmpty { return "在卡包中添加第一张银行卡。" }
+        if active.isEmpty { return "添加卡片，集中查看权益与消费。" }
         return "\(active.count) 张使用中 · 在卡包中管理"
     }
 

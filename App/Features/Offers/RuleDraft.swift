@@ -22,9 +22,11 @@ import SwiftData
     var sourceURL = ""
     var error: String?
     let existing: RewardRule?
+    @ObservationIgnored private var initialValues: Values?
 
     init(rule: RewardRule?, cardID: UUID? = nil) {
         existing = rule; self.cardID = cardID
+        defer { initialValues = values }
         guard let rule else { return }
         name = rule.name; kind = rule.kind; self.cardID = rule.card?.id
         rate = Decimal(rule.rateBps) / 100; cap = Decimal(rule.capCents) / 100; period = rule.capPeriod
@@ -33,6 +35,41 @@ import SwiftData
         merchants = rule.merchantKeywords; startsOn = rule.startsOn; endsOn = rule.endsOn
         notes = rule.notes; sourceURL = rule.sourceURL
         periodKnown = !((try? RulePolicyStore.state(rule).extras.periodUnverified) ?? false)
+    }
+
+    func prepare(cards: [BankCard]) {
+        guard existing == nil, cardID == nil else { return }
+        cardID = cards.first(where: { !$0.isArchived })?.id
+        initialValues?.cardID = cardID
+    }
+
+    var hasUnsavedChanges: Bool { initialValues != values }
+
+    private var values: Values {
+        Values(name: name, kind: kind, cardID: cardID, rate: rate, cap: cap, period: period,
+               periodKnown: periodKnown, threshold: threshold, bonus: bonus, category: category,
+               currency: currency, paymentMethod: paymentMethod, merchants: merchants,
+               startsOn: startsOn, endsOn: endsOn, notes: notes, sourceURL: sourceURL)
+    }
+
+    private struct Values: Equatable {
+        var name: String
+        var kind: String
+        var cardID: UUID?
+        var rate: Decimal
+        var cap: Decimal
+        var period: String
+        var periodKnown: Bool
+        var threshold: Decimal
+        var bonus: Decimal
+        var category: String
+        var currency: String
+        var paymentMethod: String
+        var merchants: String
+        var startsOn: Date
+        var endsOn: Date
+        var notes: String
+        var sourceURL: String
     }
 
     func save(in context: ModelContext, cards: [BankCard]) -> Bool {

@@ -22,9 +22,11 @@ final class CardDraft {
     var error: String?
     var terms: CardTerms?
     let existing: BankCard?
+    @ObservationIgnored private var initialValues: Values?
 
     init(card: BankCard?) {
         existing = card
+        defer { initialValues = values }
         guard let card else { return }
         bank = card.bank; name = card.name; network = card.network; kind = card.kind
         lastFour = card.lastFour; statementDay = card.statementDay; paymentDay = card.paymentDay
@@ -35,6 +37,33 @@ final class CardDraft {
         artworkSource = card.artworkSource
         imageData = artworkSource == .custom ? card.imageData : nil; sourceURL = card.sourceURL
         terms = pricing.terms
+    }
+
+    var hasUnsavedChanges: Bool { initialValues != values }
+
+    private var values: Values {
+        Values(bank: bank, name: name, network: network, kind: kind, lastFour: lastFour,
+               statementDay: statementDay, paymentDay: paymentDay, basePercent: basePercent,
+               feePercent: feePercent, overseasHKDPercent: overseasHKDPercent, theme: theme,
+               isArchived: isArchived, artworkSource: artworkSource, imageData: imageData, sourceURL: sourceURL)
+    }
+
+    private struct Values: Equatable {
+        var bank: String
+        var name: String
+        var network: String
+        var kind: String
+        var lastFour: String
+        var statementDay: Int
+        var paymentDay: Int
+        var basePercent: Decimal
+        var feePercent: Decimal
+        var overseasHKDPercent: Decimal
+        var theme: String
+        var isArchived: Bool
+        var artworkSource: CardArtworkSource
+        var imageData: Data?
+        var sourceURL: String
     }
 
     func importArtwork(_ data: Data) throws {

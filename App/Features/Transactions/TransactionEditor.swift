@@ -13,33 +13,30 @@ struct TransactionEditor: View {
 
     init(transaction: SpendTransaction? = nil, cardID: UUID? = nil, onSaved: ((String) -> Void)? = nil) {
         self.onSaved = onSaved
-        let draft = TransactionDraft(transaction: transaction)
-        if let cardID { draft.cardID = cardID }
+        let draft = TransactionDraft(transaction: transaction, cardID: cardID)
         _draft = State(initialValue: draft)
     }
 
     private var availableCards: [BankCard] {
-        cards.filter { !$0.isArchived || $0.id == draft.cardID }
+        cards.filter { !$0.isArchived || $0.id == draft.existing?.card?.id }
     }
 
     var body: some View {
         NavigationStack {
-            Form {
+            Group {
                 if availableCards.isEmpty {
-                    Section {
-                        ContentUnavailableView("先添加一张银行卡", systemImage: "creditcard", description: Text("在卡片页添加银行卡后，即可记录消费。"))
-                    }
+                    ContentUnavailableView("先添加一张银行卡", systemImage: "creditcard", description: Text("在卡包中添加银行卡后，即可记录消费。"))
                 } else {
-                    SpendFields(draft: draft, cards: availableCards)
-                }
-                if let error = draft.error {
-                    Section { Label(error, systemImage: "exclamationmark.circle").foregroundStyle(.red) }
+                    Form { SpendFields(draft: draft, cards: availableCards) }
+                        .formStyle(.grouped)
+                        .scrollDismissesKeyboard(.interactively)
                 }
             }
-            .formStyle(.grouped)
             .navigationTitle(draft.existing == nil ? "记一笔" : "编辑交易")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("取消", action: { dismiss() }) }
+                ToolbarItem(placement: .cancellationAction) {
+                    DiscardChangesButton(hasChanges: draft.hasUnsavedChanges, discard: { dismiss() })
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存", action: save).bold().disabled(availableCards.isEmpty)
                         .keyboardShortcut(.return, modifiers: .command)
@@ -47,6 +44,18 @@ struct TransactionEditor: View {
             }
         }
         .editorSize()
+        .interactiveDismissDisabled(draft.hasUnsavedChanges)
+        .safeAreaInset(edge: .top) {
+            if let error = draft.error {
+                Label(error, systemImage: "exclamationmark.circle")
+                    .font(.subheadline).foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding().background(.regularMaterial)
+            }
+        }
+        .onChange(of: draft.error) { _, message in
+            if let message { AccessibilityNotification.Announcement(message).post() }
+        }
         .task { draft.prepare(cards: cards) }
         .confirmationDialog("可能是已记录的消费", isPresented: $showingDuplicateConfirmation, titleVisibility: .visible) {
             Button("保存为另一笔消费", action: saveAsAnother)

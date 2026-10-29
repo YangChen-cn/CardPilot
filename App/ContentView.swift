@@ -98,14 +98,6 @@ struct ContentView: View {
             NavigationStack {
                 sectionView(selection ?? .cards)
                     .navigationTitle(title(selection ?? .cards))
-                    .toolbar {
-                        if selection == .transactions {
-                            ToolbarItem(placement: .primaryAction) {
-                                Button("记一笔", systemImage: "plus", action: { showingTransaction = true })
-                                    .keyboardShortcut("n", modifiers: .command)
-                            }
-                        }
-                    }
             }
         }
         #if os(macOS)

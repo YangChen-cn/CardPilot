@@ -8,6 +8,7 @@ struct RecommendationWorkbench: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
     @State private var draft = RecommendationDraft()
+    @State private var addingCard = false
 
     private var phoneLayout: Bool {
         #if os(iOS)
@@ -20,7 +21,16 @@ struct RecommendationWorkbench: View {
     var body: some View {
         let _ = catalog.revision
         Group {
-            if compact { content }
+            if !compact && !cards.contains(where: { !$0.isArchived }) {
+                ContentUnavailableView {
+                    Label("先添加一张银行卡", systemImage: "creditcard")
+                } description: {
+                    Text("根据你持有的卡片，比较可能适用的权益。")
+                } actions: {
+                    Button("从资料库添加", systemImage: "plus", action: { addingCard = true })
+                        .buttonStyle(.borderedProminent).controlSize(.large)
+                }
+            } else if compact { content }
             else {
                 ScrollView {
                     content.padding(phoneLayout ? PilotTheme.phonePagePadding : PilotTheme.pagePadding)
@@ -28,6 +38,7 @@ struct RecommendationWorkbench: View {
                 }.scrollDismissesKeyboard(.interactively)
             }
         }
+        .sheet(isPresented: $addingCard) { AddCardFlowView() }
     }
 
     private var content: some View {

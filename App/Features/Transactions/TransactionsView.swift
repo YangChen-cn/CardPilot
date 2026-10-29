@@ -108,10 +108,12 @@ struct TransactionsView: View {
                         .buttonStyle(.plain)
                     }
                     mailStatus
-                    HStack {
-                        if hasFilters { Text("已筛选").font(.caption).foregroundStyle(.secondary) }
-                        Spacer()
-                        filters
+                    if !visibleRecords.isEmpty || hasFilters || allHistory || !search.isEmpty {
+                        HStack {
+                            if hasFilters { Text("已筛选").font(.caption).foregroundStyle(.secondary) }
+                            Spacer()
+                            filters
+                        }
                     }
                 }
                 .padding(.vertical, 8)
@@ -231,26 +233,31 @@ struct TransactionsView: View {
     }
 
     private var monthControls: some View {
-        HStack(spacing: 12) {
-            Button("上个月", systemImage: "chevron.left") { changeMonth(-1) }
-                .labelStyle(.iconOnly).disabled(allHistory)
-                .frame(minWidth: 44, minHeight: 44)
-            Button {
-                selectedDate = month
-                showingMonthPicker = true
-            } label: {
-                HStack(spacing: 6) {
-                    Text(allHistory ? "全部历史" : monthLabel)
-                        .font(.headline)
-                    Image(systemName: "chevron.down").font(.caption)
-                }.frame(minHeight: 44)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Button {
+                    selectedDate = month
+                    showingMonthPicker = true
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(allHistory ? "全部历史" : monthLabel).font(.headline)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Image(systemName: "chevron.down").font(.caption).accessibilityHidden(true)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("选择月份，当前为" + (allHistory ? "全部历史" : monthLabel))
+                Button(action: { changeMonth(-1) }) {
+                    Label("上个月", systemImage: "chevron.left").labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44).contentShape(.rect)
+                }.buttonStyle(.plain).disabled(allHistory)
+                Button(action: { changeMonth(1) }) {
+                    Label("下个月", systemImage: "chevron.right").labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44).contentShape(.rect)
+                }.buttonStyle(.plain).disabled(allHistory || month >= LedgerQuery.monthStart(.now))
             }
-            .accessibilityLabel(allHistory ? "选择月份，当前为全部历史" : "选择月份")
-            Button("下个月", systemImage: "chevron.right") { changeMonth(1) }
-                .labelStyle(.iconOnly)
-                .disabled(allHistory || month >= LedgerQuery.monthStart(.now))
-                .frame(minWidth: 44, minHeight: 44)
-            Spacer(minLength: 0)
             if allHistory {
                 Button("返回本月") {
                     month = LedgerQuery.monthStart(.now)
@@ -378,6 +385,10 @@ struct TransactionsView: View {
             ToolbarItem(placement: .primaryAction) { ledgerOptions }
         }
         #else
+        ToolbarItem(placement: .primaryAction) {
+            Button("记一笔", systemImage: "plus", action: { adding = true })
+                .disabled(!canRecord).keyboardShortcut("n", modifiers: .command)
+        }
         ToolbarItem(placement: .primaryAction) { ledgerOptions }
         #endif
     }
@@ -390,9 +401,11 @@ struct TransactionsView: View {
                 Button("粘贴短信", systemImage: "text.bubble", action: { importingSMS = true })
                 Button("导入 CSV", systemImage: "doc.badge.plus", action: { importingCSV = true })
             }
-            if scopedCardID != nil || !phoneLayout {
+            #if os(iOS)
+            if !phoneLayout {
                 Button("记一笔", systemImage: "plus", action: { adding = true }).disabled(!canRecord)
             }
+            #endif
         }
     }
 
@@ -435,6 +448,7 @@ struct TransactionsView: View {
         HStack(spacing: 0) {
             Button(action: { editing = transaction }) { TransactionRow(transaction: transaction) }
                 .buttonStyle(.plain)
+                .accessibilityHint("编辑这笔消费")
             #if os(macOS)
             Menu("交易操作", systemImage: "ellipsis") {
                 Button("编辑", systemImage: "pencil", action: { editing = transaction })

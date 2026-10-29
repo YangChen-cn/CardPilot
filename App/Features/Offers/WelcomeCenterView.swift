@@ -67,7 +67,16 @@ struct WelcomeCenterView: View {
                     }.pickerStyle(.segmented).frame(maxWidth: 480)
                 }
                 if items.isEmpty {
-                    ContentUnavailableView(filter == "我在追踪" ? "还没有追踪中的迎新" : "暂无\(filter == "全部" ? "" : filter)迎新记录", systemImage: "gift", description: Text("需要时可在「可记录」中选择迎新，按实际情况记录状态。"))
+                    ContentUnavailableView {
+                        Label(filter == "我在追踪" ? "还没有追踪中的迎新" : "暂无\(filter == "全部" ? "" : filter)迎新记录", systemImage: "gift")
+                    } description: {
+                        Text(filter == "可记录" || filter == "全部" ? "已添加卡片的迎新会显示在这里，完成与到账状态由你记录。" : "选择迎新后，可记录自己的截止日期和完成状态。")
+                    } actions: {
+                        if filter != "可记录" && filter != "全部" {
+                            Button("查看可记录的迎新", action: { filter = "可记录" })
+                                .buttonStyle(.bordered)
+                        }
+                    }
                 }
                 LazyVGrid(columns: phoneLayout ? [GridItem(.flexible(), alignment: .top)] : [GridItem(.adaptive(minimum: 300), spacing: 16, alignment: .top)], alignment: .leading, spacing: 16) {
                     ForEach(items) { info in goal(info).padding(.bottom, 8) }

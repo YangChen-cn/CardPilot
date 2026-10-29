@@ -6,6 +6,7 @@ struct WelcomeTrackingEditor: View {
     @Environment(\.dismiss) private var dismiss
     let info: BenefitInfo
     @State private var tracking: WelcomeTracking?
+    @State private var initialTracking: WelcomeTracking?
     @State private var error: String?
 
     var body: some View {
@@ -18,11 +19,24 @@ struct WelcomeTrackingEditor: View {
             }
             .navigationTitle("个人迎新记录")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("取消", action: { dismiss() }) }
-                ToolbarItem(placement: .confirmationAction) { Button("保存", action: save).bold().disabled(tracking == nil) }
+                ToolbarItem(placement: .cancellationAction) {
+                    DiscardChangesButton(hasChanges: tracking != initialTracking, discard: { dismiss() })
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("保存", action: save).bold().disabled(tracking == nil)
+                        .keyboardShortcut(.return, modifiers: .command)
+                }
             }
         }.editorSize()
-        .task { do { tracking = try OfferTrackingStore.load(for: info, context: context) } catch { self.error = PilotError.message(error) } }
+        .interactiveDismissDisabled(tracking != initialTracking)
+        .task {
+            guard initialTracking == nil else { return }
+            do {
+                let value = try OfferTrackingStore.load(for: info, context: context)
+                tracking = value
+                initialTracking = value
+            } catch { self.error = PilotError.message(error) }
+        }
     }
 
     private func editor(_ current: WelcomeTracking) -> some View {
@@ -63,7 +77,7 @@ struct WelcomeTrackingEditor: View {
                 Section { Link("查看官方条款", destination: url) }
             }
             if let error { Section { Text(error).foregroundStyle(.red) } }
-        }.formStyle(.grouped)
+        }.formStyle(.grouped).scrollDismissesKeyboard(.interactively)
     }
 
     private func field<Value>(_ keyPath: WritableKeyPath<WelcomeTracking, Value>, fallback: Value) -> Binding<Value> {
