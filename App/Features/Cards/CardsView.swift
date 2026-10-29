@@ -40,7 +40,7 @@ struct CardsView: View {
     /// squeezing the card face into a fixed-height slot.
     private var phoneStyle: CardPhoneStyle {
         if let style = CardPhoneStyle(rawValue: phoneStyleRaw) { return style }
-        return legacyCompactList ? .compact : .faces
+        return legacyCompactList ? .compact : .deck
     }
 
     private var phoneStyleSelection: Binding<CardPhoneStyle> {

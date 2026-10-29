@@ -4,6 +4,13 @@ import Testing
 
 @Suite @MainActor
 struct CardUsageGuideTests {
+    @Test func bundledProductsExposeOneHolisticGuideEach() throws {
+        let document = try BankLibrary.loadBundledSnapshot().document
+        let guides = document.cardProducts.compactMap(\.usageGuide)
+        #expect(!guides.isEmpty)
+        #expect(guides.allSatisfy { $0.scenarios.count == 1 })
+    }
+
     private func scenario() -> [String: Any] {
         ["id": "example.mobile", "title": "示例场景", "whenToUse": "示例消费条件",
          "howToUse": "按官方条款选择支付方式", "capNote": "上限须按官方条款核实",
@@ -65,12 +72,15 @@ struct CardUsageGuideTests {
         #expect(value.periodDescription() == "有效期未列明")
     }
 
-    @Test(arguments: ["duplicateID", "missingOffer", "wrongType", "insecureURL", "credentials", "invalidDate",
+    @Test(arguments: ["multipleStrategies", "duplicateID", "missingOffer", "wrongType", "insecureURL", "credentials", "invalidDate",
                       "reversedDates", "unknownField", "emptySummary", "emptyScenarios", "tooManyScenarios", "longText"])
     func invalidGuidesAreRejected(problem: String) throws {
         var item = scenario()
         var value = guide()
         switch problem {
+        case "multipleStrategies":
+            var other = item; other["id"] = "example.other"
+            value["scenarios"] = [item, other]
         case "duplicateID": value["scenarios"] = [item, item]
         case "missingOffer": item["relatedOfferIDs"] = ["another.card.offer"]
         case "wrongType": item["stopAfter"] = 2000
@@ -81,10 +91,10 @@ struct CardUsageGuideTests {
         case "unknownField": item["stopAmount"] = 2000
         case "emptySummary": value["summary"] = "  \n"
         case "emptyScenarios": value["scenarios"] = [] as [[String: Any]]
-        case "tooManyScenarios": value["scenarios"] = Array(repeating: item, count: 5)
+        case "tooManyScenarios": value["scenarios"] = Array(repeating: item, count: 2)
         default: item["howToUse"] = String(repeating: "x", count: 221)
         }
-        if !["duplicateID", "emptySummary", "emptyScenarios", "tooManyScenarios"].contains(problem) {
+        if !["multipleStrategies", "duplicateID", "emptySummary", "emptyScenarios", "tooManyScenarios"].contains(problem) {
             value["scenarios"] = [item]
         }
         #expect(throws: (any Error).self) { try decode(value) }
