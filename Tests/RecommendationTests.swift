@@ -105,6 +105,12 @@ struct RecommendationTests {
         #expect(offer.title.contains("8%"))
         #expect(first.rankingLabel == "需补充信息")
         #expect(offer.keyMissingConditions.contains("登记状态"))
+        _ = try OfferStateStore.setEnrollment(.notRegistered, cardKey: go.overlayKey, cardID: go.id,
+                                              offerID: "go.diamond.mobile.mainland.2026q4", legacy: nil, in: context)
+        let unregistered = try #require(RecommendationEngine.suggest(cards: [go], query: input,
+                                                                     now: try day("2026-10-22")).first?.topOffer)
+        #expect(unregistered.keyMissingConditions.contains("登记状态"))
+        #expect(unregistered.confirmationNeeded.contains { $0.contains("尚未登记") })
     }
 
     @Test func unspecifiedPaymentMethodKeepsTheCandidateOpenInsteadOfCallingItBest() throws {

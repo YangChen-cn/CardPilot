@@ -148,8 +148,10 @@ import Foundation
         }
         if info.capCents > 0 { missing.append("设有回赠上限，请自行确认剩余名额及额度。") }
         if !info.sharedCapGroup.isEmpty { missing.append("可能与其他活动共享上限或名额。") }
-        if info.catalogRule?.requiresPersonalDates == true, info.personal.enrollment == .unknown {
-            missing.append("需要确认是否已登记；个人登记状态未知。")
+        if info.requiresRegistration, info.personal.enrollment != .registered {
+            missing.append(info.personal.enrollment == .notRegistered
+                           ? "你记录为尚未登记；请先按银行要求完成登记。"
+                           : "需要确认是否已登记；个人登记状态未知。")
             keyMissing.append("登记状态")
         }
         if info.sourceURL.isEmpty || info.verifiedOn.isEmpty { missing.append("公开来源或核实日期不完整，请先向银行核实。") }

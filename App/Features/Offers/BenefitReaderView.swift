@@ -135,7 +135,7 @@ struct BenefitDetailView: View {
                     terms(current)
                     facts(current)
                     if let tracking { welcome(tracking) }
-                    if info.origin == .official { personalSection }
+                    if info.origin == .official, info.requiresRegistration { personalSection }
                     official(current)
                 }
                 .padding(28)

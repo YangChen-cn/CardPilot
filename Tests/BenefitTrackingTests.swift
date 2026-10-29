@@ -4,6 +4,22 @@ import Testing
 @testable import CardPilot
 
 @Suite @MainActor struct BenefitTrackingTests {
+    @Test(arguments: ["welcome", "cashback"])
+    func personalDatesOnlyRequireEnrollmentForRegistrationOffers(kind: String) throws {
+        let product = try #require(BankLibrary.load().product(id: "bochk.go.diamond"))
+        let card = BankCard(bank: "Example", name: "Example")
+        var rule = CatalogRule(id: "test.registration", name: "Test", kind: kind,
+                               group: kind == "welcome" ? "welcome" : "limited",
+                               startsOn: nil, endsOn: nil, sourceURL: "https://example.com/offer")
+        for flag in [Bool?.none, .some(false), .some(true)] {
+            rule.requiresPersonalDates = flag
+            let state = OfferPersonalState(enrollment: .registered)
+            let info = BenefitInfo(official: rule, product: product, card: card, state: state)
+            #expect(info.requiresRegistration == (kind != "welcome" && flag == true))
+            #expect(info.personal.enrollment == .registered)
+        }
+    }
+
     private func day(_ value: String) throws -> Date { try CatalogImporter.date(value) }
 
     @Test func publishedBenefitRendersWithoutTransactionsAndDoesNotTreatDisabledAsArchived() throws {

@@ -102,6 +102,12 @@ enum BenefitPeriodStatus: Equatable {
     /// available in the history section.
     var isHistoricalReadable: Bool { isHistorical && !isUserArchived && !isHidden }
     var isWelcome: Bool { group == .welcome }
+
+    /// In the current catalog, non-welcome offers use this flag for activation/
+    /// registration; welcome offers use it for personal consumption dates instead.
+    /// Never ask for enrollment merely because a welcome needs personal dates.
+    var requiresRegistration: Bool { !isWelcome && catalogRule?.requiresPersonalDates == true }
+
     var canEdit: Bool { origin == .personal }
     var canChangeHiddenState: Bool { origin == .official }
 
