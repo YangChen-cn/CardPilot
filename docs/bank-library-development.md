@@ -97,4 +97,4 @@ welcomePlans.kind、exclusionGroup、calculable及旧主/附方案字段仅为�
 
 来源研究：[BOCHK/BEA](bochk-bea-library-research.md)、[HSBC](hsbc-library-research.md)、[CNCBI 信银国际](cncbi-library-research.md)。这些是事实来源记录，不构成银行实时服务。公开快照可按上述流程发布，但更新只替换只读缓存，不替代银行官方核实。
 
-SOGO 两等级权益、迎新及官方竖版卡面来源：[核实记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/bochk-sogo-research.md)。
+SOGO 两等级权益、迎新及AI横版示意及官方参考来源：[核实记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/bochk-sogo-research.md)。

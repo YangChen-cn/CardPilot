@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102901,
+  "contentVersion": 2026102902,
   "publishedAt": "2026-10-29",
   "banks": [
     {
@@ -2912,7 +2912,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-sogo-visa-platinum.png",
-        "sha256": "72a9e6db6af1f2be9bb0153fa4429ec080e8dacf3554ca750d10ba2a0ffe1d96",
+        "sha256": "a0de2302b03de1302c4482ec561f5d691f6b98bfc68dc44ac6acf559442d0520",
         "contentType": "image/png"
       },
       "baseRewardVerified": false,
@@ -2961,7 +2961,7 @@
         "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
         "verifiedOn": "2026-10-29",
         "annualFeeNote": "首年免年费；后续年费及豁免条件请核对银行收费表。",
-        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为官方竖版，完整保留比例。迎新以个人实际申请方案及银行资格为准。",
+        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为参考官方素材经AI整理的横版示意，不代表银行实际发行的卡面版本。迎新以个人实际申请方案及银行资格为准。",
         "rules": [
           {
             "id": "bochk.sogo.visa.platinum.shopping.2026",
@@ -3038,7 +3038,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-sogo-visa-signature.png",
-        "sha256": "feeff3c94cde0a64e9c80bb82a4eccf45e920adc85ace65bcd09137f59dd12a8",
+        "sha256": "7ab82b0266fbde5d95c05c8d93671e239f3fd392dcd60302aa5546d4f2e03c1f",
         "contentType": "image/png"
       },
       "baseRewardVerified": false,
@@ -3087,7 +3087,7 @@
         "sourceURL": "https://www.bochk.com/tc/creditcard/details/cobrand/cobrand/sogo.html",
         "verifiedOn": "2026-10-29",
         "annualFeeNote": "首年免年费；后续年费及豁免条件请核对银行收费表。",
-        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为官方竖版，完整保留比例。迎新以个人实际申请方案及银行资格为准。",
+        "caveats": "白金与Signature是独立产品；指定手机支付额外5%仅Signature适用。活动开始日期未明确，保持未知；基本积分不等于保证现金回赠。卡面为参考官方素材经AI整理的横版示意，不代表银行实际发行的卡面版本。迎新以个人实际申请方案及银行资格为准。",
         "rules": [
           {
             "id": "bochk.sogo.visa.signature.mobile.2026",
