@@ -36,6 +36,14 @@
 
 参考 Apple 的 [Managing search interface activation](https://developer.apple.com/documentation/swiftui/managing-search-interface-activation) 和 [ScrollEdgeEffectStyle](https://developer.apple.com/documentation/swiftui/scrolledgeeffectstyle)。各次局部呈现修补只编译受影响目标，不重复单元/全量测试；实际取消与滚动可读性仍由用户复验。
 
+## 推荐用法面板高度验收跟进（2026-10-30）
+
+- 用户反馈默认大Sheet底部留空过多。第一版按ScrollGeometry测量后改变height detent，用户立即反馈先大后小的跳动；这条中间实现已删除，未作为最终方案提交。
+- 当前iOS `CardUsageGuideView` 使用原生 `.presentationSizing(.page.fitted(horizontal: false, vertical: true))` 与 `ViewThatFits`，在呈现布局时给出正文自然尺寸；短文直接展示，空间不足时选择ScrollView。没有测量状态、默认large回退、弹出后高度回调或延时改尺寸。
+- iOS只读面板去掉无导航层级的NavigationStack，保留紧凑标题、原生玻璃完成按钮、系统拖动关闭及既有缩放来源；macOS仍用原NavigationStack/toolbar/editorSize。正文共用同一视图，不改指南资料、其他编辑器、存储或同步。
+- 依据：[presentationSizing](https://developer.apple.com/documentation/swiftui/view/presentationsizing)、[fitted](https://developer.apple.com/documentation/swiftui/presentationsizing/fitted)。最终双端增量编译与差异检查通过，没有为局部布局重复单元/全量；按原脚本更新现有iPhone17内存演示版本供用户复验，未点击/截图验收。
+- 待验：首次打开不应再先大后小；短指南底部留白、长指南滚动至最后一行/官方链接、大字号、转屏，以及交互式关闭与重新打开仍需用户确认。
+
 ## 官方依据
 
 - [Adopting Liquid Glass](https://developer.apple.com/documentation/technologyoverviews/adopting-liquid-glass)：优先系统导航与控件，玻璃用于功能层，避免遮盖内容和过量使用。
