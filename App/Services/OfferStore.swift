@@ -124,19 +124,25 @@ struct OfferPersonalState: Codable, Equatable, Sendable {
         guard info.isWelcome else { return false }
         if info.origin == .personal, info.legacyRule != nil { return true }
         if !info.personal.notes.isEmpty { return true }
-        if try DocumentStore.load(WelcomeTracking.self, key: info.trackingKey, in: context) != nil { return true }
+        // Presence, not successful decoding, controls visibility: a damaged
+        // record must remain reachable so the UI can report its read error.
+        func exists(_ key: String) throws -> Bool {
+            guard let record = try DocumentStore.record(key, in: context) else { return false }
+            return !record.isDeleted
+        }
+        if try exists(info.trackingKey) { return true }
         if let cardID = info.cardID,
-           try DocumentStore.load(WelcomeTracking.self, key: legacyKey(cardID: cardID, offerID: info.overlayOfferID),
-                                  in: context) != nil { return true }
+           try exists(legacyKey(cardID: cardID, offerID: info.overlayOfferID)) { return true }
         guard let cardID = info.cardID,
               let legacy = info.legacyRule ?? legacyRule(cardID: cardID, externalID: info.overlayOfferID, context: context)
         else { return false }
         if legacy.isEnabled { return true }
-        if try DocumentStore.load(WelcomeTracking.self, key: WelcomeTrackingStore.key(legacy), in: context) != nil { return true }
-        if try DocumentStore.load(WelcomeReceipt.self, key: "welcome:" + legacy.syncKey, in: context) != nil { return true }
+        if try exists(WelcomeTrackingStore.key(legacy)) { return true }
+        if try exists("welcome:" + legacy.syncKey) { return true }
         guard let card = legacy.card,
-              let profile = try DocumentStore.load(PersonalCardProfile.self, key: "personalCard:" + card.syncKey, in: context)
+              let record = try DocumentStore.record("personalCard:" + card.syncKey, in: context), !record.isDeleted
         else { return false }
+        guard let profile = try? SyncCodec.decoder().decode(PersonalCardProfile.self, from: record.content) else { return true }
         return profile.welcomePlanID == legacy.externalID || profile.welcomeRuleIDs.contains(legacy.externalID)
             || (profile.addons?.contains { $0.ruleIDs.contains(legacy.externalID) || $0.planID == legacy.externalID } ?? false)
     }

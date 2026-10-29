@@ -489,4 +489,52 @@ struct RemoteCatalogTests {
         #expect(try OfferTrackingStore.load(for: actual, context: context).status == .received)
     }
 
+    @Test func damagedArchivedWelcomeRecordRemainsVisibleUntilDeleted() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let product = try #require(BankLibrary.load().product(id: "bochk.sogo.visa.signature"))
+        let card = BankCard(bank: "BOCHK", name: "Archived card")
+        card.catalogID = product.id; context.insert(card)
+        let info = try #require(OfferStore.offers(for: card, context: context).first { $0.isWelcome })
+        let record = DomainRecord(key: info.trackingKey, kind: "welcomeTrackingOffer", content: Data("{}".utf8))
+        context.insert(record); card.isArchived = true
+        let history = OfferStore.offers(context: context, includeArchivedCards: true).filter { $0.cardID == card.id }
+        #expect(history.count == 1)
+        let visible = try #require(history.first)
+        #expect(throws: (any Error).self) { try OfferTrackingStore.load(for: visible, context: context) }
+        #expect(record.content == Data("{}".utf8))
+        record.isDeleted = true
+        #expect(OfferStore.offers(context: context, includeArchivedCards: true).filter { $0.cardID == card.id }.isEmpty)
+    }
+
+    @Test func archivedWelcomeRetainsOlderUUIDKeyAndLegacyReceipt() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let firstProduct = try #require(BankLibrary.load().product(id: "bochk.sogo.visa.signature"))
+        let firstCard = BankCard(bank: "BOCHK", name: "Earlier card")
+        firstCard.catalogID = firstProduct.id; context.insert(firstCard)
+        let firstInfo = try #require(OfferStore.offers(for: firstCard, context: context).first { $0.isWelcome })
+        var previous = try OfferTrackingStore.load(for: firstInfo, context: context)
+        previous.status = .achieved; previous.notes = "UUID history"
+        try DocumentStore.put(previous,
+                              key: OfferTrackingStore.legacyKey(cardID: firstCard.id, offerID: firstInfo.overlayOfferID),
+                              kind: "welcomeTrackingOffer", in: context)
+        firstCard.isArchived = true
+
+        let secondProduct = try #require(BankLibrary.load().product(id: "bochk.chill.platinum"))
+        let secondCard = BankCard(bank: "BOCHK", name: "Older card")
+        secondCard.catalogID = secondProduct.id; context.insert(secondCard)
+        let secondInfo = try #require(OfferStore.offers(for: secondCard, context: context).first { $0.isWelcome })
+        let legacy = RewardRule(name: "Earlier welcome", kind: "welcome", card: secondCard)
+        legacy.externalID = secondInfo.overlayOfferID; legacy.isEnabled = false; context.insert(legacy)
+        try DocumentStore.put(WelcomeReceipt(received: true, receivedOn: nil),
+                              key: "welcome:" + legacy.syncKey, kind: "welcome", in: context)
+        secondCard.isArchived = true
+
+        let history = OfferStore.offers(context: context, includeArchivedCards: true)
+        let first = try #require(history.first { $0.cardID == firstCard.id && $0.overlayOfferID == firstInfo.overlayOfferID })
+        let second = try #require(history.first { $0.cardID == secondCard.id && $0.overlayOfferID == secondInfo.overlayOfferID })
+        #expect(try OfferTrackingStore.load(for: first, context: context).notes == "UUID history")
+        #expect(try OfferTrackingStore.load(for: first, context: context).status == .achieved)
+        #expect(try OfferTrackingStore.load(for: second, context: context).status == .received)
+    }
+
 }

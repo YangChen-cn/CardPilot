@@ -10,6 +10,13 @@ import UserNotifications
         return allowed
     }
 
+    static func disable() async {
+        UserDefaults.standard.set(false, forKey: "welcome.reminders")
+        let center = UNUserNotificationCenter.current()
+        let requests = await center.pendingNotificationRequests()
+        center.removePendingNotificationRequests(withIdentifiers: requests.filter { $0.identifier.hasPrefix("cardpilot.welcome.") }.map(\.identifier))
+    }
+
     static func refresh(context: ModelContext) async throws {
         guard !RuntimeMode.isEphemeral, UserDefaults.standard.bool(forKey: "welcome.reminders") else { return }
         let offers = OfferStore.offers(context: context).filter(\.isWelcome)
@@ -24,6 +31,7 @@ import UserNotifications
             let cardName = info.cardName.components(separatedBy: " · ").last ?? info.cardName
             for days in [7, 1] where count < 60 {
                 try Task.checkCancellation()
+                guard UserDefaults.standard.bool(forKey: "welcome.reminders") else { return }
                 guard let day = HKCalendar.calendar.date(byAdding: .day, value: -days, to: HKCalendar.start(tracking.deadline)),
                       let date = HKCalendar.calendar.date(bySettingHour: 10, minute: 0, second: 0, of: day), date > .now else { continue }
                 let content = UNMutableNotificationContent()
@@ -32,6 +40,11 @@ import UserNotifications
                 content.sound = .default
                 let trigger = UNCalendarNotificationTrigger(dateMatching: HKCalendar.calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date), repeats: false)
                 try await center.add(UNNotificationRequest(identifier: "cardpilot.welcome.\(info.id).\(days)", content: content, trigger: trigger))
+                // Disabling can happen while the notification center is adding a request.
+                if !UserDefaults.standard.bool(forKey: "welcome.reminders") {
+                    center.removePendingNotificationRequests(withIdentifiers: ["cardpilot.welcome.\(info.id).\(days)"])
+                    return
+                }
                 count += 1
             }
         }

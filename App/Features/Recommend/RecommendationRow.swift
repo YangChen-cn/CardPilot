@@ -26,7 +26,27 @@ struct RecommendationRow: View {
             Text(result.card.displayName).font(.title3.bold())
             Text(result.rankingSummary).font(.caption).foregroundStyle(.secondary)
             if let base = result.baseBenefit { Text(base).font(.subheadline).foregroundStyle(.secondary) }
-            ForEach(result.offers) { offer in
+            ForEach(phoneLayout ? Array(result.offers.prefix(1)) : result.offers) { offer in
+                offerContent(offer)
+            }
+            if phoneLayout, result.offers.count > 1 {
+                PilotDisclosureGroup("其他 \(result.offers.count - 1) 项可能适用的权益") {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(Array(result.offers.dropFirst())) { offer in offerContent(offer) }
+                    }
+                }.font(.subheadline)
+            }
+            if !result.caveats.isEmpty {
+                PilotDisclosureGroup("卡片注意事项") {
+                    ForEach(result.caveats, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
+                }.font(.subheadline)
+            }
+            if result.offers.isEmpty, let url = URL(string: PricingStore.details(result.card).sourceURL), ["https", "http"].contains(url.scheme ?? "") {
+                Link("查看官方权益", destination: url).font(.subheadline).frame(minHeight: phoneLayout ? 44 : nil)
+            }
+        }.frame(maxWidth: .infinity, alignment: .leading).pilotPanel()
+    }
+    private func offerContent(_ offer: SuggestedBenefit) -> some View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(offer.title).font(.headline)
                     if phoneLayout {
@@ -66,16 +86,7 @@ struct RecommendationRow: View {
                         }.font(.caption)
                     }
                 }
-                if offer.id != result.offers.last?.id { Divider() }
-            }
-            if !result.caveats.isEmpty {
-                PilotDisclosureGroup("卡片注意事项") {
-                    ForEach(result.caveats, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
-                }.font(.subheadline)
-            }
-            if result.offers.isEmpty, let url = URL(string: PricingStore.details(result.card).sourceURL), ["https", "http"].contains(url.scheme ?? "") {
-                Link("查看官方权益", destination: url).font(.subheadline).frame(minHeight: phoneLayout ? 44 : nil)
-            }
-        }.frame(maxWidth: .infinity, alignment: .leading).pilotPanel()
+
     }
+
 }

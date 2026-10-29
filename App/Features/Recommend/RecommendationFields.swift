@@ -52,12 +52,12 @@ struct RecommendationFields: View {
                 }
                 .padding(.vertical, 2)
             }
-            PilotDisclosureGroup("支付方式、金额与商户（选填）") {
+            Picker("支付方式（选填）", selection: $draft.paymentMethod) {
+                Text("暂未确定").tag("")
+                ForEach(PaymentMethod.allCases.filter { $0 != .unknown }) { Text($0.rawValue).tag($0.rawValue) }
+            }.pickerStyle(.menu).frame(minHeight: 44)
+            PilotDisclosureGroup("金额与商户（选填）") {
                 VStack(alignment: .leading, spacing: 16) {
-                    Picker("支付方式", selection: $draft.paymentMethod) {
-                        Text("暂未确定").tag("")
-                        ForEach(PaymentMethod.allCases.filter { $0 != .unknown }) { Text($0.rawValue).tag($0.rawValue) }
-                    }.pickerStyle(.menu).frame(minHeight: 44)
                     if !compact {
                         Picker("币种", selection: $draft.currency) {
                             ForEach(Currency.allCases) { Text($0.rawValue).tag($0.rawValue) }
