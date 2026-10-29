@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102903,
+  "contentVersion": 2026102904,
   "publishedAt": "2026-10-29",
   "banks": [
     {
@@ -308,37 +308,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.hsbc.student.tuition.2026h2",
-            "title": "指定院校学费2.4%奖赏钱（网银缴费）",
-            "whenToUse": "在指定大学通过要求的缴费渠道交学费。",
-            "howToUse": "2026-10-01至2027-03-31，通过HSBC HK App或个人网银的网上缴费服务向指定院校缴学费，整期额外奖赏钱最高$200，2027年5月底前发放；普通网上刷卡或其他教育消费并不因此符合资格。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "日常小额消费；有指定大学学费需要经汇丰网银缴付时。",
+            "howToUse": "平时赚基础奖赏钱；2026/10–2027/3向指定大学缴学费，须通过HSBC HK App或个人网银指定缴费渠道，活动额外奖赏钱最高HK$200。新客另可按发卡后60日的消费要求领迎新HK$300，不同客户资格不要混用。",
             "relatedOfferIDs": [
-              "hsbc.student.tuition.2026h2"
-            ],
-            "sourceURLs": [
-              "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/tc/tuition-fee-payment-tcs1.pdf"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2027-03-31",
-            "capNote": "整期额外奖赏钱上限HK$200。",
-            "stopAfter": "若整期额度尚未使用，约HK$8,333合资格学费对应HK$200奖赏钱，实际以银行记录为准。"
-          },
-          {
-            "id": "guide.hsbc.student.welcome.new.2026",
-            "title": "学生卡迎新｜新客 $300奖赏钱",
-            "whenToUse": "符合该卡新客或指定客户资格，在个人迎新消费期内签账。",
-            "howToUse": "符合新客户资格并在发卡后首60个历日内累计合资格签账满HK$2,000，可获$300奖赏钱。",
-            "relatedOfferIDs": [
+              "hsbc.student.tuition.2026h2",
               "hsbc.student.welcome.new.2026"
             ],
             "sourceURLs": [
+              "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/tc/tuition-fee-payment-tcs1.pdf",
               "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/student/terms-and-conditions.pdf"
             ],
-            "startsOn": "2026-04-01",
-            "endsOn": "2027-02-28",
-            "warnings": [
-              "批核日前12个月曾取消汇丰个人信用卡主卡不合资格；电子钱包、充值及缴费等不计。"
-            ]
+            "capNote": "学费推广整期额外奖赏钱最高HK$200；迎新另按各客户方案计算。"
           }
         ]
       }
@@ -589,36 +571,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.hsbc.pulse.cn-mo.mobile.2026h2",
-            "title": "内地／澳门人民币或澳门元手机付款额外2%奖赏钱",
-            "whenToUse": "在中国内地或澳门以人民币／澳门元，使用指定手机或二维码付款。",
-            "howToUse": "指定交易享额外5倍奖赏钱（约2%），基础奖赏钱另计；同一持卡人的合资格主附卡签账合并计算。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "经常在内地或澳门以人民币／澳门元使用指定手机支付；新申请卡时。",
+            "howToUse": "在符合条件的内地或澳门手机付款可赚额外5倍奖赏钱，约值2%，基础0.4%另计；香港港币交易不能套用这项活动。网上申请且符合新客条件时，发卡后首60日合资格签账满HK$8,000可获HK$800迎新。",
             "relatedOfferIDs": [
-              "hsbc.pulse.cn-mo.mobile.2026h2"
-            ],
-            "sourceURLs": [
-              "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/unionpay-dual-currency/diamond-card-terms-and-conditions.pdf"
-            ],
-            "startsOn": "2026-07-01",
-            "endsOn": "2026-12-31",
-            "capNote": "整期首HK$80,000合资格签账可获额外奖赏；按2%估算最多约$1,600奖赏钱。"
-          },
-          {
-            "id": "guide.hsbc.pulse.welcome.new.online.2026",
-            "title": "Pulse迎新｜新客网上申请 $800奖赏钱",
-            "whenToUse": "符合该卡新客或指定客户资格，在个人迎新消费期内签账。",
-            "howToUse": "新客户经汇丰网站、个人网银或HSBC HK App申请，发卡后首60个历日内合资格签账满HK$8,000，可获$800奖赏钱。",
-            "relatedOfferIDs": [
+              "hsbc.pulse.cn-mo.mobile.2026h2",
               "hsbc.pulse.welcome.new.online.2026"
             ],
             "sourceURLs": [
+              "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/credit-cards/unionpay-dual-currency/diamond-card-terms-and-conditions.pdf",
               "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/credit-cards/offers/welcome-terms-and-conditions.pdf"
             ],
-            "startsOn": "2026-03-01",
-            "endsOn": "2027-02-28",
-            "warnings": [
-              "批核日前12个月曾取消汇丰个人信用卡主卡不合资格；电子钱包、充值及缴费等不计。"
-            ]
+            "capNote": "手机付款推广按整期首HK$80,000合资格消费计算额外奖赏。"
           }
         ]
       }
@@ -659,10 +624,10 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.daily-debit",
-            "title": "日常扣账",
-            "whenToUse": "从银行账户直接付款，不使用信用额度。",
-            "howToUse": "消费直接扣除关联账户余额；使用前可先检查所需币种余额及账户收费。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "希望直接从汇丰账户余额付款、不使用信用额度时。",
+            "howToUse": "刷卡直接扣除关联账户资金；跨币种消费前先确认账户币种和实际汇兑费用。",
             "relatedOfferIDs": [],
             "sourceURLs": [
               "https://www.hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/"
@@ -784,32 +749,18 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.chill.platinum.merchants.2026",
-            "title": "Chill 商户 8%",
-            "whenToUse": "在指定Chill商户消费，且当月实体零售签账满足门槛。",
-            "howToUse": "当月合资格实体零售累计满HK$1,000才适用；Apple Pay在实体店消费可计门槛；8%含0.4%积分等值及7.6%额外回赠；名单见官方商户图（2026-05-01生效）；全港戏院资格按银行认定的MCC核定。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "网上购物、海外外币消费，或在指定Chill商户实体购物。",
+            "howToUse": "网上／海外合资格消费可享合计约4%回赠；指定Chill商户满足当月实体零售HK$1,000门槛后最高8%。8%含基础积分等值，不能与4%简单相加；是否属于指定商户须看实际活动名单和交易类别。",
             "relatedOfferIDs": [
-              "chill.platinum.merchants.2026"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/chillcard/chill_offer_tnc_tc.pdf"
-            ],
-            "endsOn": "2026-12-31",
-            "capNote": "两项优惠每月共享HK$150额外现金回赠上限，基础积分另计；主附卡合并。"
-          },
-          {
-            "id": "guide.chill.platinum.online-overseas.2026",
-            "title": "网上及海外签账 4%",
-            "whenToUse": "网上零售或海外外币零售消费。",
-            "howToUse": "网上零售不限地点及币种；海外零售须以外币结算；4%含0.4%积分等值及3.6%额外回赠，额外部分与Chill商户共享月上限；需于交易后7天内入账。",
-            "relatedOfferIDs": [
+              "chill.platinum.merchants.2026",
               "chill.platinum.online-overseas.2026"
             ],
             "sourceURLs": [
               "https://www.bochk.com/dam/boccreditcard/chillcard/chill_offer_tnc_tc.pdf"
             ],
-            "endsOn": "2026-12-31",
-            "capNote": "两项优惠每月共享HK$150额外现金回赠上限，基础积分另计；主附卡合并。"
+            "capNote": "网上／海外与指定Chill商户共享每月额外HK$150回赠上限（主附卡合并）。"
           }
         ]
       }
@@ -1069,55 +1020,21 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.go.diamond.mobile.mainland.2026q4",
-            "title": "2026年第4季内地指定手机签账最高20X积分（等值8%）",
-            "whenToUse": "内地人民币结算，使用活动指定的手机支付。",
-            "howToUse": "先成功登记（限首35,000名）；登记当月起以指定手机支付的合资格交易享额外积分，倍率已包含基础积分。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "内地人民币手机消费、香港手机消费，或在指定GO商户付款。",
+            "howToUse": "2026年第四季先登记指定手机支付活动：内地人民币最高20X积分（约8%），香港最高10X（约4%）；两者都已含基本手机积分，不能相加。指定GO商户可看最高5%现金回赠，与季度手机积分优惠不能叠加。",
             "relatedOfferIDs": [
-              "go.diamond.mobile.mainland.2026q4"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31",
-            "capNote": "内地、本地及海外额外积分整期共享75,000分，约值HK$300。",
-            "warnings": [
-              "交易须于7天内入账；同笔符合指定Go商户时只计商户优惠。"
-            ]
-          },
-          {
-            "id": "guide.go.diamond.mobile.local.2026q4",
-            "title": "2026年第4季香港本地指定手机签账最高10X积分（等值4%）",
-            "whenToUse": "香港本地以活动指定手机支付付款。",
-            "howToUse": "先成功登记（限首35,000名）；登记当月起以指定手机支付的合资格交易享额外积分，倍率已包含基础积分。",
-            "relatedOfferIDs": [
-              "go.diamond.mobile.local.2026q4"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31",
-            "capNote": "内地、本地及海外额外积分整期共享75,000分，约值HK$300。",
-            "warnings": [
-              "交易须于7天内入账；同笔符合指定Go商户时只计商户优惠。"
-            ]
-          },
-          {
-            "id": "guide.go.diamond.selected-go-merchants.2026",
-            "title": "指定Go商户最高5%现金回赠",
-            "whenToUse": "在指定GO商户使用银行认可的付款方式。",
-            "howToUse": "在指定GO商户合资格付款，最高5%现金回赠，不与手机积分优惠叠加。",
-            "relatedOfferIDs": [
+              "go.diamond.mobile.mainland.2026q4",
+              "go.diamond.mobile.local.2026q4",
               "go.diamond.selected-go-merchants.2026"
             ],
             "sourceURLs": [
+              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf",
               "https://www.bochk.com/tc/creditcard/promotions/offers/gomerchants.html"
             ],
-            "endsOn": "2026-12-31",
-            "capNote": "每月上限HK$100，包含现金回赠和积分等值；主附卡合并。",
-            "stopAfter": "本月主附卡尚未使用该优惠时，约HK$2,000合资格签账可接近上限；此后可比较其他卡。"
+            "capNote": "本季手机活动各地区共享整期额外75,000分（约HK$300）；GO商户每月最多HK$100。",
+            "stopAfter": "指定GO商户月额度未使用时，约HK$2,000合资格消费可接近该项上限；之后比较其他卡。"
           }
         ]
       }
@@ -1377,55 +1294,21 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.go.platinum.mobile.mainland.2026q4",
-            "title": "2026年第4季内地指定手机签账最高10X积分（等值4%）",
-            "whenToUse": "内地人民币结算，使用活动指定的手机支付。",
-            "howToUse": "先成功登记（限首35,000名）；登记当月起以指定手机支付的合资格交易享额外积分，倍率已包含基础积分。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "内地人民币手机消费、香港手机消费，或在指定GO商户付款。",
+            "howToUse": "2026年第四季先登记指定手机支付活动：内地人民币最高10X积分（约4%），香港最高5X（约2%）；已含基本手机积分。指定GO商户可看最高5%现金回赠，不与季度手机积分活动叠加；勿套用钻石版倍率。",
             "relatedOfferIDs": [
-              "go.platinum.mobile.mainland.2026q4"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31",
-            "capNote": "内地、本地及海外额外积分整期共享75,000分，约值HK$300。",
-            "warnings": [
-              "交易须于7天内入账；同笔符合指定Go商户时只计商户优惠。"
-            ]
-          },
-          {
-            "id": "guide.go.platinum.mobile.local.2026q4",
-            "title": "2026年第4季香港本地指定手机签账最高5X积分（等值2%）",
-            "whenToUse": "香港本地以活动指定手机支付付款。",
-            "howToUse": "先成功登记（限首35,000名）；登记当月起以指定手机支付的合资格交易享额外积分，倍率已包含基础积分。",
-            "relatedOfferIDs": [
-              "go.platinum.mobile.local.2026q4"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31",
-            "capNote": "内地、本地及海外额外积分整期共享75,000分，约值HK$300。",
-            "warnings": [
-              "交易须于7天内入账；同笔符合指定Go商户时只计商户优惠。"
-            ]
-          },
-          {
-            "id": "guide.go.platinum.selected-go-merchants.2026",
-            "title": "指定Go商户最高5%现金回赠",
-            "whenToUse": "在指定GO商户使用银行认可的付款方式。",
-            "howToUse": "在指定GO商户合资格付款，最高5%现金回赠，不与手机积分优惠叠加。",
-            "relatedOfferIDs": [
+              "go.platinum.mobile.mainland.2026q4",
+              "go.platinum.mobile.local.2026q4",
               "go.platinum.selected-go-merchants.2026"
             ],
             "sourceURLs": [
+              "https://www.bochk.com/dam/boccreditcard/gopmq126/tnc_tc.pdf",
               "https://www.bochk.com/tc/creditcard/promotions/offers/gomerchants.html"
             ],
-            "endsOn": "2026-12-31",
-            "capNote": "每月上限HK$100，包含现金回赠和积分等值；主附卡合并。",
-            "stopAfter": "本月主附卡尚未使用该优惠时，约HK$2,000合资格签账可接近上限；此后可比较其他卡。"
+            "capNote": "本季手机活动各地区共享整期额外75,000分（约HK$300）；GO商户每月最多HK$100。",
+            "stopAfter": "指定GO商户月额度未使用时，约HK$2,000合资格消费可接近该项上限；之后比较其他卡。"
           }
         ]
       }
@@ -1552,33 +1435,20 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.regional",
-            "title": "香港澳门内地实体零售5%现金回赠",
-            "whenToUse": "在香港、澳门或内地的实体商户消费。",
-            "howToUse": "在香港、澳门或内地实体商户使用该卡，合资格零售享5%现金回赠；网上购物不适用。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "香港、澳门或内地实体零售；新办卡且符合手机迎新资格时。",
+            "howToUse": "在港澳及内地实体商户合资格付款可享5%现金回赠，网购不适用。符合新客要求时，发卡当月及后两个月使用指定手机支付另有10%迎新；迎新属于个人消费期，不能把申请期当消费截止日。",
             "relatedOfferIDs": [
-              "regional"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/cbc_pdf/gba_product_tnc_tc.pdf"
-            ],
-            "endsOn": "2026-12-31",
-            "capNote": "每个卡账户每历月最多HK$100现金回赠。",
-            "stopAfter": "本月尚未使用该优惠时，约HK$2,000合资格签账可接近上限。"
-          },
-          {
-            "id": "guide.welcome",
-            "title": "手机迎新10%回赠",
-            "whenToUse": "符合该卡新客或指定客户资格，在个人迎新消费期内签账。",
-            "howToUse": "10%按合资格手机签账逐笔累计、整段个人消费期最多HK$300；HK$3,000是用满回赠目标，不是最低门槛；个人消费期为发卡当月及后2个历月，申请期只写即日起至2026-12-31；所示活动日期为申请期，个人消费截止日按实际发卡月份确定。",
-            "relatedOfferIDs": [
+              "regional",
               "welcome"
             ],
             "sourceURLs": [
+              "https://www.bochk.com/dam/boccreditcard/cbc_pdf/gba_product_tnc_tc.pdf",
               "https://www.bochk.com/dam/boccreditcard/cbc_pdf/gba_welcome_tnc.pdf"
             ],
-            "endsOn": "2026-12-31",
-            "capNote": "整期上限HK$300（回赠或积分等值）。"
+            "capNote": "日常5%每卡账户每历月最多HK$100；手机迎新整期最多HK$300。",
+            "stopAfter": "当月尚未使用日常5%额度时，约HK$2,000合资格实体签账可接近该项月上限。"
           }
         ]
       }
@@ -1666,18 +1536,16 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.hku.student.welcome.2026",
-            "title": "HKU学生卡网上迎新HK$200",
-            "whenToUse": "符合该卡新客或指定客户资格，在个人迎新消费期内签账。",
-            "howToUse": "网上或指定手机链接申请的新客户；申请及批核前6个月未持有指定BEA主卡（联营卡等例外）；激活后在发卡日起2个月内消费满HK$2,000；预计最迟2027-06-30入账；消费期从发卡日起算；外币消费门槛按银行折算并计入相关手续费，以银行认定金额为准。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "港大学生日常持卡；符合网上申请迎新资格时。",
+            "howToUse": "学生主卡永久免年费。若符合新客资格并由指定线上渠道申请，激活后发卡日起2个月内合资格签账满HK$2,000，可获HK$200迎新；缴费及电子钱包充值不计消费门槛。",
             "relatedOfferIDs": [
               "hku.student.welcome.2026"
             ],
             "sourceURLs": [
               "https://www.hkbea.com/pdf/en/credit-card/Student_card/bea-student-card-tnc.pdf"
-            ],
-            "startsOn": "2026-07-01",
-            "endsOn": "2027-01-13"
+            ]
           }
         ]
       }
@@ -1919,58 +1787,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.cny",
-            "title": "人民币零售12倍积分等值4.8%",
-            "whenToUse": "在人民币结算的合资格零售消费。",
-            "howToUse": "人民币合资格零售享12倍积分，按卡片资料约值4.8%。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "人民币零售、其他外币签账、本地餐饮；按结算币种选最合适场景。",
+            "howToUse": "人民币零售可赚12X积分（约4.8%），其他外币10X（约4%），香港餐饮3X（约1.2%）；均为积分兑换等值，不是现金直接返还。不同类别不可重复加倍率；消费前注意外币手续费。",
             "relatedOfferIDs": [
-              "cny"
-            ],
-            "sourceURLs": [
-              "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
-            ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
-          },
-          {
-            "id": "guide.dining",
-            "title": "本地餐饮3倍积分等值1.2%",
-            "whenToUse": "在合资格餐饮商户消费。",
-            "howToUse": "香港本地合资格餐饮签账获3倍积分，按卡片资料约值1.2%。",
-            "relatedOfferIDs": [
-              "dining"
-            ],
-            "sourceURLs": [
-              "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
-            ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
-          },
-          {
-            "id": "guide.usd",
-            "title": "非人民币外币10倍积分等值4%",
-            "whenToUse": "使用非人民币外币结算的合资格零售。",
-            "howToUse": "非人民币外币合资格零售享10倍积分，按卡片资料约值4%。",
-            "relatedOfferIDs": [
+              "cny",
+              "dining",
               "usd"
             ],
             "sourceURLs": [
               "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
             ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
+            "capNote": "各类别额外积分共享每账户每月最多100,000分（约值HK$400），基础积分另计。"
           }
         ]
       }
@@ -2169,58 +1998,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.cny",
-            "title": "人民币零售12倍积分等值4.8%",
-            "whenToUse": "在人民币结算的合资格零售消费。",
-            "howToUse": "人民币合资格零售享12倍积分，按卡片资料约值4.8%。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "学生的人民币零售、其他外币签账或香港本地餐饮。",
+            "howToUse": "学生主卡永久免年费；人民币零售12X积分（约4.8%）、其他外币10X（约4%）、本地餐饮3X（约1.2%）。积分是兑换等值，类别倍率不能相加；刷外币前注意手续费。",
             "relatedOfferIDs": [
-              "cny"
-            ],
-            "sourceURLs": [
-              "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
-            ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
-          },
-          {
-            "id": "guide.dining",
-            "title": "本地餐饮3倍积分等值1.2%",
-            "whenToUse": "在合资格餐饮商户消费。",
-            "howToUse": "香港本地合资格餐饮签账获3倍积分，按卡片资料约值1.2%。",
-            "relatedOfferIDs": [
-              "dining"
-            ],
-            "sourceURLs": [
-              "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
-            ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
-          },
-          {
-            "id": "guide.usd",
-            "title": "非人民币外币10倍积分等值4%",
-            "whenToUse": "使用非人民币外币结算的合资格零售。",
-            "howToUse": "非人民币外币合资格零售享10倍积分，按卡片资料约值4%。",
-            "relatedOfferIDs": [
+              "cny",
+              "dining",
               "usd"
             ],
             "sourceURLs": [
               "https://www.hkbea.com/pdf/en/credit-card/master-reward-tnc_en.pdf"
             ],
-            "startsOn": "2025-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每卡账户各类别合共每月最多100,000额外积分，约值HK$400；基本积分另计。",
-            "warnings": [
-              "超市、旅行社、政府部门及自动转账等交易不计额外积分。"
-            ]
+            "capNote": "各类别额外积分共享每账户每月最多100,000分（约值HK$400）。"
           }
         ]
       }
@@ -2261,10 +2051,10 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.daily-debit",
-            "title": "日常扣账",
-            "whenToUse": "从银行账户直接付款，不使用信用额度。",
-            "howToUse": "使用对应币种余额扣款，普通客户合资格消费享0.5%现金回赠。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "多币种日常购物，打算用账户余额付款而非信用卡额度时。",
+            "howToUse": "优先使用已有对应币种余额付款，普通客户合资格签账有0.5%基础现金回赠；中银私人财富客户若符合额外活动资格，整体回赠最高可达1%。",
             "relatedOfferIDs": [],
             "sourceURLs": [
               "https://www.bochk.com/dam/more/bocdebitcard/card/tc.html"
@@ -2447,46 +2237,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.cny4",
-            "title": "人民币签账额外3.6%（连基础共4%）",
-            "whenToUse": "人民币结算的合资格零售或网购消费。",
-            "howToUse": "人民币结算的合资格零售／网购签账可享合共4%（含基础0.4%及额外3.6%），额外回赠按每历月最高HK$150封顶；同一上限也适用于合资格云闪付App商户扫付款码交易；人民币签账按月结单币种认定，人民币按CNY1=HKD1计合资格额外回赠。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "人民币购物，或商户扫描云闪付App付款码；单笔人民币大额消费。",
+            "howToUse": "人民币结算或合资格云闪付商户扫付款码交易整体最高4%（含基础0.4%）；同一笔消费只计一次4%。单笔人民币满CNY4,000另有额外6%活动，但微信、支付宝、PayMe不适用；并非所有渠道都能叠加。",
             "relatedOfferIDs": [
-              "cny4"
-            ],
-            "sourceURLs": [
-              "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15"
-            ],
-            "endsOn": "2026-12-31",
-            "capNote": "人民币及云闪付4%活动共用每月额外HK$150上限。"
-          },
-          {
-            "id": "guide.cny6",
-            "title": "单笔满CNY4,000额外6%",
-            "whenToUse": "人民币结算的单笔至少CNY4,000零售消费。",
-            "howToUse": "单笔合资格人民币签账满CNY4,000享额外6%；符合4%优惠条件时合计最高10%。微信、支付宝及PayMe交易不享额外6%。",
-            "relatedOfferIDs": [
-              "cny6"
-            ],
-            "sourceURLs": [
-              "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15"
-            ],
-            "endsOn": "2026-12-31",
-            "capNote": "额外6%每月最多HK$250；4%的额外部分另设每月HK$150共享上限。"
-          },
-          {
-            "id": "guide.cncbi.gba.unionpay.app.merchantqr.2026h2",
-            "title": "云闪付App商户扫付款码｜合共4%回赠（含基础）",
-            "whenToUse": "商户扫描你在云闪付App出示的二维码收款。",
-            "howToUse": "以云闪付App展示付款码、由商户扫描的合资格实体零售交易，可享合共4%（基础0.4%加额外3.6%），与人民币4%回赠共用每历月额外HK$150上限；用户扫描商户码、账单缴费、服务／慈善、交通、网购等云闪付交易不合资格。",
-            "relatedOfferIDs": [
+              "cny4",
+              "cny6",
               "cncbi.gba.unionpay.app.merchantqr.2026h2"
             ],
             "sourceURLs": [
               "https://www.cncbinternational.com/personal/promotions/credit-card/tc/index.html?SOURCE=ATJ15"
             ],
-            "endsOn": "2026-12-31",
-            "capNote": "人民币及云闪付4%活动共用每月额外HK$150上限。"
+            "capNote": "4%活动的额外3.6%共用每月HK$150上限；大额人民币额外6%每月HK$250上限。"
           }
         ]
       }
@@ -2530,10 +2293,10 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.daily-debit",
-            "title": "日常扣账",
-            "whenToUse": "从银行账户直接付款，不使用信用额度。",
-            "howToUse": "使用对应币种账户余额扣款，基本现金回赠0.2%；经Mastercard兑换外币另有手续费。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "已有对应外币账户余额，希望直接以该币种扣账。",
+            "howToUse": "可从十种币种账户直接付款，合资格消费基本现金回赠0.2%；如交易仍需经Mastercard进行外币兑换，将收取1.95%兑换手续费。",
             "relatedOfferIDs": [],
             "sourceURLs": [
               "https://www.cncbinternational.com/personal/multi-currency-debit-card/tc/index.html"
@@ -2657,33 +2420,20 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.bocom.go-goal.first-year.rebate.2026",
-            "title": "2026申请｜首12历月额外5.6%签账回赠",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "限2026年1月1日至12月31日成功申请主卡的全日制大学／大专学生；发卡当月起首12个历月，每月首HK$2,000合资格签账获额外5.6%，与基础积分等值合共最高6%；额外部分每月最高HK$112，交易历月后第3个月入账。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "大学生每月小额零售消费，或需要在指定大学缴学费。",
+            "howToUse": "2026年申请的新学生主卡，发卡当月起首12个历月每月首HK$2,000合资格消费，可获额外5.6%，连基础积分等值最高约6%。在港大等指定院校缴学费另有每HK$1赚1分推广，须满足独立渠道与发卡期限。",
             "relatedOfferIDs": [
-              "bocom.go-goal.first-year.rebate.2026"
-            ],
-            "sourceURLs": [
-              "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113110202_Go-Goal_Card_Spending%20Rebate_TnC_TC.pdf"
-            ],
-            "startsOn": "2026-01-01",
-            "capNote": "每月额外现金回赠最多HK$112，基本积分另计。",
-            "stopAfter": "本月尚未使用额度时，首HK$2,000合资格签账可用满额外回赠；之后可比较其他卡，本卡仍赚基本积分。"
-          },
-          {
-            "id": "guide.bocom.go-goal.tuition.points.2026",
-            "title": "指定大学学费｜最高50,000积分",
-            "whenToUse": "在指定大学通过要求的缴费渠道交学费。",
-            "howToUse": "限2026年内申请的新卡，申请时及过去12个月无交银主卡；推广期内缴付城大、浸大、岭大、中大、教大、理大、科大或港大学费，每HK$1获1分，整期最多50,000分，主附卡合并；交易须在发卡首3个月内入账，积分于2027年6月或之前发放。",
-            "relatedOfferIDs": [
+              "bocom.go-goal.first-year.rebate.2026",
               "bocom.go-goal.tuition.points.2026"
             ],
             "sourceURLs": [
+              "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113110202_Go-Goal_Card_Spending%20Rebate_TnC_TC.pdf",
               "https://www.hk.bankcomm.com/hk/uploadhk/infos/202205/30/2503990/20260113105426_Go-Goal_Card_Tuitionfee_TnC_TC.pdf"
             ],
-            "startsOn": "2026-01-01",
-            "endsOn": "2026-12-31"
+            "capNote": "首年零售每月额外回赠最多HK$112；指定院校学费推广整期最多50,000分。",
+            "stopAfter": "首年每月首HK$2,000合资格签账用尽额外5.6%额度后，可比较其他卡。"
           }
         ]
       }
@@ -2822,34 +2572,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.bocom.unionpay.cny-mop.rebate.2026",
-            "title": "人民币／澳门币零售签账5%回赠",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "须登记202601CCD0000098，全年5,000个名额；每月合资格人民币及／或澳门币零售签账须满HK$2,000，每月最高HK$300、全年HK$3,600；内地人民币按1:1计算推广金额。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "在内地／澳门人民币或澳门币购物，以及跨境交通、停车或充电等场景。",
+            "howToUse": "先分别登记人民币／澳门币零售5%及指定交通5%两项推广。人民币或澳门币零售每月达到HK$2,000门槛后享5%；指定跨境交通等交易按另一活动独立计算。不能把同一笔消费重复计算两次。",
             "relatedOfferIDs": [
-              "bocom.unionpay.cny-mop.rebate.2026"
-            ],
-            "sourceURLs": [
-              "https://www.hk.bankcomm.com/hk/uploadhk/infos/202606/29/7051588/20260714173726_2026_%E3%80%8C%E4%BA%BA%E6%B0%91%E5%B9%A3%E5%8F%8A%E6%BE%B3%E9%96%80%E5%B9%A3%E9%9B%B6%E5%94%AE%E7%B0%BD%E8%B3%AC%E4%BA%A4%E6%98%93%E7%B0%BD%E8%B3%AC%E6%8E%A8%E5%BB%A3%E8%A8%88%E5%8A%83%E3%80%8DTnC_TC_202607.pdf"
-            ],
-            "startsOn": "2026-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每月上限HK$300（回赠或积分等值）。"
-          },
-          {
-            "id": "guide.bocom.unionpay.gba-transport.rebate.2026",
-            "title": "交游湾区｜指定交通签账5%回赠",
-            "whenToUse": "在香港、澳门或内地的指定交通场景消费。",
-            "howToUse": "须登记202601CCD0000097，从登记当月起计算；适用香港、澳门、内地及跨境的指定公共交通，以及隧道／路桥、油站、停车、充电、汽车维修及美容等合资格费用；每月最多HK$100，主附卡合并，各主卡独立。",
-            "relatedOfferIDs": [
+              "bocom.unionpay.cny-mop.rebate.2026",
               "bocom.unionpay.gba-transport.rebate.2026"
             ],
             "sourceURLs": [
+              "https://www.hk.bankcomm.com/hk/uploadhk/infos/202606/29/7051588/20260714173726_2026_%E3%80%8C%E4%BA%BA%E6%B0%91%E5%B9%A3%E5%8F%8A%E6%BE%B3%E9%96%80%E5%B9%A3%E9%9B%B6%E5%94%AE%E7%B0%BD%E8%B3%AC%E4%BA%A4%E6%98%93%E7%B0%BD%E8%B3%AC%E6%8E%A8%E5%BB%A3%E8%A8%88%E5%8A%83%E3%80%8DTnC_TC_202607.pdf",
               "https://www.hk.bankcomm.com/hk/uploadhk/infos/202609/30/7051612/20260930144441_2026_TravelnEarn%20in%20GBA_TC_TC.pdf"
             ],
-            "startsOn": "2026-01-01",
-            "endsOn": "2026-12-31",
-            "capNote": "每月上限HK$100（回赠或积分等值）。"
+            "capNote": "人民币／澳门币零售每月最高HK$300；指定交通每月最高HK$100，主附卡合并。"
           }
         ]
       }
@@ -2974,42 +2709,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.mox.credit.mastercard.cashback.base",
-            "title": "CashBack方案｜普通客户1%无上限",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "在Mox App选择CashBack模式，普通客户合资格消费享1%现金回赠，不设上限。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "普通日常消费、合资格超市购物；已具Mox+身份时。",
+            "howToUse": "在Mox App选择CashBack模式：普通合资格消费整体1%，Mox+合资格客户整体2%；合资格超市及杂货店最高整体3%，不是额外加3%。如切换到里数模式，不能继续按CashBack回赠理解。",
             "relatedOfferIDs": [
-              "mox.credit.mastercard.cashback.base"
-            ],
-            "sourceURLs": [
-              "https://mox.com/zh/features/mox-credit/"
-            ],
-            "startsOn": "2026-09-01"
-          },
-          {
-            "id": "guide.mox.credit.mastercard.cashback.plus",
-            "title": "Mox+ CashBack｜2%无上限",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "符合Mox+资格并选择CashBack模式，合资格消费享总共2%现金回赠。",
-            "relatedOfferIDs": [
-              "mox.credit.mastercard.cashback.plus"
-            ],
-            "sourceURLs": [
-              "https://mox.com/zh/features/mox-credit/"
-            ],
-            "startsOn": "2026-09-01"
-          },
-          {
-            "id": "guide.mox.credit.mastercard.supermarket",
-            "title": "指定超市杂货店｜最高3%无上限",
-            "whenToUse": "在合资格超市或杂货商户消费。",
-            "howToUse": "在合资格超市与杂货店使用CashBack模式，整体回赠最高3%，不是额外加3%。",
-            "relatedOfferIDs": [
+              "mox.credit.mastercard.cashback.base",
+              "mox.credit.mastercard.cashback.plus",
               "mox.credit.mastercard.supermarket"
             ],
             "sourceURLs": [
               "https://mox.com/zh/features/mox-credit/"
-            ]
+            ],
+            "capNote": "上述基础及指定超市CashBack均按对应计划标示无上限，商户类别由卡组织判定。"
           }
         ]
       }
@@ -3092,30 +2804,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.icbcasia.horoscope.unionpay.diamond.cashback.1_5",
-            "title": "本地／海外合资格签账｜1.5%无上限现金回赠",
-            "whenToUse": "本地及海外合资格零售签账。",
-            "howToUse": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "本地、内地或海外合资格零售；2026年第四季有税款需要缴付时。",
+            "howToUse": "日常合资格消费享1.5%现金回赠，不设回赠上限，按月计入港币卡账户；人民币签账按1:1计回赠基础。第四季如同时累计零售HK$1,800及缴税HK$5,000，另可获HK$100税款奖赏。",
             "relatedOfferIDs": [
-              "icbcasia.horoscope.unionpay.diamond.cashback.1_5"
-            ],
-            "sourceURLs": [
-              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html"
-            ]
-          },
-          {
-            "id": "guide.icbcasia.horoscope.unionpay.diamond.tax.2026q4",
-            "title": "2026Q4交税奖赏｜额外HKD100",
-            "whenToUse": "同时完成活动要求的零售消费及缴税门槛。",
-            "howToUse": "同时达合资格零售HK$1,800和缴税HK$5,000两项门槛，可获HK$100奖赏。",
-            "relatedOfferIDs": [
+              "icbcasia.horoscope.unionpay.diamond.cashback.1_5",
               "icbcasia.horoscope.unionpay.diamond.tax.2026q4"
             ],
             "sourceURLs": [
+              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
               "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html"
             ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31"
+            "capNote": "日常1.5%不设回赠上限；税款活动HK$100须完成两个门槛。"
           }
         ]
       }
@@ -3177,30 +2878,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.icbcasia.horoscope.visa.signature.cashback.1_5",
-            "title": "本地／海外合资格签账｜1.5%无上限现金回赠",
-            "whenToUse": "本地及海外合资格零售签账。",
-            "howToUse": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "本地及海外合资格日常消费；第四季需要交税时。",
+            "howToUse": "平时合资格签账享1.5%现金回赠，不设上限，每月入港币卡账户。第四季如同时完成合资格零售HK$1,800和该卡缴税HK$5,000，可获HK$100税款奖励；单独交税并不达标。",
             "relatedOfferIDs": [
-              "icbcasia.horoscope.visa.signature.cashback.1_5"
-            ],
-            "sourceURLs": [
-              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html"
-            ]
-          },
-          {
-            "id": "guide.icbcasia.horoscope.visa.signature.tax.2026q4",
-            "title": "2026Q4交税奖赏｜额外HKD100",
-            "whenToUse": "同时完成活动要求的零售消费及缴税门槛。",
-            "howToUse": "同时达合资格零售HK$1,800和缴税HK$5,000两项门槛，可获HK$100奖赏。",
-            "relatedOfferIDs": [
+              "icbcasia.horoscope.visa.signature.cashback.1_5",
               "icbcasia.horoscope.visa.signature.tax.2026q4"
             ],
             "sourceURLs": [
+              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-horoscope-card.html",
               "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html"
             ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31"
+            "capNote": "日常1.5%不设上限；第四季税款活动另设双门槛。"
           }
         ]
       }
@@ -3283,30 +2973,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.icbcasia.gba.unionpay.diamond.cashback.1_5",
-            "title": "本地／海外合资格签账｜1.5%无上限现金回赠",
-            "whenToUse": "本地及海外合资格零售签账。",
-            "howToUse": "港币及人民币合资格签账合并计算，人民币奖励按1:1折算为港币，每月现金回赠自动入港币信用卡账户。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "本地、人民币及海外合资格零售，或第四季缴税。",
+            "howToUse": "日常合资格签账享1.5%现金回赠，不设上限；人民币金额按1:1计算后每月回赠港币账户。第四季如零售累计满HK$1,800并用卡缴税满HK$5,000，另有HK$100活动奖赏。",
             "relatedOfferIDs": [
-              "icbcasia.gba.unionpay.diamond.cashback.1_5"
-            ],
-            "sourceURLs": [
-              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-greater-bay-area-credit-cards.html"
-            ]
-          },
-          {
-            "id": "guide.icbcasia.gba.unionpay.diamond.tax.2026q4",
-            "title": "2026Q4交税奖赏｜额外HKD100",
-            "whenToUse": "同时完成活动要求的零售消费及缴税门槛。",
-            "howToUse": "同时达合资格零售HK$1,800和缴税HK$5,000两项门槛，可获HK$100奖赏。",
-            "relatedOfferIDs": [
+              "icbcasia.gba.unionpay.diamond.cashback.1_5",
               "icbcasia.gba.unionpay.diamond.tax.2026q4"
             ],
             "sourceURLs": [
+              "https://www.icbcasia.com/hk/tc/personal/credit-cards/type-of-cards/icbc-greater-bay-area-credit-cards.html",
               "https://www.icbcasia.com/hk/tc/promotion/tax-payment-cash-rebate.html"
             ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2026-12-31"
+            "capNote": "日常1.5%无上限；税款奖赏HK$100须零售和缴税两项条件同时成立。"
           }
         ]
       }
@@ -3423,31 +3102,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.ccbasia.eye.visa.signature.online.contactless",
-            "title": "升级版｜网购最高5%／拍卡最高3%",
-            "whenToUse": "网购或使用Visa感应付款（包括Apple Pay、Google Pay）。",
-            "howToUse": "每月合资格签账满HK$3,000后，网购赚7.5倍积分及2%现金回赠；合资格感应付款赚7.5倍积分，两者共享额外上限。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "网上购物或Visa感应付款，每月合资格总消费达到HK$3,000时。",
+            "howToUse": "2026/10–2027/3升级推广免登记：月合资格签账满HK$3,000后，网购可获7.5X积分（约3%等值）加2%现金，合计最高约5%；合资格拍卡7.5X积分约3%。日常基本积分兑换价值另按实际兑换计算。",
             "relatedOfferIDs": [
-              "ccbasia.eye.visa.signature.online.contactless"
-            ],
-            "sourceURLs": [
-              "https://www.asia.ccb.com/hongkong_sc/personal/credit_cards/eye_credit_card.html"
-            ],
-            "startsOn": "2026-10-01",
-            "endsOn": "2027-03-31",
-            "capNote": "网购与拍卡每月共享额外52,000积分；网购2%现金回赠每月最多HK$160。"
-          },
-          {
-            "id": "guide.ccbasia.eye.visa.signature.points.base",
-            "title": "合资格消费｜基本1X积分（约0.4%等值）",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "合资格签账赚积分，现金等值取决于所选兑换方式。",
-            "relatedOfferIDs": [
+              "ccbasia.eye.visa.signature.online.contactless",
               "ccbasia.eye.visa.signature.points.base"
             ],
             "sourceURLs": [
+              "https://www.asia.ccb.com/hongkong_sc/personal/credit_cards/eye_credit_card.html",
               "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/eye_visa_signature_credit_card.html"
-            ]
+            ],
+            "capNote": "网购与拍卡每月共享额外52,000分；网购现金回赠每月最高HK$160。"
           }
         ]
       }
@@ -3559,32 +3226,18 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.ccbasia.travo.world.mastercard.overseas.2026",
-            "title": "TRAVO Rewards｜海外最高4%或HKD1.5/里",
-            "whenToUse": "在海外以活动要求的币种结算。",
-            "howToUse": "2026-07-01至12-31须通过建行亚洲网银或手机银行登记TRAVO Rewards，海外合资格签账可选最高4%现金回赠或HKD1.5/里，具体最低签账、封顶及排除依该奖励计划条款。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "海外消费或香港本地餐饮，愿意在现金回赠与航空里数间选择。",
+            "howToUse": "先在建行亚洲网银或App登记TRAVO Rewards并选择奖励模式。海外合资格签账最高4%现金回赠或约HK$1.5/里；本地餐饮最高2%或HK$3/里。回赠与里数不能同时领取，且不同场景仍有额外门槛。",
             "relatedOfferIDs": [
-              "ccbasia.travo.world.mastercard.overseas.2026"
-            ],
-            "sourceURLs": [
-              "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html"
-            ],
-            "startsOn": "2026-07-01",
-            "endsOn": "2026-12-31"
-          },
-          {
-            "id": "guide.ccbasia.travo.world.mastercard.dining.2026",
-            "title": "TRAVO Rewards｜本地餐饮最高2%或HKD3/里",
-            "whenToUse": "在合资格餐饮商户消费。",
-            "howToUse": "2026-07-01至12-31，须经网银或手机银行登记TRAVO Rewards；合资格本地餐饮最高2%现金回赠或HKD3/里，不能同时重复计算，门槛与上限依专属计划条款。",
-            "relatedOfferIDs": [
+              "ccbasia.travo.world.mastercard.overseas.2026",
               "ccbasia.travo.world.mastercard.dining.2026"
             ],
             "sourceURLs": [
               "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/travoworld.html"
             ],
-            "startsOn": "2026-07-01",
-            "endsOn": "2026-12-31"
+            "capNote": "各活动的实际签账门槛与封顶按所选TRAVO Rewards计划计算。"
           }
         ]
       }
@@ -3687,31 +3340,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.ccbasia.unionpay.dual.currency.points",
-            "title": "日常积分｜每HKD/RMB1赚1分，250分折1元",
-            "whenToUse": "进行此项优惠涵盖的合资格零售交易。",
-            "howToUse": "合资格消费每HKD/RMB1赚1分，可选择每250分兑HKD/RMB1（约0.4%），或每15分兑1亚洲万里通里数（视卡资格）；现金回赠和里数互斥。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "日常港币／人民币消费；2026年9–10月海外非港币消费。",
+            "howToUse": "日常签账每HKD/RMB1赚1分，可选择250分兑换1元（约0.4%）或按合资格方案兑换里数，不能两者兼得。2026年9–10月海外推广须App登记，单笔至少HK$300、整期累计HK$4,000起计算，达更高档位可享最高6%。",
             "relatedOfferIDs": [
-              "ccbasia.unionpay.dual.currency.points"
-            ],
-            "sourceURLs": [
-              "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html"
-            ]
-          },
-          {
-            "id": "guide.ccbasia.unionpay.dual.currency.overseas.2026sep",
-            "title": "2026年9–10月｜海外签账最高6% + 银联额外HKD100",
-            "whenToUse": "在海外以活动要求的币种结算。",
-            "howToUse": "2026-09-01至10-31须App登记且名额先到先得；合资格海外非港币交易单笔至少HKD300，整期累计HKD4,000起按档位享回赠，HKD8,000起最高6%，一般阶段回赠封顶HKD500。",
-            "relatedOfferIDs": [
+              "ccbasia.unionpay.dual.currency.points",
               "ccbasia.unionpay.dual.currency.overseas.2026sep"
             ],
             "sourceURLs": [
+              "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/cup_dual_currency.html",
               "https://www.asia.ccb.com/hongkong_tc/personal/credit_cards/promotions/overseas_spending/index.html"
             ],
-            "startsOn": "2026-09-01",
-            "endsOn": "2026-10-31",
-            "capNote": "名下卡片合资格签账合并、上限按持卡人共享；一般阶段最高HK$500。"
+            "capNote": "海外限时推广阶段回赠最高HK$500；另有符合条件的银联额外HK$100。"
           }
         ]
       }
@@ -3846,30 +3487,17 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.bochk.sogo.visa.platinum.shopping.2026",
-            "title": "崇光指定商户购物5%现金回赠",
-            "whenToUse": "在指定崇光商户和活动时段购物。",
-            "howToUse": "限崇光指定商户及指定商品，以实体卡或Apple Pay、Google Pay、Samsung Pay全额付款；名单可变；回赠部分不赚签账积分，购物袋收费除外；并非所有崇光消费都适用。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "崇光指定商户购物，或星期一在Freshmart买东西。",
+            "howToUse": "在指定崇光商户以认可卡或手机支付全额付款，可享最高5%现金回赠。Freshmart星期一另外有5%即时折扣，须按商户流程出示卡片；它不是账后现金回赠，也不应与其他活动强行叠加。",
             "relatedOfferIDs": [
-              "bochk.sogo.visa.platinum.shopping.2026"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf"
-            ],
-            "endsOn": "2026-12-31"
-          },
-          {
-            "id": "guide.bochk.sogo.visa.platinum.freshmart.2026",
-            "title": "Freshmart星期一购物5%折扣",
-            "whenToUse": "在指定崇光商户和活动时段购物。",
-            "howToUse": "为即时折扣，并非账后现金回赠；须全额付款，手机付款前需出示应用内已加入的卡片；周年庆及其他指定推广、购物袋收费除外。",
-            "relatedOfferIDs": [
+              "bochk.sogo.visa.platinum.shopping.2026",
               "bochk.sogo.visa.platinum.freshmart.2026"
             ],
             "sourceURLs": [
               "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf"
-            ],
-            "endsOn": "2026-12-31"
+            ]
           }
         ]
       }
@@ -4018,32 +3646,19 @@
         "reviewedOn": "2026-10-29",
         "scenarios": [
           {
-            "id": "guide.bochk.sogo.visa.signature.mobile.2026",
-            "title": "指定手机支付额外5%现金回赠",
-            "whenToUse": "使用活动认可的手机支付或感应付款。",
-            "howToUse": "仅Signature：Apple Pay、Google Pay、Samsung Pay合资格零售签账，交易后7日内入账；每月额外回赠上限HK$100，主附卡合并；缴费、八达通及钱包／储值卡充值、P2P等除外。",
+            "id": "guide.card-strategy",
+            "title": "这张卡怎么刷",
+            "whenToUse": "日常合资格手机付款、崇光购物及星期一Freshmart消费。",
+            "howToUse": "Signature指定Apple Pay、Google Pay或Samsung Pay合资格零售额外5%，每月上限HK$100；崇光指定商户购物另有5%现金回赠；Freshmart星期一是5%即时折扣。各活动限制不同，不能把百分比简单相加。",
             "relatedOfferIDs": [
-              "bochk.sogo.visa.signature.mobile.2026"
-            ],
-            "sourceURLs": [
-              "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf"
-            ],
-            "endsOn": "2026-12-31",
-            "capNote": "每月额外现金回赠上限HK$100，主附卡合并。",
-            "stopAfter": "当月主附卡尚未使用额度时，约HK$2,000合资格手机签账可用满额外回赠；之后可比较其他卡。"
-          },
-          {
-            "id": "guide.bochk.sogo.visa.signature.shopping.2026",
-            "title": "崇光指定商户购物5%现金回赠",
-            "whenToUse": "在指定崇光商户和活动时段购物。",
-            "howToUse": "限崇光指定商户及指定商品，以实体卡或Apple Pay、Google Pay、Samsung Pay全额付款；名单可变；回赠部分不赚签账积分，购物袋收费除外；并非所有崇光消费都适用。",
-            "relatedOfferIDs": [
+              "bochk.sogo.visa.signature.mobile.2026",
               "bochk.sogo.visa.signature.shopping.2026"
             ],
             "sourceURLs": [
               "https://www.bochk.com/dam/boccreditcard/sogo_doc/sogocard_tnc_tc.pdf"
             ],
-            "endsOn": "2026-12-31"
+            "capNote": "Signature手机支付每月额外HK$100封顶，主附卡合并。",
+            "stopAfter": "如当月尚未使用手机活动额度，约HK$2,000合资格手机签账可接近该项回赠上限。"
           }
         ]
       }
