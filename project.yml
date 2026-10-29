@@ -81,6 +81,18 @@ targets:
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: CardPilot
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CardPilot.app/Contents/MacOS/CardPilot"
+  CardPilotIOSLayoutTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests/GuidePresentationSizingTests.swift]
+    dependencies:
+      - target: CardPilotIOS
+    settings:
+      base:
+        PRODUCT_NAME: CardPilotIOSLayoutTests
+        PRODUCT_MODULE_NAME: CardPilotIOSLayoutTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.layout-tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CardPilot.app/CardPilot"
 schemes:
   CardPilotMac:
     build:
@@ -92,3 +104,5 @@ schemes:
     build:
       targets:
         CardPilotIOS: all
+    test:
+      targets: [CardPilotIOSLayoutTests]

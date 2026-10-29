@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 /// One entry per card, shown both in the library and directly in the wallet.
 /// The preview opens the complete card-level guide without first navigating
@@ -9,11 +12,17 @@ struct CardUsageGuideSection: View {
     var compact = false
     var showsProductName = false
     @Environment(\.dynamicTypeSize) private var typeSize
+    #if os(iOS)
+    @Environment(\.self) private var environment
+    @State private var measurementAnchor = UIView()
+    @State private var presentation: CardUsageGuidePresentation?
+    @State private var preparationFailed = false
+    #else
     @State private var showingGuide = false
-    @Namespace private var guideTransition
+    #endif
 
     var body: some View {
-        Button { showingGuide = true } label: {
+        Button(action: openGuide) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Label("推荐用法", systemImage: "lightbulb")
@@ -42,12 +51,32 @@ struct CardUsageGuideSection: View {
             .pilotPanel()
         }
         .buttonStyle(WalletCardButtonStyle())
-        .matchedTransitionSource(id: "guide", in: guideTransition)
         .accessibilityLabel(productName + "的推荐用法：" + guide.summary)
         .accessibilityHint("直接打开这张卡的完整用卡指南")
+        #if os(iOS)
+        .background { GuideMeasurementAnchor(view: measurementAnchor).allowsHitTesting(false).accessibilityHidden(true) }
+        .sheet(item: $presentation) { ready in
+            CardUsageGuideView(guide: ready.guide, productName: ready.productName)
+                .presentationDetents([.height(ready.height)])
+        }
+        .alert("暂时无法打开推荐用法，请重试", isPresented: $preparationFailed) { }
+        #else
         .sheet(isPresented: $showingGuide) {
             CardUsageGuideView(guide: guide, productName: productName)
-                .pilotZoomTransition(sourceID: "guide", in: guideTransition)
         }
+        #endif
+    }
+
+    private func openGuide() {
+        #if os(iOS)
+        guard let ready = CardUsageGuidePresentation.prepare(guide: guide, productName: productName,
+                                                             anchor: measurementAnchor, environment: environment) else {
+            preparationFailed = true
+            return
+        }
+        presentation = ready
+        #else
+        showingGuide = true
+        #endif
     }
 }

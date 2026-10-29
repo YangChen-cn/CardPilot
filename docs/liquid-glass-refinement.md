@@ -38,11 +38,20 @@
 
 ## 推荐用法面板高度验收跟进（2026-10-30）
 
-- 用户反馈默认大Sheet底部留空过多。第一版按ScrollGeometry测量后改变height detent，用户立即反馈先大后小的跳动；这条中间实现已删除，未作为最终方案提交。
-- 当前iOS `CardUsageGuideView` 使用原生 `.presentationSizing(.page.fitted(horizontal: false, vertical: true))` 与 `ViewThatFits`，在呈现布局时给出正文自然尺寸；短文直接展示，空间不足时选择ScrollView。没有测量状态、默认large回退、弹出后高度回调或延时改尺寸。
-- iOS只读面板去掉无导航层级的NavigationStack，保留紧凑标题、原生玻璃完成按钮、系统拖动关闭及既有缩放来源；macOS仍用原NavigationStack/toolbar/editorSize。正文共用同一视图，不改指南资料、其他编辑器、存储或同步。
-- 依据：[presentationSizing](https://developer.apple.com/documentation/swiftui/view/presentationsizing)、[fitted](https://developer.apple.com/documentation/swiftui/presentationsizing/fitted)。最终双端增量编译与差异检查通过，没有为局部布局重复单元/全量；按原脚本更新现有iPhone17内存演示版本供用户复验，未点击/截图验收。
-- 待验：首次打开不应再先大后小；短指南底部留白、长指南滚动至最后一行/官方链接、大字号、转屏，以及交互式关闭与重新打开仍需用户确认。
+- 默认大Sheet留白多；第一版ScrollGeometry测量后改detent经用户确认先大后小，已删除。17adff5改用fitted/ViewThatFits也经用户确认未自适应并出现顶部空白，**该方案同样失败，不能继续作为当前设计**。
+- 当前流程：点击时从所在窗口获取实际可用宽度，使用UIHostingController.sizeThatFits测量同一份SwiftUI正文和标题/完成区，沿用当前字号、语言、方向和配色；先创建含不可变指南及明确高度的CardUsageGuidePresentation，再通过sheet(item:)呈现。没有初始large兜底，也没有呈现后修改高度的回调。
+- CardUsageGuideBody与CardUsageGuideSheetContent共用于测量和显示；正式面板保留ScrollView，长内容按窗口限高并可滚动，顶部明确对齐。仅此阅读面板采用标准原生Sheet动画，移除缩放来源和转场；卡片详情和其他阅读入口不变。UIKit桥接只读取当前窗口及离屏测量，不接管整个App导航。
+- 3项iOS离屏尺寸单测通过（CardPilotIOSLayoutTests/GuidePresentationSizingTests）：当前蓝狮子短指南在393pt宽、760pt高的可用区域里测得150–640pt之间；更窄屏/辅助功能字号的自然高度增加；300pt窗口正确限高。测试不展示Sheet、不执行界面动作、不截图，不等同于视觉/转场验收。
+- iOS测试使用独立build/TestIOSDerivedData；macOS增量编译通过。通过原脚本重新安装打开现有iPhone17，仍为内存演示数据；macOS不重启、真实账本不变。guide-sizing日志只记录宽度、自然高度与初始detent数字，不记录指南正文或个人数据。
+- 高度是每次打开时准备的快照。已打开后若改变系统字号或窗口环境，可关闭重开以重新测量；长文仍可滚动。首次高度、短文留白、长文/大字号可读性及关闭手感待用户复验，不能用编译/尺寸单测替代。
+- 尺寸测量依据：[UIHostingController.sizeThatFits](https://developer.apple.com/documentation/swiftui/uihostingcontroller/sizethatfits%28in%3A%29)。复测命令：
+
+```sh
+xcodebuild -project CardPilot.xcodeproj -scheme CardPilotIOS \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -derivedDataPath build/TestIOSDerivedData CODE_SIGNING_ALLOWED=NO \
+  test -only-testing:CardPilotIOSLayoutTests/GuidePresentationSizingTests
+```
 
 ## 官方依据
 
