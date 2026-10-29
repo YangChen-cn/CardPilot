@@ -6,6 +6,7 @@ import SwiftUI
 struct StackedCardDeck: View {
     let cards: [BankCard]
     let transition: Namespace.ID
+    let revealCardKey: String?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var interaction: CardDeckInteraction
     @State private var deckWidth: CGFloat = 0
@@ -13,9 +14,10 @@ struct StackedCardDeck: View {
     @State private var feedback = 0
     @GestureState private var gestureActive = false
 
-    init(cards: [BankCard], transition: Namespace.ID) {
+    init(cards: [BankCard], transition: Namespace.ID, revealCardKey: String? = nil) {
         self.cards = cards
         self.transition = transition
+        self.revealCardKey = revealCardKey
         _interaction = State(initialValue: CardDeckInteraction(keys: cards.map(\.syncKey)))
     }
 
@@ -93,6 +95,17 @@ struct StackedCardDeck: View {
         }
         .onChange(of: cards.map(\.syncKey)) { _, keys in
             withoutAnimation { interaction.reconcile(keys: keys) }
+        }
+        .onChange(of: revealCardKey, initial: true) { _, key in
+            guard let key, cards.contains(where: { $0.syncKey == key }) else { return }
+            // Present a card explicitly added from the sheet without changing
+            // saved order or the swipe/animation handoff logic.
+            withoutAnimation {
+                interaction.reconcile(keys: cards.map(\.syncKey))
+                if interaction.select(key, direction: 1) {
+                    _ = interaction.complete(generation: interaction.generation)
+                }
+            }
         }
         .onChange(of: gestureActive) { _, active in
             // GestureState also resets when the system cancels a touch (no onEnded).

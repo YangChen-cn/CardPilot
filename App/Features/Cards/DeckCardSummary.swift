@@ -40,7 +40,7 @@ struct DeckCardSummary: View {
                         Text(card.bank + " · " + card.network
                              + (card.lastFour.isEmpty ? "" : " · 尾号 " + card.lastFour))
                             .font(.caption).foregroundStyle(.secondary)
-                        if pricing.baseRateBps > 0 {
+                        if benefits.isEmpty && pricing.baseRateBps > 0 {
                             Text("基础权益 " + Money.percent(pricing.baseRateBps)
                                  + (details.baseRateVerified ? " · 以条款为准" : " · 比例待核实"))
                                 .font(.subheadline).foregroundStyle(PilotTheme.accent)
@@ -59,7 +59,7 @@ struct DeckCardSummary: View {
             .accessibilityHint("查看卡片的全部权益和个人资料")
 
             if benefits.isEmpty {
-                Text("暂未收录当前活动，点卡片查看完整资料。")
+                Text("暂无当前活动")
                     .font(.footnote).foregroundStyle(.secondary)
             } else {
                 ForEach(benefits) { info in
@@ -77,8 +77,10 @@ struct DeckCardSummary: View {
                                 Image(systemName: "chevron.right").font(.caption2)
                                     .foregroundStyle(.tertiary).accessibilityHidden(true)
                             }
-                            Text(info.headline).font(.subheadline.weight(.semibold))
-                                .foregroundStyle(PilotTheme.accent)
+                            if info.headline != "查看适用权益与条件" {
+                                Text(info.headline).font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(PilotTheme.accent)
+                            }
                             Text(info.compactPeriodLabel)
                                 .font(.caption).foregroundStyle(.secondary)
                         }
@@ -89,8 +91,6 @@ struct DeckCardSummary: View {
                     .buttonStyle(.plain)
                     .accessibilityHint("阅读适用条件及完整条款")
                 }
-                Text("优惠有适用条件，点击查看完整条款。")
-                    .font(.caption).foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

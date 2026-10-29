@@ -4,6 +4,7 @@ import SwiftData
 struct CardDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(CatalogRepository.self) private var catalog
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -46,14 +47,26 @@ struct CardDetailView: View {
     var body: some View {
         let _ = catalog.revision
         let benefits = displayedBenefits
-        let favoriteBenefits = benefits.filter { $0.personal.favorite && !$0.isHistorical }
-        let currentBenefits = benefits.filter { !$0.isHistorical && !$0.personal.favorite }
+        let favoriteBenefits = benefits.filter { $0.personal.favorite && !$0.isHistorical && (!phoneLayout || !$0.isEnded) }
+        let currentBenefits = benefits.filter { !$0.isHistorical && !$0.personal.favorite && (!phoneLayout || !$0.isEnded) }
+        let endedBenefits = phoneLayout ? benefits.filter { !$0.isHistorical && $0.isEnded } : []
         let historicalBenefits = benefits.filter(\.isHistorical)
         let pricing = PricingStore.current(card)
         let details = PricingStore.details(card)
         ScrollView {
             VStack(alignment: .leading, spacing: phoneLayout ? 20 : 28) {
                 CardDetailHeader(card: card)
+                if phoneLayout {
+                    let actions = typeSize.isAccessibilitySize
+                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                        : AnyLayout(HStackLayout(spacing: 12))
+                    actions {
+                        ledgerEntry.frame(minHeight: PilotTheme.minimumTouchTarget)
+                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true })
+                            .buttonStyle(.bordered).frame(minHeight: PilotTheme.minimumTouchTarget)
+                    }
+                    .controlSize(.large)
+                }
                 if !favoriteBenefits.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
                         HStack(spacing: 7) {
@@ -96,6 +109,28 @@ struct CardDetailView: View {
                         }
                     }
                 }
+                if !endedBenefits.isEmpty {
+                    PilotDisclosureGroup("已结束的优惠（\(endedBenefits.count) 项）") {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(endedBenefits) { info in
+                                Button { readingHistory = info } label: {
+                                    HStack(alignment: .top, spacing: 12) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(info.title).font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
+                                            Text(info.periodDescription).font(.caption).foregroundStyle(.secondary)
+                                        }
+                                        Spacer(minLength: 8)
+                                        Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+                                            .accessibilityHidden(true)
+                                    }
+                                    .frame(maxWidth: .infinity, minHeight: PilotTheme.minimumTouchTarget, alignment: .leading)
+                                    .contentShape(.rect)
+                                }.buttonStyle(.plain)
+                                if info.id != endedBenefits.last?.id { Divider() }
+                            }
+                        }.padding(.top, 12)
+                    }
+                }
                 if !historicalBenefits.isEmpty {
                     GroupBox("历史活动与个人记录") {
                         VStack(alignment: .leading, spacing: 10) {
@@ -128,12 +163,6 @@ struct CardDetailView: View {
                     }
                 }
                 Divider()
-                if phoneLayout {
-                    HStack(spacing: 12) {
-                        ledgerEntry
-                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true }).buttonStyle(.bordered)
-                    }.controlSize(.large)
-                }
                 CardFinancialSummary(card: card)
                 if !details.annualFeeNote.isEmpty || !details.caveats.isEmpty || pricing.foreignFeeBps > 0 || pricing.overseasHKDFeeBps > 0 {
                     GroupBox("费用与其他说明") {
@@ -161,13 +190,6 @@ struct CardDetailView: View {
             ToolbarItem(placement: .primaryAction) {
                 Menu("卡片操作", systemImage: "ellipsis") {
                     Button("添加活动", systemImage: "gift.badge.plus", action: { addingRule = true })
-                    if phoneLayout {
-                        NavigationLink { TransactionsView(card: card) } label: {
-                            Label("消费账本", systemImage: "list.bullet.rectangle")
-                        }
-                        Button("记一笔", systemImage: "plus", action: { addingTransaction = true })
-                        Divider()
-                    }
                     Button("编辑卡片", systemImage: "pencil", action: { editing = true })
                     if libraryProduct != nil {
                         Button("个人持卡资料", systemImage: "person.crop.rectangle", action: { personalProduct = libraryProduct })

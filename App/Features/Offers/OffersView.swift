@@ -15,6 +15,7 @@ struct OffersView: View {
     @State private var includeEnded = false
     @State private var includeHidden = false
     @State private var favoritesOnly = false
+    @State private var selectedCardID: UUID?
     @State private var search = ""
     @State private var error: String?
 
@@ -26,18 +27,43 @@ struct OffersView: View {
         #endif
     }
 
+    private var activeCards: [BankCard] {
+        cards.filter { !$0.isArchived }.sorted {
+            $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending
+        }
+    }
+
+    private var hasActiveFilters: Bool {
+        selectedCardID != nil || includeEnded || includeHidden || favoritesOnly ||
+            !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var filterSummary: String {
+        var labels: [String] = []
+        if let selectedCardID, let card = activeCards.first(where: { $0.id == selectedCardID }) {
+            labels.append(card.displayName)
+        }
+        if favoritesOnly { labels.append("只看收藏") }
+        if includeEnded { labels.append("含已结束") }
+        if includeHidden { labels.append("含已隐藏") }
+        if !search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { labels.append("搜索中") }
+        return labels.joined(separator: " · ")
+    }
+
     private var filtered: [BenefitInfo] {
         let _ = cards.map(\.modifiedAt)
         let _ = documents.map(\.modifiedAt)
         let _ = catalog.revision
+        let query = search.trimmingCharacters(in: .whitespacesAndNewlines)
         return OfferStore.offers(context: context).filter { info in
             let archiveVisible = info.isHistorical ? info.isHistoricalReadable : !info.isArchived
-            return archiveVisible && (includeHidden || !info.isHidden)
+            return archiveVisible && (selectedCardID == nil || info.cardID == selectedCardID)
+                && (includeHidden || !info.isHidden)
                 && (!favoritesOnly || (!info.isHistorical && info.personal.favorite))
                 && (includeEnded || (!info.isEnded && !info.isHistorical))
-                && (search.isEmpty || info.title.localizedStandardContains(search)
-                    || info.cardName.localizedStandardContains(search)
-                    || info.conditions.contains(where: { $0.localizedStandardContains(search) }))
+                && (query.isEmpty || info.title.localizedStandardContains(query)
+                    || info.cardName.localizedStandardContains(query)
+                    || info.conditions.contains(where: { $0.localizedStandardContains(query) }))
         }
     }
 
@@ -49,10 +75,16 @@ struct OffersView: View {
                     NavigationLink { WelcomeCenterView() } label: { Label("迎新记录", systemImage: "gift").frame(minHeight: 44) }
                     Spacer()
                     if phoneLayout {
-                        Menu("权益筛选", systemImage: includeEnded || includeHidden || favoritesOnly ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") {
+                        Menu("权益筛选", systemImage: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle") {
+                            if activeCards.count > 1 {
+                                cardPicker
+                            }
                             Toggle("只看收藏", isOn: $favoritesOnly)
                             Toggle("包括已结束", isOn: $includeEnded)
                             Toggle("显示已隐藏", isOn: $includeHidden)
+                            if hasActiveFilters {
+                                Button("清除筛选", systemImage: "xmark.circle", action: clearFilters)
+                            }
                         }
                         .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44)
                     } else {
@@ -61,12 +93,29 @@ struct OffersView: View {
                         Toggle("显示已隐藏", isOn: $includeHidden).toggleStyle(.switch).fixedSize()
                     }
                 }
+                if !phoneLayout && activeCards.count > 1 {
+                    cardPicker.pickerStyle(.menu).frame(maxWidth: 320, alignment: .leading)
+                }
+                if hasActiveFilters {
+                    HStack(alignment: .top, spacing: 12) {
+                        Label(filterSummary, systemImage: "line.3.horizontal.decrease.circle")
+                            .font(.subheadline).foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                        Button("清除", action: clearFilters)
+                            .font(.subheadline)
+                            .frame(minHeight: PilotTheme.minimumTouchTarget)
+                    }
+                }
                 if visible.isEmpty {
-                    ContentUnavailableView(
-                        favoritesOnly ? "暂无收藏的权益" : "暂无匹配的权益",
-                        systemImage: favoritesOnly ? "star" : "gift",
-                        description: Text(favoritesOnly ? "在权益详情中点按星标，即可在这里快速找到。" : "试试其他关键词，或为银行卡添加活动。")
-                    )
+                    ContentUnavailableView {
+                        Label(favoritesOnly ? "暂无收藏的权益" : "暂无匹配的权益",
+                              systemImage: favoritesOnly ? "star" : "gift")
+                    } description: {
+                        Text(favoritesOnly ? "在权益详情中点按星标，即可在这里快速找到。" : "试试其他关键词或筛选条件，也可以为银行卡添加活动。")
+                    } actions: {
+                        if hasActiveFilters { Button("清除筛选", action: clearFilters) }
+                    }
                 }
                 ForEach(BenefitGroup.allCases) { group in
                     let items = visible.filter { $0.group == group }
@@ -105,17 +154,10 @@ struct OffersView: View {
         }
         .background(PilotTheme.canvas)
         .searchable(text: $search, prompt: "活动、卡片或优惠条件")
+        .onChange(of: cards.filter { !$0.isArchived }.map(\.id)) { _, visibleIDs in
+            if let selectedCardID, !visibleIDs.contains(selectedCardID) { self.selectedCardID = nil }
+        }
         .toolbar {
-            #if os(iOS)
-            if phoneLayout {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink { RecommendView() } label: {
-                        Label("选卡建议", systemImage: "sparkles")
-                    }
-                    .labelStyle(.iconOnly)
-                }
-            }
-            #endif
             ToolbarItem(placement: .primaryAction) {
                 if phoneLayout {
                     Button("添加活动", systemImage: "plus", action: { showingAdd = true }).labelStyle(.iconOnly)
@@ -134,6 +176,23 @@ struct OffersView: View {
         } message: {
             Text("活动将从权益列表隐藏；个人迎新记录、备注和已到账奖励会保留。")
         }
+    }
+
+    private var cardPicker: some View {
+        Picker("银行卡", selection: $selectedCardID) {
+            Text("所有银行卡").tag(nil as UUID?)
+            ForEach(activeCards) { card in
+                Text(card.displayName).tag(Optional(card.id))
+            }
+        }
+    }
+
+    private func clearFilters() {
+        selectedCardID = nil
+        includeEnded = false
+        includeHidden = false
+        favoritesOnly = false
+        search = ""
     }
 
     private func setHidden(_ info: BenefitInfo, hidden: Bool) {

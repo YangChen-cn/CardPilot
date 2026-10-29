@@ -27,39 +27,47 @@ struct OfferPanel: View {
     var body: some View {
         let _ = refreshToken
         let tracking = info.isWelcome ? (try? OfferTrackingStore.load(for: info, context: context)) : nil
-        VStack(alignment: .leading, spacing: phoneLayout ? 10 : 14) {
-            Button {
-                showingReader = true
-            } label: {
-                VStack(alignment: .leading, spacing: phoneLayout ? 9 : 12) {
-                    heading(tracking)
-                    Text(info.headline)
-                        .font(phoneLayout ? .headline : .title3.weight(.semibold))
-                        .foregroundStyle(PilotTheme.accent)
-                    if phoneLayout {
-                        phoneSummary
-                    } else {
-                        VStack(alignment: .leading, spacing: 12) {
-                            BenefitConditionGrid(info: info, compact: true)
-                            BenefitNotesView(info: info, compact: true, limit: 1)
+        Group {
+            if phoneLayout {
+                Button { showingReader = true } label: {
+                    VStack(alignment: .leading, spacing: 10) {
+                        heading(tracking)
+                        if info.headline != "查看适用权益与条件" {
+                            Text(info.headline).font(.headline).foregroundStyle(PilotTheme.accent)
                         }
+                        phoneSummary
+                        phoneFooter
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .pilotPanel()
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("查看适用条件和官方条款")
+            } else {
+                VStack(alignment: .leading, spacing: 14) {
+                    Button { showingReader = true } label: {
+                        VStack(alignment: .leading, spacing: 12) {
+                            heading(tracking)
+                            Text(info.headline).font(.title3.weight(.semibold)).foregroundStyle(PilotTheme.accent)
+                            VStack(alignment: .leading, spacing: 12) {
+                                BenefitConditionGrid(info: info, compact: true)
+                                BenefitNotesView(info: info, compact: true, limit: 1)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("阅读完整条款：\(info.title)")
+                    Divider()
+                    desktopFooter(tracking)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("阅读完整条款：\(info.title)")
-            if phoneLayout {
-                phoneFooter
-            } else {
-                Divider()
-                desktopFooter(tracking)
+                .fixedSize(horizontal: false, vertical: true)
+                .pilotPanel()
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .fixedSize(horizontal: false, vertical: true)
-        .pilotPanel()
         .sheet(isPresented: $managingWelcome) { WelcomeTrackingEditor(info: info) }
         .sheet(isPresented: $showingReader) {
             BenefitDetailView(info: info)
@@ -100,32 +108,34 @@ struct OfferPanel: View {
 
     private var phoneSummary: some View {
         VStack(alignment: .leading, spacing: 7) {
-            ForEach(info.labeledTerms.prefix(2)) { term in
+            ForEach(info.labeledTerms.prefix(info.capCents > 0 ? 1 : 2)) { term in
                 Text((term.label.map { $0 + "：" } ?? "") + term.value)
                     .font(.subheadline).foregroundStyle(.secondary)
                     .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+            }
+            if info.capCents > 0 {
+                let period = info.catalogRule?.capPeriod ?? info.legacyRule?.capPeriod
+                let label = period == "monthly" ? "每月回赠上限" : period == "campaign" ? "整期回赠上限" : "回赠上限"
+                Text(label + " " + Money.text(info.capCents))
+                    .font(.subheadline).foregroundStyle(.secondary)
+            } else if info.labeledTerms.isEmpty, !info.noteTerms.isEmpty {
+                Text("适用条件见详情")
+                    .font(.subheadline).foregroundStyle(.secondary)
             }
         }
     }
 
     private var phoneFooter: some View {
-        Button {
-            showingReader = true
-        } label: {
-            HStack(spacing: 6) {
-                Label(info.periodDescription, systemImage: info.periodStatus == .unknown ? "calendar.badge.questionmark" : "calendar")
-                    .lineLimit(1)
-                Spacer(minLength: 8)
-                Text("完整条款")
-                Image(systemName: "chevron.right").font(.caption2.weight(.semibold))
-            }
-            .font(.caption2)
-            .foregroundStyle(.secondary)
-            .frame(minHeight: 44)
-            .contentShape(.rect)
+        HStack(alignment: .top, spacing: 8) {
+            Label(info.periodDescription, systemImage: info.periodStatus == .unknown ? "calendar.badge.questionmark" : "calendar")
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 4)
+            Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                .accessibilityHidden(true)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("阅读完整条款")
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .padding(.top, 2)
     }
 
     private func desktopFooter(_ tracking: WelcomeTracking?) -> some View {

@@ -22,6 +22,8 @@ struct CardsView: View {
     @AppStorage("cards.phoneCompactList") private var legacyCompactList = false
     @State private var kindFilter: CardKind?
     @State private var highlightedCardKey: String?
+    @State private var addedDuringPresentation: String?
+    @State private var revealCardKey: String?
     @State private var addedFeedback = 0
     @Namespace private var cardTransition
 
@@ -75,6 +77,7 @@ struct CardsView: View {
     var body: some View {
         let _ = documents.map(\.modifiedAt)
         let visible = filtered
+        ScrollViewReader { proxy in
         ScrollView {
             if cards.isEmpty && isCompact {
                 CardsEmptyState(onCatalog: { showingCatalog = true }, onManual: { showingAdd = true })
@@ -139,6 +142,14 @@ struct CardsView: View {
                 .frame(maxWidth: 1180).frame(maxWidth: .infinity)
             }
         }
+        .onChange(of: highlightedCardKey) { _, key in
+            guard isCompact, let key, key == revealCardKey,
+                  filtered.contains(where: { $0.syncKey == key }) else { return }
+            let target = scrollTarget(for: key)
+            if reduceMotion { proxy.scrollTo(target, anchor: .center) }
+            else { withAnimation(.easeInOut(duration: 0.25)) { proxy.scrollTo(target, anchor: .center) } }
+        }
+        }
         .searchable(text: $search, prompt: "银行或卡片名称")
         .minimizedSearchToolbar()
         .background(PilotTheme.canvas)
@@ -148,14 +159,18 @@ struct CardsView: View {
         .sensoryFeedback(.success, trigger: addedFeedback)
         .onChange(of: cards.map(\.syncKey)) { oldKeys, newKeys in
             guard let added = newKeys.first(where: { !oldKeys.contains($0) }) else { return }
-            highlightedCardKey = added
+            if showingAdd || showingCatalog { addedDuringPresentation = added }
+            else { highlightedCardKey = added }
             addedFeedback &+= 1
         }
         .task(id: highlightedCardKey) {
             guard highlightedCardKey != nil else { return }
             try? await Task.sleep(for: .seconds(1.2))
             guard !Task.isCancelled else { return }
-            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { highlightedCardKey = nil }
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+                highlightedCardKey = nil
+                revealCardKey = nil
+            }
         }
         .toolbar {
             if isCompact {
@@ -172,8 +187,8 @@ struct CardsView: View {
             }
         }
         #endif
-        .sheet(isPresented: $showingAdd) { CardEditor() }
-        .sheet(isPresented: $showingCatalog) { AddCardFlowView() }
+        .sheet(isPresented: $showingAdd, onDismiss: revealAddedCard) { CardEditor() }
+        .sheet(isPresented: $showingCatalog, onDismiss: revealAddedCard) { AddCardFlowView() }
         #if os(macOS)
         .sheet(item: $ledgerCard) { CardLedgerSheet(card: $0) }
         #endif
@@ -263,7 +278,8 @@ struct CardsView: View {
                     }
                     .background(PilotTheme.surface, in: .rect(cornerRadius: PilotTheme.cardCornerRadius, style: .continuous))
                 } else if phoneStyle == .deck {
-                    StackedCardDeck(cards: items, transition: cardTransition)
+                    StackedCardDeck(cards: items, transition: cardTransition, revealCardKey: revealCardKey)
+                        .id(deckID(items.first?.cardKind))
                 } else {
                     LazyVStack(spacing: 24) {
                         ForEach(items) { card in
@@ -284,6 +300,31 @@ struct CardsView: View {
                               onDrop: { source, after in reorder(source, onto: card.syncKey, after: after) },
                               onMoveToStart: { move(card, toEnd: false) },
                               onMoveToEnd: { move(card, toEnd: true) })
+            .id(card.syncKey)
+    }
+
+    private func deckID(_ kind: CardKind?) -> String {
+        displayMode == .grouped ? "wallet-deck:" + (kind?.rawValue ?? "") : "wallet-deck:all"
+    }
+
+    private func scrollTarget(for key: String) -> String {
+        guard !usesCompactList, phoneStyle == .deck,
+              let selected = filtered.first(where: { $0.syncKey == key }) else { return key }
+        return deckID(selected.cardKind)
+    }
+
+    private func revealAddedCard() {
+        guard isCompact, let key = addedDuringPresentation,
+              let card = cards.first(where: { $0.syncKey == key }) else {
+            addedDuringPresentation = nil
+            return
+        }
+        addedDuringPresentation = nil
+        showArchived = false
+        if !search.isEmpty && !card.displayName.localizedStandardContains(search) { search = "" }
+        if displayMode == .together, let kindFilter, kindFilter != card.cardKind { self.kindFilter = nil }
+        revealCardKey = key
+        highlightedCardKey = key
     }
 
     private func resetFilters() {
