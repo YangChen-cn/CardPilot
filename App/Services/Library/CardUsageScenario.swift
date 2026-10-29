@@ -20,14 +20,17 @@ struct CardUsageScenario: Codable, Identifiable, Sendable {
               Set(relatedOfferIDs).count == relatedOfferIDs.count,
               Set(relatedOfferIDs).isSubset(of: offerIDs),
               (1...6).contains(sourceURLs.count), Set(sourceURLs).count == sourceURLs.count,
-              (warnings ?? []).count <= 8 else {
+              (warnings ?? []).count <= 2 else {
             throw PilotError.invalid("推荐用法的场景标识、活动引用或来源无效。")
         }
-        try CardUsageGuide.validateText(title, maximum: 80)
-        try CardUsageGuide.validateText(whenToUse, maximum: 300)
-        try CardUsageGuide.validateText(howToUse, maximum: 1_200)
-        for text in [capNote, stopAfter].compactMap({ $0 }) + (warnings ?? []) {
-            try CardUsageGuide.validateText(text, maximum: 400)
+        try CardUsageGuide.validateText(title, maximum: 64)
+        try CardUsageGuide.validateText(whenToUse, maximum: 130)
+        try CardUsageGuide.validateText(howToUse, maximum: 220)
+        for text in [capNote, stopAfter].compactMap({ $0 }) {
+            try CardUsageGuide.validateText(text, maximum: 120)
+        }
+        for warning in warnings ?? [] {
+            try CardUsageGuide.validateText(warning, maximum: 100)
         }
         for source in sourceURLs {
             try CardUsageGuide.validateText(source, maximum: 2_048)
@@ -52,8 +55,8 @@ struct CardUsageScenario: Codable, Identifiable, Sendable {
         switch (startsOn, endsOn) {
         case let (.some(start), .some(end)): return start + " 至 " + end
         case let (_, .some(end)): return "截至 " + end
-        case let (.some(start), _): return start + " 起 · 截止日待核实"
-        default: return "有效期待核实，请查看官方条款"
+        case let (.some(start), _): return start + " 起 · 未列明截止日期"
+        default: return "有效期未列明"
         }
     }
 }

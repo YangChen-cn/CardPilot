@@ -57,7 +57,7 @@ struct RecommendationWorkbench: View {
                     }
                 }
             }
-            if !compact { Text("建议不判断银行最终合资格签账，也不估算精确到账金额。")
+            if !compact { Text("优惠及合资格消费以官方条款为准。")
                     .font(.caption).foregroundStyle(.secondary) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

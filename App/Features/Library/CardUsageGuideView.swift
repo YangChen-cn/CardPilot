@@ -12,14 +12,14 @@ struct CardUsageGuideView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text(productName).font(.title2.weight(.semibold))
                         Text(guide.summary).font(.body)
-                        Text("AI 根据公开资料整理，非银行承诺；未核实的资格、名额及共享上限请自行确认。不会根据你的账本判断是否已刷满。")
-                            .font(.caption).foregroundStyle(.secondary)
-                        Text("建议核实于 " + guide.reviewedOn).font(.caption).foregroundStyle(.secondary)
+                        Text("整理于 " + guide.reviewedOn).font(.caption).foregroundStyle(.secondary)
                     }
                     ForEach(guide.scenarios) { scenario in
                         Divider()
                         CardUsageScenarioView(scenario: scenario)
                     }
+                    Text("用卡参考，具体优惠见官方条款。")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
                 .padding(PilotTheme.pagePadding)
                 .frame(maxWidth: 720, alignment: .leading).frame(maxWidth: .infinity)

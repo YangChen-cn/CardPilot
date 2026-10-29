@@ -13,8 +13,6 @@ struct CardUsageGuideSection: View {
                 .fixedSize(horizontal: false, vertical: true)
             Button("查看使用场景与上限说明", systemImage: "lightbulb", action: { showingGuide = true })
                 .frame(minHeight: PilotTheme.minimumTouchTarget)
-            Text("AI 整理的用卡参考，以银行条款为准。")
-                .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .sheet(isPresented: $showingGuide) {

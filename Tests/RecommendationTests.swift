@@ -58,7 +58,7 @@ struct RecommendationTests {
         suggestions = RecommendationEngine.suggest(cards: [card], query: input, now: try day("2026-10-22"))
         possible = try #require(suggestions.first?.offers.first)
         #expect(possible.matchedConditions.count == 2)
-        #expect(possible.confirmationNeeded.contains { $0.contains("推广登记") })
+        #expect(!possible.confirmationNeeded.contains { $0.contains("推广登记") })
     }
 
     @Test func publicValueBeatsMatchCountEvenWhenAnotherCardMatchesMoreConditions() throws {
@@ -243,7 +243,7 @@ struct RecommendationTests {
         context.insert(purchase); try context.save()
         for _ in 0..<3 {
             let possible = try #require(RecommendationEngine.suggest(cards: [card], query: query(), now: day("2026-10-22")).first?.offers.first)
-            #expect(possible.confirmationNeeded.contains { $0.contains("不判断你是否已达到") })
+            #expect(possible.confirmationNeeded.contains { $0.contains("每月实体消费须满") })
         }
         #expect(try context.fetchCount(FetchDescriptor<SpendTransaction>()) == 1)
         #expect(!context.hasChanges)
@@ -257,9 +257,25 @@ struct RecommendationTests {
         var extras = RuleExtras(); extras.periodUnverified = true
         try RulePolicyStore.imported(RuleSyncData(offer), extras: extras, into: offer, isNew: true, context: context)
         let possible = try #require(RecommendationEngine.suggest(cards: [card], query: query(), now: day("2026-10-22")).first?.offers.first)
-        #expect(possible.confirmationNeeded.contains { $0.contains("活动开始日期未核实") })
-        #expect(possible.confirmationNeeded.contains { $0.contains("活动结束日期未核实") })
+        #expect(possible.confirmationNeeded.contains { $0.contains("开始日期未列明") })
+        #expect(!possible.hasKnownEnd)
         #expect(!BenefitInfo(rule: possible.rule).hasKnownPeriod)
+    }
+
+    @Test func recommendationKeepsSpecificConditionsWithoutCopyingProductNotes() throws {
+        let container = try Persistence.makeContainer(inMemory: true), context = container.mainContext
+        let card = BankCard(bank: "Example", name: "Card"); context.insert(card)
+        card.caveats = "产品专属长说明，不应混入支付条件"
+        let activity = try rule(card, context: context)
+        activity.capCents = 10000
+        activity.monthlyPhysicalThresholdCents = 300000
+        let candidate = try #require(RecommendationEngine.suggest(cards: [card], query: query(), now: day("2026-10-22")).first)
+        #expect(candidate.caveats.isEmpty)
+        let offer = try #require(candidate.topOffer)
+        #expect(offer.confirmationNeeded.contains { $0.contains("上限") })
+        #expect(offer.confirmationNeeded.contains { $0.contains("每月实体消费须满") })
+        #expect(offer.keyMissingConditions.contains("累计消费门槛"))
+        #expect(!offer.confirmationNeeded.contains { $0.contains("其他限制以银行条款为准") })
     }
 
     @Test func unsourcedPersonalBaseRateIsNotLabelledAsVerifiedPublishedTerms() throws {
@@ -269,6 +285,6 @@ struct RecommendationTests {
         card.sourceURL = "https://example.com/card"; card.verifiedOn = "2026-10-01"
         let sourced = try #require(RecommendationEngine.suggest(cards: [card], query: query()).first)
         #expect(sourced.baseBenefit?.contains("参考") == true)
-        #expect(sourced.baseBenefit?.contains("核对官方条款") == true)
+        #expect(sourced.baseBenefit?.contains("核对官方条款") == false)
     }
 }

@@ -15,13 +15,12 @@ import Foundation
             let hasSource = ["https", "http"].contains(URL(string: details.sourceURL)?.scheme ?? "") && !details.verifiedOn.isEmpty
             if query.currency != "HKD", pricing.foreignFeeBps > 0 {
                 caveats.append(hasSource
-                    ? "外币交易可能收取手续费，资料所列费率为" + Money.percent(pricing.foreignFeeBps) + "，请核对最终结算条款。"
+                    ? "外币手续费参考 " + Money.percent(pricing.foreignFeeBps) + "。"
                     : "个人记录了外币手续费，来源及适用条件待核实。")
             }
-            if !details.caveats.isEmpty { caveats.append(details.caveats) }
             return CardRecommendation(card: card, offers: offers,
                                       baseBenefit: pricing.baseRateBps > 0
-                                        ? (hasSource ? "资料所列基础回赠参考 " + Money.percent(pricing.baseRateBps) + "，合资格消费及兑换条件请核对官方条款。" : "个人记录的基础权益，来源待核实。") : nil,
+                                        ? (hasSource ? "基础回赠参考 " + Money.percent(pricing.baseRateBps) : "个人记录的基础权益，来源待核实。") : nil,
                                       caveats: caveats)
         }
         .filter { !$0.offers.isEmpty || $0.baseBenefit != nil }
@@ -60,10 +59,7 @@ import Foundation
         if info.hasKnownEnd, info.endsOn < HKCalendar.start(now) { return nil }
         if info.hasKnownStart, info.startsOn > now { return nil }
         if !info.hasKnownStart {
-            missing.append("活动开始日期未核实，请先确认本次消费是否已开始。")
-        }
-        if !info.hasKnownEnd {
-            missing.append("活动结束日期未核实，请先确认本次消费是否仍在活动期内。")
+            missing.append("开始日期未列明，需确认活动已生效。")
         }
         if !info.hasKnownStart || !info.hasKnownEnd {
             keyMissing.append("活动有效期")
@@ -143,8 +139,17 @@ import Foundation
         }
         let monthlyPhysical = info.legacyRule?.monthlyPhysicalThresholdCents
             ?? info.catalogRule?.monthlyPhysicalThresholdHKD.map { Money.cents($0) } ?? 0
+        if info.thresholdCents > 0 {
+            missing.append("累计消费须满 " + Money.text(info.thresholdCents) + "。")
+        }
+        if extras.monthlyLocalThresholdCents > 0 {
+            missing.append("每月本地消费须满 " + Money.text(extras.monthlyLocalThresholdCents) + "。")
+        }
+        if monthlyPhysical > 0 {
+            missing.append("每月实体消费须满 " + Money.text(monthlyPhysical) + "。")
+        }
         if info.thresholdCents > 0 || extras.monthlyLocalThresholdCents > 0 || monthlyPhysical > 0 {
-            missing.append("另设累计消费门槛；此建议不判断你是否已达到。")
+            keyMissing.append("累计消费门槛")
         }
         if info.capCents > 0 { missing.append("设有回赠上限，请自行确认剩余名额及额度。") }
         if !info.sharedCapGroup.isEmpty { missing.append("可能与其他活动共享上限或名额。") }
@@ -154,8 +159,10 @@ import Foundation
                            : "需要确认是否已登记；个人登记状态未知。")
             keyMissing.append("登记状态")
         }
-        if info.sourceURL.isEmpty || info.verifiedOn.isEmpty { missing.append("公开来源或核实日期不完整，请先向银行核实。") }
-        missing.append("合资格签账、推广登记及其他限制以银行条款为准。")
+        if info.sourceURL.isEmpty || info.verifiedOn.isEmpty {
+            missing.append("来源资料未齐。")
+            keyMissing.append("资料来源")
+        }
         let rateBps = info.catalogRule?.ratePercent.map { Int(Money.cents($0)) }
             ?? info.legacyRule?.rateBps ?? 0
         let fixedRewardCents = info.catalogRule?.bonusHKD.map { Money.cents($0) }

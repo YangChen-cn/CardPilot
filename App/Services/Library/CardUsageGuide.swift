@@ -7,11 +7,11 @@ struct CardUsageGuide: Codable, Sendable {
     let scenarios: [CardUsageScenario]
 
     func validate(offerIDs: Set<String>) throws {
-        try Self.validateText(summary, maximum: 480)
+        try Self.validateText(summary, maximum: 90)
         _ = try CatalogImporter.date(reviewedOn)
-        guard (1...12).contains(scenarios.count),
+        guard (1...4).contains(scenarios.count),
               Set(scenarios.map(\.id)).count == scenarios.count else {
-            throw PilotError.invalid("推荐用法需要 1–12 个场景，且场景 ID 不得重复。")
+            throw PilotError.invalid("推荐用法需要 1–4 个场景，且场景 ID 不得重复。")
         }
         for scenario in scenarios { try scenario.validate(offerIDs: offerIDs) }
     }

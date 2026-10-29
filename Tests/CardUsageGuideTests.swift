@@ -62,7 +62,7 @@ struct CardUsageGuideTests {
         item["relatedOfferIDs"] = [] as [String]
         let value = try #require(decode(guide(item)).cardProducts.first?.usageGuide?.scenarios.first)
         #expect(value.capNote == nil && value.stopAfter == nil)
-        #expect(value.periodDescription() == "有效期待核实，请查看官方条款")
+        #expect(value.periodDescription() == "有效期未列明")
     }
 
     @Test(arguments: ["duplicateID", "missingOffer", "wrongType", "insecureURL", "credentials", "invalidDate",
@@ -81,8 +81,8 @@ struct CardUsageGuideTests {
         case "unknownField": item["stopAmount"] = 2000
         case "emptySummary": value["summary"] = "  \n"
         case "emptyScenarios": value["scenarios"] = [] as [[String: Any]]
-        case "tooManyScenarios": value["scenarios"] = Array(repeating: item, count: 13)
-        default: item["howToUse"] = String(repeating: "x", count: 1_201)
+        case "tooManyScenarios": value["scenarios"] = Array(repeating: item, count: 5)
+        default: item["howToUse"] = String(repeating: "x", count: 221)
         }
         if !["duplicateID", "emptySummary", "emptyScenarios", "tooManyScenarios"].contains(problem) {
             value["scenarios"] = [item]

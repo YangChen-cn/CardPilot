@@ -167,9 +167,10 @@ struct RemoteCatalogTests {
     }
 
     @Test func unavailableNetworkLeavesCacheAndBundledPreviewAvailable() async throws {
-        let cache = temporaryCache(), doc = try document(version: 2026102903, rate: 6)
+        let version = try BankLibrary.loadBundledSnapshot().document.contentVersion + 1
+        let cache = temporaryCache(), doc = try document(version: version, rate: 6)
         let saved = try data(doc)
-        try cache.save(document: doc, data: saved, metadata: CatalogCacheMetadata(contentVersion: 2026102903, publishedAt: "2026-10-23"))
+        try cache.save(document: doc, data: saved, metadata: CatalogCacheMetadata(contentVersion: version, publishedAt: "2026-10-23"))
         BankLibrary.invalidate()
         let library = try BankLibrary.load(remoteCache: cache)
         #expect(library.products.count == 1)

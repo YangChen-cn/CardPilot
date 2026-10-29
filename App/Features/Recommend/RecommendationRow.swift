@@ -59,11 +59,10 @@ struct RecommendationRow: View {
                                 ForEach(offer.matchedConditions, id: \.self) { Text($0).font(.subheadline) }
                                 ForEach(offer.confirmationNeeded, id: \.self) { Text($0).font(.subheadline).foregroundStyle(.secondary) }
                                 if !offer.note.isEmpty { Text(offer.note).font(.subheadline).foregroundStyle(.secondary) }
-                                if !offer.hasKnownStart { Text("开始日期未核实").font(.caption).foregroundStyle(.secondary) }
                                 if offer.hasKnownEnd {
                                     Label(offer.endsOn.formatted(.dateTime.year().month().day()) + " 截止", systemImage: "calendar")
                                         .font(.caption).foregroundStyle(.secondary)
-                                } else { Text("结束日期未核实").font(.caption).foregroundStyle(.secondary) }
+                                } else { Text("未列明截止日期").font(.caption).foregroundStyle(.secondary) }
                             }.padding(.top, 4)
                         }.font(.subheadline)
                         if let url = URL(string: offer.sourceURL), ["https", "http"].contains(url.scheme ?? "") {
@@ -74,11 +73,10 @@ struct RecommendationRow: View {
                         ForEach(offer.confirmationNeeded, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
                         if !offer.note.isEmpty { Text(offer.note).font(.caption).foregroundStyle(.secondary) }
                         HStack {
-                            if !offer.hasKnownStart { Text("开始日期未核实") }
                             if offer.hasKnownEnd {
                                 Text(offer.endsOn, format: .dateTime.year().month().day())
                                 Text("截止")
-                            } else { Text("结束日期未核实") }
+                            } else { Text("未列明截止日期") }
                             Spacer()
                             if let url = URL(string: offer.sourceURL), ["https", "http"].contains(url.scheme ?? "") {
                                 Link("官方条款", destination: url)
