@@ -9,12 +9,28 @@ import SwiftData
             case "creditGroup": snapshot.groups.append(try SyncCodec.decoder().decode(CreditGroup.self, from: record.content))
             case "statement": snapshot.statements.append(try SyncCodec.decoder().decode(BillingStatement.self, from: record.content))
             case "repayment": snapshot.payments.append(try SyncCodec.decoder().decode(Repayment.self, from: record.content))
+            case "billingPreferences":
+                let preferences = try SyncCodec.decoder().decode(CardBillingPreferences.self, from: record.content)
+                snapshot.billingPreferences[preferences.cardKey] = preferences
             default: break
             }
         }
         return snapshot
     }
     static func snapshot(context: ModelContext) throws -> FinanceSnapshot { try snapshot(context.fetch(FetchDescriptor<DomainRecord>())) }
+
+    static func save(_ preferences: CardBillingPreferences, context: ModelContext) throws {
+        guard preferences.isValid else { throw PilotError.invalid("请检查提醒日期与时间。") }
+        try DocumentStore.put(preferences, key: preferences.key, kind: "billingPreferences", in: context)
+    }
+
+    /// The caller owns the save transaction so statement and repayment tombstones travel together.
+    static func removeStatement(_ statement: BillingStatement, context: ModelContext) throws {
+        for payment in try snapshot(context: context).payments where payment.statementID == statement.id {
+            try DocumentStore.remove("repayment:" + payment.id.uuidString, in: context)
+        }
+        try DocumentStore.remove("statement:" + statement.id.uuidString, in: context)
+    }
 
     /// Personal settings may clear a limit without deleting statements or another card's shared limit.
     /// The caller owns the surrounding Persistence.save transaction.
@@ -63,8 +79,16 @@ import SwiftData
             throw PilotError.invalid("这张卡同一币种及截止日的账单已存在，请编辑原账单。")
         }
         let rate = Decimal(string: statement.exchangeRate) ?? 0
-        guard (0...10_000_000_000).contains(statement.amountCents), Currency(rawValue: statement.currency) != nil,
-              rate > 0, rate <= 1000, statement.dueDate >= statement.periodEnd else { throw PilotError.invalid("请检查账单金额、汇率及还款日期。") }
+        let validRate = statement.currency == "HKD" ? rate == 1 : statement.exchangeRate.isEmpty || (!rate.isNaN && rate > 0 && rate <= 1000)
+        let payments = try snapshot(context: context).payments.filter { $0.statementID == statement.id }.reduce(Int64(0)) { $0 + $1.amountCents }
+        if payments > 0, let old = existing.first(where: { $0.id == statement.id }),
+           old.currency != statement.currency || old.cardKey != statement.cardKey {
+            throw PilotError.invalid("已有还款记录，不能更改账单所属卡片或币种。")
+        }
+        guard (0...10_000_000_000).contains(statement.amountCents), statement.amountCents >= payments,
+              Currency(rawValue: statement.currency) != nil, validRate, HKCalendar.start(statement.dueDate) >= HKCalendar.start(statement.periodEnd) else {
+            throw PilotError.invalid("请检查金额与还款日期；账单金额不能低于已记录还款。")
+        }
         try DocumentStore.put(statement, key: "statement:" + statement.id.uuidString, kind: "statement", in: context)
     }
     static func save(_ payment: Repayment, context: ModelContext) throws {

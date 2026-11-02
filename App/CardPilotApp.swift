@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 @main
 struct CardPilotApp: App {
@@ -9,6 +10,7 @@ struct CardPilotApp: App {
     @State private var catalog = CatalogRepository.shared
 
     init() {
+        if !RuntimeMode.isEphemeral { UNUserNotificationCenter.current().delegate = ReminderNavigation.shared }
         do {
             let store = try RuntimeMode.isEphemeral ? Persistence.makeContainer(inMemory: true) : Persistence.live.get()
             #if DEBUG && targetEnvironment(simulator)

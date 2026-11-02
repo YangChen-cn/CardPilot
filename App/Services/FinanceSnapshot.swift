@@ -4,6 +4,7 @@ struct FinanceSnapshot: Sendable {
     var groups: [CreditGroup] = []
     var statements: [BillingStatement] = []
     var payments: [Repayment] = []
+    var billingPreferences: [String: CardBillingPreferences] = [:]
     func unpaid(_ statement: BillingStatement, now: Date = .now) -> Int64 {
         max(0, statement.amountCents - payments.filter { $0.statementID == statement.id && $0.date <= now }.reduce(0) { $0 + $1.amountCents })
     }

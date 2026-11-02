@@ -22,7 +22,9 @@ struct CardFinancialSummary: View {
                     LabeledContent("已记录待还账单", value: Money.text(finance.unpaid(statement), currency: statement.currency))
                     LabeledContent("到期日", value: statement.dueDate.formatted(date: .abbreviated, time: .omitted))
                 }
-                NavigationLink("管理账单与还款") { FinanceView() }.frame(minHeight: 44)
+                if !card.isDebitCard {
+                    NavigationLink("账单、还款与提醒") { CardBillingView(card: card) }.frame(minHeight: 44)
+                }
             }
             .font(.subheadline)
             .frame(maxWidth: .infinity, alignment: .leading)

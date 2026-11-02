@@ -88,7 +88,11 @@ enum DocumentValidator {
             valid = !group.name.isEmpty && amount(group.limitCents) && group.limitCents > 0 && group.cardKeys.count <= 100 && Set(group.cardKeys).count == group.cardKeys.count
         case "statement":
             let statement = try decoder.decode(BillingStatement.self, from: value.content), rate = Decimal(string: statement.exchangeRate) ?? 0
-            valid = amount(statement.amountCents) && Currency(rawValue: statement.currency) != nil && rate > 0 && rate <= 1000 && statement.dueDate >= statement.periodEnd
+            let validRate = statement.currency == "HKD" ? rate == 1 : statement.exchangeRate.isEmpty || (!rate.isNaN && rate > 0 && rate <= 1000)
+            valid = amount(statement.amountCents) && Currency(rawValue: statement.currency) != nil && validRate && HKCalendar.start(statement.dueDate) >= HKCalendar.start(statement.periodEnd)
+        case "billingPreferences":
+            let preferences = try decoder.decode(CardBillingPreferences.self, from: value.content)
+            valid = preferences.isValid && value.key == preferences.key
         case "repayment": valid = try decoder.decode(Repayment.self, from: value.content).amountCents > 0
         default: valid = false
         }

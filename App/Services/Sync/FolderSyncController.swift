@@ -222,7 +222,7 @@ final class FolderSyncController {
                 guard !Task.isCancelled, generation == token, isEnabled else { return }
                 lastSyncAt = .now; defaults.set(lastSyncAt, forKey: "sync.lastDate")
                 defaults.set(true, forKey: "sync.previouslyPublished")
-                try? await WelcomeReminderService.refresh(context: context)
+                try? await LocalReminderService.refresh(context: context)
             } catch is CancellationError { }
             catch {
                 guard generation == token else { return }

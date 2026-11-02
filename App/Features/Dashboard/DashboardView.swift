@@ -51,6 +51,7 @@ struct DashboardView: View {
                 wallet
                 cardGuides
                 DashboardActivities(documents: documents)
+                billingAttention
                 if !phoneLayout { Divider() }
                 if wide {
                     HStack(alignment: .top, spacing: 32) {
@@ -156,6 +157,29 @@ struct DashboardView: View {
                     .buttonStyle(.bordered)
                 }
                 .controlSize(.large)
+            }
+        }
+    }
+
+    @ViewBuilder private var billingAttention: some View {
+        if let finance = try? FinanceStore.snapshot(documents) {
+            let activeKeys = Set(cards.filter { !$0.isArchived && !$0.isDebitCard }.map(\.syncKey))
+            let due = finance.statements.filter {
+                activeKeys.contains($0.cardKey) && finance.unpaid($0) > 0 && HKCalendar.daysLeft($0.dueDate) <= 7
+            }.sorted { $0.dueDate < $1.dueDate }
+            if let first = due.first {
+                NavigationLink { FinanceView() } label: {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "calendar.badge.clock").foregroundStyle(PilotTheme.accent)
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("\(due.count) 期账单待还").font(.headline)
+                            Text((cards.first { $0.syncKey == first.cardKey }?.name ?? "信用卡") + " · " + BillingDates.status(due: first.dueDate, paid: false))
+                                .font(.subheadline).foregroundStyle(.secondary)
+                        }
+                        Spacer(minLength: 8)
+                        Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+                    }.frame(minHeight: 44).contentShape(.rect)
+                }.buttonStyle(.plain)
             }
         }
     }

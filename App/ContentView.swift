@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showingSettings = false
     @State private var tab: AppSection = .cards
     @State private var reminderRevision = 0
+    @State private var reminders = ReminderNavigation.shared
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
@@ -54,7 +55,21 @@ struct ContentView: View {
             try? OfferMigration.migrateLegacy(in: context)
             await catalog.checkIfNeeded()
         }
-        .task(id: reminderRevision) { try? await WelcomeReminderService.refresh(context: context) }
+        .task(id: reminderRevision) { try? await LocalReminderService.refresh(context: context) }
+        .sheet(item: $reminders.destination) { destination in
+            NavigationStack {
+                Group {
+                    switch destination {
+                    case .billing: FinanceView()
+                    case .welcome: WelcomeCenterView()
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) { Button("完成") { reminders.destination = nil } }
+                }
+            }
+            .editorSize()
+        }
         .onReceive(NotificationCenter.default.publisher(for: Persistence.didChange)) { _ in
             reminderRevision &+= 1
         }

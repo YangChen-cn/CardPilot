@@ -92,7 +92,8 @@ struct WelcomeCenterView: View {
                         Button("关闭提醒") {
                             updatingReminders = true
                             Task {
-                                await WelcomeReminderService.disable()
+                                do { try await LocalReminderService.disable(LocalReminderService.welcomeEnabledKey, context: context) }
+                                catch { message = "暂时无法更新提醒，请重试。" }
                                 updatingReminders = false
                             }
                         }.frame(minHeight: 44).disabled(updatingReminders)
@@ -180,7 +181,7 @@ struct WelcomeCenterView: View {
         updatingReminders = true
         Task {
             defer { updatingReminders = false }
-            do { message = try await WelcomeReminderService.enable(context: context) ? "已开启到期提醒。" : "请在系统设置中允许 CardPilot 通知。" }
+            do { message = try await LocalReminderService.enable(LocalReminderService.welcomeEnabledKey, context: context) ? "已开启到期提醒。" : "请在系统设置中允许 CardPilot 通知。" }
             catch { message = "暂时无法设置提醒，请稍后重试。" }
             await refreshNotificationPermission()
         }
