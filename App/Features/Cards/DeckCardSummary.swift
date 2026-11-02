@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// A quick look at the selected card, using published benefits rather than its ledger.
+/// A quick look at the selected card's benefits and personal dates, without reading its ledger.
 struct DeckCardSummary: View {
     let card: BankCard
     let onOpen: () -> Void
@@ -11,6 +11,13 @@ struct DeckCardSummary: View {
         $0.kind == "offerState" || $0.kind == "policy" || $0.kind == "cardOverride"
     }) private var documents: [DomainRecord]
     @State private var reading: BenefitInfo?
+
+    private var billingDatesSummary: String {
+        guard !card.isDebitCard else { return "" }
+        return [(1...31).contains(card.statementDay) ? "账单日 每月 \(card.statementDay) 日" : nil,
+                (1...31).contains(card.paymentDay) ? "还款日 每月 \(card.paymentDay) 日" : nil]
+            .compactMap { $0 }.joined(separator: " · ")
+    }
 
     private var highlights: [BenefitInfo] {
         OfferStore.offers(for: card, context: context)
@@ -39,6 +46,10 @@ struct DeckCardSummary: View {
                         Text(card.bank + " · " + card.network
                              + (card.lastFour.isEmpty ? "" : " · 尾号 " + card.lastFour))
                             .font(.caption).foregroundStyle(.secondary)
+                        if !billingDatesSummary.isEmpty {
+                            Text(billingDatesSummary)
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
                         if benefits.isEmpty && pricing.baseRateBps > 0 {
                             Text("基础权益 " + Money.percent(pricing.baseRateBps)
                                  + (details.baseRateVerified ? " · 以条款为准" : " · 比例待核实"))
