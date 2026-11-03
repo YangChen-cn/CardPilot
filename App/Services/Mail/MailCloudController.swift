@@ -38,21 +38,31 @@ import SwiftData
             let connection = MailCloudConnection(url: url.trimmingCharacters(in: .whitespacesAndNewlines),
                                                  token: token.trimmingCharacters(in: .whitespacesAndNewlines))
             try restoreConnection(connection)
+            try MailConnectionSyncStore.save(connection, in: context)
             await sync(in: context, force: true)
         } catch { self.error = PilotError.message(error) }
     }
+
+    var ignoresSyncedConnection: Bool { defaults.bool(forKey: "mail.connection.ignoreSynced") }
+
+    func resumeConnectionSync() { defaults.set(false, forKey: "mail.connection.ignoreSynced") }
 
     func restoreConnection(_ connection: MailCloudConnection) throws {
         guard allowsSync else { throw PilotError.invalid("演示模式不保存邮件连接。") }
         guard !isSyncing else { throw PilotError.invalid("请等待当前邮件读取完成后再恢复连接。") }
         try MailCloudConnectionStore.save(connection)
+        resumeConnectionSync()
         isConnected = true; error = nil; message = nil; lastSyncAt = nil
         defaults.removeObject(forKey: "mail.cloud.lastSync")
     }
 
+    func connectionSyncFailed() {
+        error = "账本同步已保留，但邮件连接未能存入本机钥匙串，请重新打开 App 后重试。"
+    }
+
     func disconnect() {
         guard !isSyncing else { return }
-        do { try MailCloudConnectionStore.remove(); isConnected = false; error = nil; message = nil }
+        do { try MailCloudConnectionStore.remove(); defaults.set(true, forKey: "mail.connection.ignoreSynced"); isConnected = false; error = nil; message = nil }
         catch { self.error = PilotError.message(error) }
     }
 

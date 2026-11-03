@@ -19,8 +19,8 @@ struct MobileUpdatePreparationView: View {
                 }
                 FolderSyncSettingsSection()
                 Section {
-                    NavigationLink("加密备份／恢复邮件连接") { MailConnectionSyncView() }
-                    Text("邮件连接需先用恢复密码加密备份，重装后用该密码恢复；本机偏好不随账本同步。")
+                    NavigationLink("邮件连接同步") { MailConnectionSyncView() }
+                    Text("邮件连接随账本一同同步，重装后自动恢复，不需要额外密码；本机偏好各自保留。")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Section {

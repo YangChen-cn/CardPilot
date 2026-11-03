@@ -217,6 +217,7 @@ final class FolderSyncController {
                 let merged = try await engine.read(folder: folder, deviceID: deviceID, local: local, previouslyPublished: published)
                 guard !Task.isCancelled, generation == token, isEnabled else { return }
                 _ = try SyncStore.apply(merged, context: context)
+                MailConnectionSyncStore.refresh(in: context)
                 let fresh = try SyncStore.records(context)
                 _ = try await engine.publish(folder: folder, deviceID: deviceID, records: fresh)
                 guard !Task.isCancelled, generation == token, isEnabled else { return }

@@ -36,8 +36,8 @@ struct AboutView: View {
                 NavigationLink("备份／恢复云端账本") {
                     Form { FolderSyncSettingsSection() }.formStyle(.grouped).navigationTitle("云端同步")
                 }
-                NavigationLink("加密备份／恢复邮件连接") { MailConnectionSyncView() }
-                Text("重装后选择同一云端文件夹并立即同步；邮件连接再用恢复密码恢复。本机偏好各自保存。")
+                NavigationLink("邮件连接同步") { MailConnectionSyncView() }
+                Text("重装后选择同一云端文件夹并立即同步，账本和邮件连接一同恢复。本机偏好各自保存。")
                     .font(.caption).foregroundStyle(.secondary)
             }
             #endif

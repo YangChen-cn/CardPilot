@@ -36,8 +36,8 @@ struct BankMailSettingsView: View {
                     Task { await cloud.connect(url: url, token: token, in: context) }
                 }.disabled(cloud.isSyncing)
                 Link("打开 Google 云端脚本", destination: URL(string: "https://script.google.com/home")!)
-                NavigationLink("加密备份／恢复邮件连接") { MailConnectionSyncView() }
-                Text("本机连接保存在钥匙串。可用恢复密码加密后随账本同步，再在另一端恢复；本机偏好各自保留。")
+                NavigationLink("邮件连接同步") { MailConnectionSyncView() }
+                Text("网址和连接码随账本同步，另一端自动保存到钥匙串，无需额外密码；本机偏好各自保留。")
                     .font(.caption).foregroundStyle(.secondary)
             }
             if cloud.isConnected {
