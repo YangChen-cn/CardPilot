@@ -22,13 +22,13 @@
 
 ## 下载安装
 
-**当前 iOS 预发布：0.2.0 RC（2026-10-29，Build 1）**
+**当前正式版：0.2.0（2026-11-03，Build 1）**
 
-[下载 IPA](https://github.com/YangChen-cn/CardPilot/releases/download/v0.2.0rc/CardPilot-0.2.0rc.ipa) · [发布说明与 SHA-256 校验文件](https://github.com/YangChen-cn/CardPilot/releases/tag/v0.2.0rc) · [全部版本](https://github.com/YangChen-cn/CardPilot/releases)
+[下载 iOS IPA](https://github.com/YangChen-cn/CardPilot/releases/download/v0.2.0/CardPilot-0.2.0.ipa) · [下载 Mac DMG](https://github.com/YangChen-cn/CardPilot/releases/download/v0.2.0/CardPilot-0.2.0.dmg) · [发布说明与 SHA-256 校验文件](https://github.com/YangChen-cn/CardPilot/releases/tag/v0.2.0) · [全部版本](https://github.com/YangChen-cn/CardPilot/releases)
 
 IPA 使用维护者的 `CardPilot` 自签名证书，并非 App Store 或 TestFlight 安装包。请通过 Sideloadly、AltStore 或 Xcode，使用自己的证书与描述文件重签安装。最低要求 iOS 26.0。
 
-macOS 可[从源码运行](#从源码运行)；本次 0.2.0 RC 发布提供 iOS IPA，没有附带新版 macOS 安装包。
+macOS 26.0 及以上可下载 DMG 安装；使用 `CardPilot` 自签名证书，未经 Apple 公证。后续正式版本支持应用内下载、安装并重启。也可[从源码运行](#从源码运行)。
 
 ## 功能
 
@@ -45,11 +45,11 @@ CardPilot 以**银行卡权益管理与轻量消费统计**为核心，帮助你
 | **这一笔刷哪张** | 根据类别、地区、可选金额、支付方式和商户比较可能适用的公开权益，保留待确认条件，不提供精确到账预测。 |
 | **个人资料与同步** | 记录尾号、账单日、还款日、额度及手动账单/还款；用自己选择的 iCloud Drive 或共享文件夹同步手机与 Mac，无需 CardPilot 服务器。 |
 | **账单与还款提醒** | 集中查看各卡还款日，手动录入账单、分次还款；按卡选择账单日提醒、还款日前及当天提醒。通知可选，各设备独立开启。 |
-| **关于与软件更新** | 设置查看作者、版本及更新内容；iOS 提醒正式新版并引导备份后下载 IPA，Mac 支持应用内下载、校验并自动替换重启。源码已预设 0.2.0，现有发布包不变。 |
+| **关于与软件更新** | 设置查看作者、版本及更新内容；iOS 提醒正式新版并引导备份后下载 IPA，Mac 支持应用内下载、校验并自动替换重启。 |
 
 迎新达标和奖励到账由用户确认，不按逐笔交易自动判断银行资格。外币消费可以只保留原币；跨币种港币合计只包含有可信换算资料的记录。
 
-账单功能入口位于卡包底部的「额度、账单与还款」，卡片详情也可直接查看该卡记录。提醒默认关闭：先为卡片设置日期与提醒，再在「账单与还款提醒」开启本机通知。已录入账单以实际还款日期为准；没有账单时，只提示查看账单，不推算欠款。见[使用说明](docs/billing-reminders.md)。以上新增功能在 main 源码中，已发布的 0.2.0 RC IPA 不包含本轮更新。
+账单功能入口位于卡包底部的「额度、账单与还款」，卡片详情也可直接查看该卡记录。提醒默认关闭：先为卡片设置日期与提醒，再在「账单与还款提醒」开启本机通知。已录入账单以实际还款日期为准；没有账单时，只提示查看账单，不推算欠款。见[使用说明](docs/billing-reminders.md)。以上功能已包含在 0.2.0 正式版。
 
 ### 邮件与快捷指令记账
 
@@ -63,7 +63,7 @@ CardPilot 以**银行卡权益管理与轻量消费统计**为核心，帮助你
 
 资料来自独立的 [CardPilot-Catalog](https://github.com/YangChen-cn/CardPilot-Catalog)，银行、产品、活动、卡面、Logo 和整卡用法均通过只读快照维护。
 
-**0.2.0 RC 内置快照：`2026102904`，8 家银行、24 款产品、24 份整卡指南。**
+**0.2.0 内置快照：`2026110301`，8 家银行、24 款产品、24 份整卡指南。**
 
 | 银行 | 已收录产品 |
 | --- | --- |
@@ -94,7 +94,7 @@ App 在启动、回到前台或手动检查时获取更新，正常检查间隔�
 
 ## 界面
 
-以下截图来自较早版本，部分入口和布局与 0.2.0 RC 不同。
+以下截图来自较早版本，部分入口和布局与 0.2.0 不同。
 
 ### macOS
 
@@ -198,13 +198,13 @@ xcodebuild \
 使用独立的 Release DerivedData，不停止或覆盖正在运行的开发版：
 
 ```sh
-./script/package_release.sh ios --version 0.2.0rc --build 1
+./script/package_release.sh ios --version 0.2.0 --build 1
 ```
 
 iOS 默认生成未签名 IPA；使用维护者现有自签名证书的方式为：
 
 ```sh
-IOS_SIGN_IDENTITY=CardPilot ./script/package_release.sh ios --version 0.2.0rc --build 1
+IOS_SIGN_IDENTITY=CardPilot ./script/package_release.sh ios --version 0.2.0 --build 1
 ```
 
 输出位于 `build/releases/<version>/`，包含 IPA、`.sha256` 和 `INSTALL.txt`。参数 `mac` 生成签名 DMG，`all` 构建两个平台；也可省略版本参数，使用 `project.yml` 当前值。iOS 包仍需有效证书和描述文件重签后侧载，不是 App Store / TestFlight 分发。

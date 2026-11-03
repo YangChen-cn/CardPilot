@@ -4,7 +4,7 @@
 
 ## 关于页与版本
 
-设置 → 关于 CardPilot：显示当前 Bundle 版本和 Build、作者 YangChen、GitHub 项目链接、本版更新内容与软件更新入口。项目版本预设为 0.2.0，Build 1；这不是一次 GitHub Release 发布，现有 0.2.0rc IPA 不包含本轮功能。
+设置 → 关于 CardPilot：显示当前 Bundle 版本和 Build、作者 YangChen、GitHub 项目链接、本版更新内容与软件更新入口。0.2.0 正式版（Build 1）发布 iOS IPA 和 macOS DMG，包含本页功能；旧 0.2.0rc 保留为历史预发布。
 
 0.2.0 的本版说明包含可选账单/还款提醒、单卡账单记录、卡包摘要、整卡用法、iPhone 搜索/阅读面板优化、云端清晰卡面、关于与更新功能。后续发版同时维护 AboutView 的本版说明。
 
