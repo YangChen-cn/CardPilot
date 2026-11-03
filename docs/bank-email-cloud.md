@@ -13,7 +13,7 @@ Gmail 的普通 API key 不能代替访问私人邮箱所需的用户授权。�
 3. 在函数下拉列表选择 `setupCardPilot`，点击「运行」，确认 Google 授权。它首先采集过去 30 天，成功后安装每天香港时间约 03:00 的触发器。Google 会在该小时内选择运行时间，不保证精确到分钟。[时间触发器说明](https://developers.google.com/apps-script/guides/triggers/installable#time-driven_triggers)。
 4. 在「项目设置 → 脚本属性」找到自动生成的 `CARDPILOT_TOKEN`。它是独立的高熵连接密钥，不是你的 Gmail 密码。只复制到 CardPilot 的安全输入框；不要写入源码、URL、截图、公开日志或 Git 仓库。
 5. 点击「部署 → 新部署 → 网络应用」。执行身份选「我」，访问权限选「任何人」，部署后复制以 `/exec` 结尾的部署 URL。脚本以你自己的身份读取私人缓存；知道 URL 仍无法获取资料，必须同时持有连接密钥。不要选择只允许登录 Google 的访问方式，否则原生 App 无法直接拉取。[Web App 执行身份](https://developers.google.com/apps-script/guides/web)。
-6. 在 CardPilot 的邮件同步设置填入部署 URL 与连接密钥，保存并同步一次。手机与 Mac 分别安全配置连接；不要将密钥放入账本文件夹同步。App 连接设置由当前版本界面引导。
+6. 在 CardPilot 的邮件同步设置填入部署 URL 与连接密钥，保存并同步一次。也可在“加密备份／恢复邮件连接”用独立恢复密码加密保存，随后经账本文件夹同步，在另一端输入恢复密码写入本机钥匙串。不要把明文连接码或恢复密码放进同步文件夹。本机偏好仍各自保留；流程及加密格式见[更新与重装备份](app-updates.md)。
 
 完成后，可在 Apps Script「触发器」看到唯一的 `collectBankMail` 每日任务。在「执行记录」检查是否成功；脚本属性 `CARDPILOT_LAST_RESULT` 只包含时间、数量及完成状态，不包含邮件正文或密钥。重新运行 `setupCardPilot` 会保留原有邮箱身份、密钥和私人归档，只重建本脚本的每日任务，不会安装重复任务。
 

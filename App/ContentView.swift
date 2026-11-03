@@ -6,6 +6,7 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(FolderSyncController.self) private var sync
     @Environment(CatalogRepository.self) private var catalog
+    @Environment(AppUpdateController.self) private var updates
     @State private var selection: AppSection? = .cards
     @State private var showingTransaction = false
     @State private var showingSettings = false
@@ -56,6 +57,7 @@ struct ContentView: View {
             await catalog.checkIfNeeded()
         }
         .task(id: reminderRevision) { try? await LocalReminderService.refresh(context: context) }
+        .task { await updates.check() }
         .sheet(item: $reminders.destination) { destination in
             NavigationStack {
                 Group {
@@ -86,6 +88,7 @@ struct ContentView: View {
                 reminderRevision &+= 1
                 Task { await MailCloudController.shared.sync(in: context) }
                 Task { await catalog.checkIfNeeded() }
+                Task { await updates.check() }
             }
             else if phase == .background { sync.suspend() }
         }

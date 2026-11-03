@@ -4,10 +4,14 @@ import UserNotifications
 
 @main
 struct CardPilotApp: App {
+    #if os(macOS)
+    @NSApplicationDelegateAdaptor(AppTerminationDelegate.self) private var termination
+    #endif
     private let container: ModelContainer?
     private let startupError: String?
     @State private var folderSync = FolderSyncController(allowsSync: !RuntimeMode.isEphemeral)
     @State private var catalog = CatalogRepository.shared
+    @State private var updates = AppUpdateController()
 
     init() {
         if !RuntimeMode.isEphemeral { UNUserNotificationCenter.current().delegate = ReminderNavigation.shared }
@@ -35,6 +39,15 @@ struct CardPilotApp: App {
                 ContentView().modelContainer(container).tint(PilotTheme.accent)
                     .environment(folderSync)
                     .environment(catalog)
+                    .environment(updates)
+                    .task {
+                        #if os(macOS)
+                        termination.context = container.mainContext
+                        termination.updates = updates
+                        termination.sync = folderSync
+                        LaunchConfirmation.confirmIfRequested()
+                        #endif
+                    }
                     .environment(\.locale, Locale(identifier: "zh_Hans_HK"))
                     .environment(\.timeZone, HKCalendar.calendar.timeZone)
                     .preferredColorScheme(RuntimeMode.isDemo && ProcessInfo.processInfo.arguments.contains("--dark") ? .dark : nil)
@@ -58,6 +71,7 @@ struct CardPilotApp: App {
                     .modelContainer(container)
                     .environment(folderSync)
                     .environment(catalog)
+                    .environment(updates)
                     .environment(\.locale, Locale(identifier: "zh_Hans_HK"))
                     .environment(\.timeZone, HKCalendar.calendar.timeZone)
                     .tint(PilotTheme.accent)

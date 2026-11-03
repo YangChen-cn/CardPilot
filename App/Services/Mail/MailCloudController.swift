@@ -37,11 +37,17 @@ import SwiftData
         do {
             let connection = MailCloudConnection(url: url.trimmingCharacters(in: .whitespacesAndNewlines),
                                                  token: token.trimmingCharacters(in: .whitespacesAndNewlines))
-            try MailCloudConnectionStore.save(connection)
-            isConnected = true; error = nil; message = nil; lastSyncAt = nil
-            defaults.removeObject(forKey: "mail.cloud.lastSync")
+            try restoreConnection(connection)
             await sync(in: context, force: true)
         } catch { self.error = PilotError.message(error) }
+    }
+
+    func restoreConnection(_ connection: MailCloudConnection) throws {
+        guard allowsSync else { throw PilotError.invalid("演示模式不保存邮件连接。") }
+        guard !isSyncing else { throw PilotError.invalid("请等待当前邮件读取完成后再恢复连接。") }
+        try MailCloudConnectionStore.save(connection)
+        isConnected = true; error = nil; message = nil; lastSyncAt = nil
+        defaults.removeObject(forKey: "mail.cloud.lastSync")
     }
 
     func disconnect() {

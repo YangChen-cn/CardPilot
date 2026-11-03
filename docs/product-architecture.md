@@ -17,6 +17,7 @@ CardPilot 是原生银行卡权益管理与轻量消费统计工具。权益展�
 | 个人迎新 | 新官方迎新使用welcomeTrackingOffer文档，key为welcomeTracking:offer:<cardKey>:<offerID>（官方卡cardKey为同步稳定的BankCard.overlayKey）；状态、申请/发卡日期、个人截止日、门槛参考、奖励内容、备注、到账日期；旧welcomeTracking:rule.syncKey只读迁移 |
 | 个人活动状态 | offerState文档，key为offerState:<cardKey>:<offerID>；隐藏、收藏、登记、备注；官方卡cardKey跨设备稳定，旧UUID key只读迁移；当前每个官方产品单实例，未来多实例需加入同步实例标识 |
 | 消费事实 | SpendTransaction及邮件/快捷指令/CSV来源证据；记录原币，不推断银行资格 |
+| 邮件连接备份 | 用户主动用恢复密码加密的mailConnectionBackup领域文档随账本同步；另一端主动解密后存入本机钥匙串。云盘不保存明文URL/连接码/密码，设备偏好不共享；详见[更新与备份](app-updates.md) |
 | 账单与还款提醒 | 复用BillingStatement/Repayment，手动记录原币账单和还款；CardBillingPreferences按稳定card.syncKey同步各卡日期提醒选项，本机通知开关独立。LocalReminderService统一安排账单与迎新通知，不读取消费历史推算欠款；见[账单说明](billing-reminders.md) |
 | 消费统计 | DashboardSnapshot仅汇总卡片、类别、月度趋势与最近记录；无回赠、手续费或奖励回放 |
 | 选卡建议 | RecommendationEngine按用户提供的条件排除明确不符项，先按公开权益力度、再按明确满足条件与待确认限制排序；未填写支付方式、商户、登记状态或有效期时标记“需补充信息”，不读取账本、不预测结算或精确收益 |

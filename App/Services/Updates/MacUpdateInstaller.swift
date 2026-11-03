@@ -1,0 +1,155 @@
+#if os(macOS)
+import Foundation
+import Security
+
+/// Runs only in the independent installer app. No shell interpolation and no
+/// elevated privileges; an unwritable installation falls back to manual install.
+actor MacUpdateInstaller {
+    struct Prepared: Sendable {
+        let target: URL
+        let staging: URL
+        let backup: URL
+    }
+
+    enum Failure: LocalizedError {
+        case invalidPackage, location, command(String), quit, rollback(URL)
+        case launchFailed(String), upgradeUnconfirmed(String)
+        var errorDescription: String? {
+            switch self {
+            case .invalidPackage: "安装包与预期版本不符，更新已停止。"
+            case .location: "当前位置无法更新，请手动将 CardPilot 安装到“应用程序”。"
+            case .command(let name): "\(name)未能完成，原版本仍保留。"
+            case .quit: "CardPilot 未正常退出，更新已停止。请保存后重试。"
+            case .rollback(let url): "恢复原版本失败，原 App 保留在：\(url.path)"
+            case .launchFailed(let message): "新版本启动失败，已恢复原版本：\(message)"
+            case .upgradeUnconfirmed(let message):
+                "新版本尚未确认可以打开，已保留上一版本备份：\(message)"
+            }
+        }
+    }
+
+    func prepare(archive: URL, target: URL, version: String, digest: String) throws -> Prepared {
+        guard digest.count == 64, digest.allSatisfy(\.isHexDigit),
+              try UpdateChecksum.sha256(of: archive) == digest else { throw Failure.invalidPackage }
+        let manager = FileManager.default
+        let parent = target.deletingLastPathComponent()
+        guard manager.isWritableFile(atPath: parent.path), manager.isWritableFile(atPath: target.path),
+              !target.path.hasPrefix("/Volumes/"), !target.path.contains("/AppTranslocation/") else { throw Failure.location }
+        let mount = manager.temporaryDirectory.appendingPathComponent("CardPilotUpdate-\(UUID().uuidString)")
+        try manager.createDirectory(at: mount, withIntermediateDirectories: false)
+        defer { try? manager.removeItem(at: mount) }
+        try run("/usr/bin/hdiutil", ["attach", archive.path, "-readonly", "-nobrowse", "-mountpoint", mount.path, "-quiet"])
+        defer { try? run("/usr/bin/hdiutil", ["detach", mount.path, "-quiet"]) }
+        let source = mount.appendingPathComponent("CardPilot.app")
+        try validate(source, installedAt: target, version: version)
+        let id = UUID().uuidString
+        let prepared = Prepared(target: target, staging: parent.appendingPathComponent(".CardPilot-update-\(id).app"),
+                                backup: parent.appendingPathComponent(".CardPilot-backup-\(id).app"))
+        do {
+            try run("/usr/bin/ditto", [source.path, prepared.staging.path])
+            try validate(prepared.staging, installedAt: target, version: version)
+            return prepared
+        } catch {
+            try? manager.removeItem(at: prepared.staging)
+            throw error
+        }
+    }
+
+    private func validate(_ source: URL, installedAt target: URL, version: String) throws {
+        guard let info = try PropertyListSerialization.propertyList(
+            from: Data(contentsOf: source.appendingPathComponent("Contents/Info.plist")), format: nil) as? [String: Any],
+              let oldInfo = try PropertyListSerialization.propertyList(
+                from: Data(contentsOf: target.appendingPathComponent("Contents/Info.plist")), format: nil) as? [String: Any],
+              info["CFBundleIdentifier"] as? String == "com.cardpilot.app.mac",
+              oldInfo["CFBundleIdentifier"] as? String == "com.cardpilot.app.mac",
+              info["CFBundleShortVersionString"] as? String == version,
+              let incoming = ReleaseVersion(version),
+              let installed = ReleaseVersion(oldInfo["CFBundleShortVersionString"] as? String ?? ""), incoming > installed,
+              let minimum = ReleaseVersion(info["LSMinimumSystemVersion"] as? String ?? ""),
+              let executable = info["CFBundleExecutable"] as? String, executable == "CardPilot" else { throw Failure.invalidPackage }
+        let os = ProcessInfo.processInfo.operatingSystemVersion
+        guard let currentOS = ReleaseVersion("\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"), minimum <= currentOS else { throw Failure.invalidPackage }
+        try run("/usr/bin/lipo", [source.appendingPathComponent("Contents/MacOS/CardPilot").path, "-verify_arch", "arm64"])
+        let installedCertificate = try UpdateSigning.certificate(of: target, identifier: "com.cardpilot.app.mac")
+        guard try UpdateSigning.certificate(of: source, identifier: "com.cardpilot.app.mac") == installedCertificate,
+              try UpdateSigning.certificate(of: source.appendingPathComponent("Contents/MacOS/CardPilotMailKeychain"), identifier: "com.cardpilot.mail-keychain") == installedCertificate,
+              try UpdateSigning.certificate(of: source.appendingPathComponent("Contents/Helpers/CardPilotUpdater.app"), identifier: "com.cardpilot.updater") == installedCertificate else { throw Failure.invalidPackage }
+        try run("/usr/bin/codesign", ["--verify", "--deep", "--strict", source.path])
+    }
+
+    func replace(_ prepared: Prepared) throws {
+        try Self.replace(prepared, move: { try FileManager.default.moveItem(at: $0, to: $1) })
+    }
+
+    /// The old App stays as a sibling backup until the new App launches.
+    nonisolated static func replace(_ prepared: Prepared, move: (URL, URL) throws -> Void) throws {
+        try move(prepared.target, prepared.backup)
+        do { try move(prepared.staging, prepared.target) }
+        catch {
+            let original = error
+            do { try move(prepared.backup, prepared.target) }
+            catch { throw Failure.rollback(prepared.backup) }
+            throw original
+        }
+    }
+
+    func rollback(_ prepared: Prepared) throws {
+        let manager = FileManager.default
+        guard manager.fileExists(atPath: prepared.backup.path) else { return }
+        // Keep the failed new bundle in staging so rollback never deletes the backup.
+        if manager.fileExists(atPath: prepared.target.path) {
+            try manager.moveItem(at: prepared.target, to: prepared.staging)
+        }
+        do { try manager.moveItem(at: prepared.backup, to: prepared.target) }
+        catch { throw Failure.rollback(prepared.backup) }
+    }
+
+    func discardStaging(_ prepared: Prepared) throws {
+        if FileManager.default.fileExists(atPath: prepared.staging.path) {
+            try FileManager.default.removeItem(at: prepared.staging)
+        }
+    }
+
+    /// Waits for the newly launched build to write its confirmation marker. The
+    /// backup is deleted only after this returns true.
+    nonisolated static func waitForLaunchMarker(
+        at url: URL,
+        timeout: Duration,
+        poll: Duration = .milliseconds(250),
+        fileExists: (URL) -> Bool = { FileManager.default.fileExists(atPath: $0.path) }
+    ) async -> Bool {
+        let deadline = ContinuousClock.now.advanced(by: timeout)
+        while ContinuousClock.now < deadline {
+            if fileExists(url) { return true }
+            do {
+                try await Task.sleep(for: poll)
+            } catch {
+                return false
+            }
+        }
+        return fileExists(url)
+    }
+
+    func finish(_ prepared: Prepared, archive: URL) throws {
+        try FileManager.default.removeItem(at: prepared.backup)
+        try FileManager.default.removeItem(at: archive.deletingLastPathComponent())
+    }
+
+    private func run(_ executable: String, _ arguments: [String]) throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        process.standardInput = FileHandle.nullDevice
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        let ended = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in ended.signal() }
+        try process.run()
+        guard ended.wait(timeout: .now() + 60) == .success else {
+            process.terminate()
+            throw Failure.command(URL(fileURLWithPath: executable).lastPathComponent)
+        }
+        guard process.terminationStatus == 0 else { throw Failure.command(URL(fileURLWithPath: executable).lastPathComponent) }
+    }
+}
+#endif

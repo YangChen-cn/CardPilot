@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Query(sort: \SpendTransaction.date, order: .reverse) private var transactions: [SpendTransaction]
     @Environment(\.modelContext) private var context
     @Environment(CatalogRepository.self) private var catalog
+    @Environment(AppUpdateController.self) private var updates
     @State private var exporting = false
     @State private var shortcuts = false
     @State private var document = TextDocument(text: "")
@@ -63,6 +64,13 @@ struct SettingsView: View {
                 Button("导出消费记录", systemImage: "square.and.arrow.up", action: prepareExport)
             }
             Section {
+                NavigationLink { AboutView() } label: {
+                    HStack {
+                        Label("关于 CardPilot", systemImage: "info.circle")
+                        Spacer()
+                        if updates.release != nil { Text("有新版本").font(.caption).foregroundStyle(PilotTheme.accent) }
+                    }
+                }
                 Text("权益以银行最新条款为准；迎新完成与到账状态由你记录。")
                     .font(.subheadline).foregroundStyle(.secondary)
             }

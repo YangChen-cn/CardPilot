@@ -11,7 +11,7 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     PRODUCT_NAME: CardPilot
     PRODUCT_MODULE_NAME: CardPilot
-    MARKETING_VERSION: "0.2.0rc"
+    MARKETING_VERSION: "0.2.0"
     CURRENT_PROJECT_VERSION: "1"
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_KEY_CFBundleDisplayName: CardPilot
@@ -35,6 +35,13 @@ targets:
         ENABLE_APP_SANDBOX: YES
         ENABLE_USER_SELECTED_FILES: readwrite
         CODE_SIGN_ENTITLEMENTS: App/CardPilot.entitlements
+    dependencies:
+      - target: CardPilotUpdater
+        link: false
+        embed: true
+        copy:
+          destination: wrapper
+          subpath: Contents/Helpers
     postBuildScripts:
       - name: Build stable mail Keychain helper
         script: 'bash "$SRCROOT/script/build_mail_keychain_helper.sh"'
@@ -45,6 +52,27 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: com.cardpilot.app
             CFBundleURLSchemes: [cardpilot]
+  CardPilotUpdater:
+    type: application
+    platform: macOS
+    sources:
+      - path: Support/Updater
+      - path: App/Services/Updates/MacUpdateInstaller.swift
+      - path: App/Services/Updates/ReleaseVersion.swift
+      - path: App/Services/Updates/UpdateChecksum.swift
+      - path: App/Services/Updates/LaunchConfirmation.swift
+      - path: App/Services/Updates/UpdateSigning.swift
+    settings:
+      base:
+        PRODUCT_NAME: CardPilotUpdater
+        PRODUCT_MODULE_NAME: CardPilotUpdater
+        PRODUCT_BUNDLE_IDENTIFIER: com.cardpilot.updater
+        SKIP_INSTALL: YES
+        ENABLE_APP_SANDBOX: NO
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: CardPilot
+        INFOPLIST_KEY_LSUIElement: YES
+        INFOPLIST_KEY_CFBundleDisplayName: CardPilot 更新
   CardPilotIOS:
     type: application
     platform: iOS

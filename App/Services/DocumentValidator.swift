@@ -94,6 +94,9 @@ enum DocumentValidator {
             let preferences = try decoder.decode(CardBillingPreferences.self, from: value.content)
             valid = preferences.isValid && value.key == preferences.key
         case "repayment": valid = try decoder.decode(Repayment.self, from: value.content).amountCents > 0
+        case "mailConnectionBackup":
+            let backup = try decoder.decode(MailConnectionBackup.self, from: value.content)
+            valid = value.key == MailConnectionBackup.key && backup.isValid
         default: valid = false
         }
         guard valid else { throw PilotError.invalid("同步资料内容无效，已保留本机账本。") }

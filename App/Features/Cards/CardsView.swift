@@ -79,6 +79,8 @@ struct CardsView: View {
         let visible = filtered
         ScrollViewReader { proxy in
         ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                AppUpdateNotice().padding(.horizontal, isCompact ? 16 : PilotTheme.pagePadding)
             if cards.isEmpty && isCompact {
                 CardsEmptyState(onCatalog: { showingCatalog = true }, onManual: { showingAdd = true })
                     .frame(maxWidth: .infinity)
@@ -143,6 +145,7 @@ struct CardsView: View {
                 .padding(isCompact ? 16 : PilotTheme.pagePadding)
                 .padding(.bottom, isCompact ? 28 : 0)
                 .frame(maxWidth: 1180).frame(maxWidth: .infinity)
+            }
             }
         }
         .onChange(of: highlightedCardKey) { _, key in
