@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "contentVersion": 2026102904,
-  "publishedAt": "2026-10-29",
+  "contentVersion": 2026110301,
+  "publishedAt": "2026-11-03",
   "banks": [
     {
       "id": "hsbc",
@@ -1318,7 +1318,7 @@
       "bankID": "bochk",
       "artwork": {
         "path": "images/cards/bochk-gba-youth.png",
-        "sha256": "b2fc7c41fb92a65f71e5d8945e7953bf6527e25d344e7ceb5b10e68adfc5d4a6",
+        "sha256": "50eaf87dc696d0e595e3ca30c39cca03f5fb0dac3a42a6a311932fd150ebe6b9",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,
@@ -2068,7 +2068,7 @@
       "bankID": "cncbi",
       "artwork": {
         "path": "images/cards/cncbi-gba-dual.png",
-        "sha256": "2099bbf2fb7caa45201678e36c6030f4a5792066ad0d024409bcc121cd7d08ff",
+        "sha256": "d6d71bba947a67d8d87aae3c5a1c1eb193e8b9b67a365027216438db8c764611",
         "contentType": "image/png"
       },
       "baseRewardVerified": true,

@@ -24,3 +24,7 @@
 | `cncbi-logo.png` | https://www.cncbinternational.com/personal/e-banking/inmotion/images/cncbi-logo.png | 银行官网页首 logo，230×62 |
 
 这些图像及品牌标识的权利归中信银行（国际）所有，仅用于卡种识别，不纳入项目代码许可证。
+
+## 2026-11-03 卡面清晰化
+
+用户要求用 imagegen 重绘模糊素材；本次仅替换现有 GBA 卡面，不改活动、产品 ID 或权益核实日期。统一导出 1200×756 横版铺满，去除个人示例字段，银行独立 Logo 不变。新版为参考既有官方样图的生成素材，不是新取得的银行高清原图。完整参考链接、处理说明与提示词见 [Catalog 素材记录](https://github.com/YangChen-cn/CardPilot-Catalog/blob/main/docs/artwork-2026-11-03.md)。云端版本 2026110301，App 内置回退图同步更新。
