@@ -87,4 +87,4 @@ xcodebuild -project CardPilot.xcodeproj -scheme CardPilotIOS \
 
 用户反馈卡包数量与卡面之间、账本筛选行及滚动后的白色标题区占位过大。iPhone五个根页面改为inline标题，不再保留large标题的展开区域；搜索仍随正文滚动，不恢复置顶搜索。卡包纵向间距24→12pt，叠放保留32pt背卡展示空间以免遮挡数量。账本筛选并入月度摘要的笔数行（全部历史并入加载数），删除手机独立筛选行；顶部内容间距16→12pt、去掉额外垂直padding，List分区间距12pt、顶部内容边距8pt。账本导航背景采用同页面的grouped背景，避免白色横带；iOS NavigationLink使用系统箭头，不重复绘制。macOS工具栏、网格、统计、数据逻辑不变。
 
-iOS generic device目标编译成功，git diff --check通过；未增布局实现细节测试、未运行全量或UI自动化、未启动模拟器或Mac App。实际滚动、深浅模式与大字号表现待用户验收。当前GitHub 0.2.0安装包不含此源码修补，未覆盖正式发布附件。临时编译缓存已再次清理，只保留Applications中正式App。
+iOS generic device目标编译成功，git diff --check通过；未增布局实现细节测试、未运行全量或UI自动化、未启动模拟器或Mac App。实际滚动、深浅模式与大字号表现待用户验收。随后用户要求直接覆盖0.2.0 iOS IPA：已用a92424e重新归档并覆盖同名IPA与校验文件，版本0.2.0 / Build 1；Mac DMG及v0.2.0 tag不变，发布说明标明补包源码。临时编译缓存已再次清理，只保留Applications中正式App。
