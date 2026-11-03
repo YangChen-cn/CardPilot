@@ -87,7 +87,7 @@ struct CardsView: View {
                     .padding(.horizontal, isCompact ? 24 : PilotTheme.pagePadding)
                     .padding(.vertical, isCompact ? 44 : 64)
             } else {
-                VStack(alignment: .leading, spacing: isCompact ? 24 : PilotTheme.spacing + 8) {
+                VStack(alignment: .leading, spacing: isCompact ? 12 : PilotTheme.spacing + 8) {
                     #if os(iOS)
                     PilotSearchField(text: $search, prompt: "银行或卡片名称")
                     #endif

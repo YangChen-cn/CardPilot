@@ -128,7 +128,7 @@ struct ContentView: View {
         NavigationStack {
             sectionView(section)
                 .navigationTitle(title(section))
-                .navigationBarTitleDisplayMode(.large)
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     if section == .cards {
                         ToolbarItem(placement: .topBarLeading) {

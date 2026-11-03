@@ -52,6 +52,7 @@ struct TransactionsView: View {
         #endif
     }
 
+    private var showsFilters: Bool { !visibleRecords.isEmpty || hasFilters || allHistory || !search.isEmpty }
     private var loading: Bool { loadingID != nil }
     private var pageIsCurrent: Bool { displayedQuery == query && displayedRevision == revision }
     private var visibleRecords: [SpendTransaction] { pageIsCurrent ? page.records : [] }
@@ -79,7 +80,7 @@ struct TransactionsView: View {
             .sorted { $0.date > $1.date }
         ledgerContainer {
             Section {
-                VStack(alignment: .leading, spacing: phoneLayout ? 16 : 20) {
+                VStack(alignment: .leading, spacing: phoneLayout ? 12 : 20) {
                     #if os(iOS)
                     PilotSearchField(text: $search, prompt: "搜索商户、卡片或分类")
                     #endif
@@ -89,8 +90,14 @@ struct TransactionsView: View {
                     } else if allHistory {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("全部历史").font(.headline)
-                            Text("已加载 \(visibleRecords.count) 笔" + (search.isEmpty ? "交易" : "匹配交易"))
-                                .font(.subheadline).foregroundStyle(.secondary)
+                            HStack(alignment: .firstTextBaseline) {
+                                Text("已加载 \(visibleRecords.count) 笔" + (search.isEmpty ? "交易" : "匹配交易"))
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                                if phoneLayout {
+                                    Spacer(minLength: 8)
+                                    filters
+                                }
+                            }
                         }
                     } else {
                         summary(visibleRecords)
@@ -102,7 +109,9 @@ struct TransactionsView: View {
                             HStack {
                                 Label((scopedCardID == nil ? "" : "全部卡片 · ") + "\(pendingDocuments.count) 笔交易待核对", systemImage: "checkmark.bubble")
                                 Spacer()
+                                #if os(macOS)
                                 Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+                                #endif
                             }
                             .frame(maxWidth: .infinity, minHeight: PilotTheme.minimumTouchTarget)
                             .contentShape(.rect)
@@ -110,7 +119,7 @@ struct TransactionsView: View {
                         .buttonStyle(.plain)
                     }
                     mailStatus
-                    if !visibleRecords.isEmpty || hasFilters || allHistory || !search.isEmpty {
+                    if !phoneLayout && showsFilters {
                         HStack {
                             if hasFilters { Text("已筛选").font(.caption).foregroundStyle(.secondary) }
                             Spacer()
@@ -118,7 +127,7 @@ struct TransactionsView: View {
                         }
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, phoneLayout ? 0 : 8)
                 #if os(iOS)
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
@@ -152,7 +161,7 @@ struct TransactionsView: View {
             }
         }
         .navigationTitle(scopedCardName.map { $0 + "账本" } ?? "交易账本")
-        .pilotSearchChrome(text: $search, prompt: "搜索商户、卡片或分类")
+        .pilotSearchChrome(text: $search, prompt: "搜索商户、卡片或分类", background: PilotTheme.groupedCanvas)
         .scrollDismissesKeyboard(.interactively)
         .toolbar { ledgerToolbar }
         .sheet(isPresented: $importingSMS) { SMSImportView() }
@@ -312,8 +321,14 @@ struct TransactionsView: View {
                 Text(valued.isEmpty ? "按原币保存，暂无港币折算" : "港币合计仅含可换算记录；其他消费按原币列示")
                     .font(.caption).foregroundStyle(.secondary)
             }
-            Text("\(records.count) 笔交易" + (hasFilters || !search.isEmpty ? " · 已筛选" : ""))
-                .font(.subheadline).foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline) {
+                Text("\(records.count) 笔交易" + (hasFilters || !search.isEmpty ? " · 已筛选" : ""))
+                    .font(.subheadline).foregroundStyle(.secondary)
+                if phoneLayout && showsFilters {
+                    Spacer(minLength: 8)
+                    filters
+                }
+            }
             if showingCategoryTotals {
                 let categories = Dictionary(grouping: valued, by: \.category).map { name, purchases in
                     CategoryTotal(name: name, cents: purchases.reduce(0) { $0 + $1.hkdCents })
@@ -343,7 +358,9 @@ struct TransactionsView: View {
                             Text("邮件上次导入：" + date.formatted(date: .abbreviated, time: .shortened))
                         } else { Text("银行邮件已连接") }
                         Spacer(minLength: 0)
+                        #if os(macOS)
                         Image(systemName: "chevron.right").font(.caption2)
+                        #endif
                     }
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: PilotTheme.minimumTouchTarget)
@@ -413,7 +430,11 @@ struct TransactionsView: View {
                 .padding(PilotTheme.pagePadding).frame(maxWidth: 1100).frame(maxWidth: .infinity)
         }.background(PilotTheme.canvas)
         #else
-        List { content() }.groupedListStyle().background(PilotTheme.groupedCanvas)
+        List { content() }
+            .groupedListStyle()
+            .listSectionSpacing(12)
+            .contentMargins(.top, 8, for: .scrollContent)
+            .background(PilotTheme.groupedCanvas)
         #endif
     }
 

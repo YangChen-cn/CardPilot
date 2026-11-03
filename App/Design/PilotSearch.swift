@@ -47,10 +47,10 @@ struct PilotSearchField: View {
 
 extension View {
     /// iOS search fields live in each page's scrolling content; macOS keeps toolbar search.
-    @ViewBuilder func pilotSearchChrome(text: Binding<String>, prompt: LocalizedStringKey) -> some View {
+    @ViewBuilder func pilotSearchChrome(text: Binding<String>, prompt: LocalizedStringKey, background: Color = PilotTheme.canvas) -> some View {
         #if os(iOS)
         scrollEdgeEffectStyle(.hard, for: .top)
-            .toolbarBackground(PilotTheme.canvas, for: .navigationBar)
+            .toolbarBackground(background, for: .navigationBar)
             .toolbarBackgroundVisibility(.visible, for: .navigationBar)
         #else
         searchable(text: text, prompt: Text(prompt))
